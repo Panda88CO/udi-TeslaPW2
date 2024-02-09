@@ -16,11 +16,11 @@ import time
 import json
 import urllib.parse
 #from udi_interface import LOGGER, Custom
-from oauth import OAuth
+#from oauth import OAuth
 try:
-    import udi_interface
-    logging = udi_interface.LOGGER
-    Custom = udi_interface.Custom
+    from udi_interface import LOGGER, Custom, OAuth
+    logging = LOGGER
+    Custom = Custom
 except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
@@ -32,22 +32,26 @@ except ImportError:
 class NetatmoCloud(OAuth):
     yourApiEndpoint = 'https://api.netatmo.com/api'
 
-    def __init__(self, polyglot):
+    def __init__(self, polyglot, scope):
         super().__init__(polyglot)
         logging.info('OAuth initializing')
         self.poly = polyglot
-        self.scope_str = None
+        self.scope = scope
+        self.customParameters = Custom(self.poly, 'customparams')
+        #self.scope_str = None
         self.apiEndpoint = 'https://api.netatmo.com'
         self.client_ID = None
         self.client_SECRET = None
         self.handleCustomParamsDone = False
-
+        #self.customerDataHandlerDone = False
+        self.customNsHandlerDone = False
+        self.temp_unit = 'C'
 
         self.scopeList = ['read_station', 'read_magellan', 'write_magellan', 'read_bubendorff', 'write_bubendorff', 'read_smarther', 'write_smarther', 'read_thermostat','write_thermostat', 'read+_camera', 'write_camera', 'access_camera', 'read_boorbell', 'access_doorbell',
              'read_mx', 'write_mx', 'read_presence', 'write_presence', 'access_presence', 'read_homecoach', 'read_carbonmonoxidedetector', 'read_smokedetector', 'read_mhs1', 'write_mhs1']
         
         self.poly = polyglot
-        #self.Parameters= Custom(polyglot, 'customparams')
+        #self.customParameters= Custom(polyglot, 'customparams')
         #self.Notices = Custom(self.poly, 'notices')
 
         logging.info('External service connectivity initialized...')
@@ -61,58 +65,89 @@ class NetatmoCloud(OAuth):
     
     # The OAuth class needs to be hooked to these 3 handlers
     def customDataHandler(self, data):
-        while not self.handleCustomParamsDone:
-            logging.debug('Waiting for customParams to complete - customDataHandler')
-            time.sleep(0.2)
-        super()._customDataHandler(data)
-        self.customerDataHandlerDone = True
+        logging.debug('customDataHandler called')
+        #while not self.handleCustomParamsDone:
+        #    logging.debug('Waiting for customDataHandler to complete')
+        #    time.sleep(1)
+        super().customDataHandler(data)
+        self.customDataHandlerDone = True
+        logging.debug('customDataHandler Finished')
 
     def customNsHandler(self, key, data):
-        while not self.handleCustomParamsDone or not self.customerDataHandlerDone :
-            logging.debug('Waiting for customParams to complete - customNsHandler')
-            time.sleep(0.2)
-        self.updateOauthConfig()
-        super()._customNsHandler(key, data)
+        logging.debug('customNsHandler called')
+        #while not self.customParamsDone():
+        #    logging.debug('Waiting for customNsHandler to complete')
+        #    time.sleep(1)
+        #self.updateOauthConfig()
+        super().customNsHandler(key, data)
         self.customNsHandlerDone = True
+        logging.debug('customNsHandler Finished')
 
     def oauthHandler(self, token):
-        
+        logging.debug('oauthHandler called')
+        #while not (self.customParamsDone() and self.customNsDone()):
+        #    logging.debug('Waiting for oauthHandler to complete')
+        #    time.sleep(1)
+        super().oauthHandler(token)
+        #self.customOauthHandlerDone = True
+        logging.debug('oauthHandler Finished')
 
-        while not self.handleCustomParamsDone or not self.customNsHandlerDone or not self.customerDataHandlerDone :
-            logging.debug('Waiting for customParams to complete - oauthHandler')
-            time.sleep(0.2)
-        
-        super()._oauthHandler(token)
+    def customNsDone(self):
+        return(self.customNsHandlerDone)
+    
+    def customDateDone(self):
+        return(self.customDataHandlerDone )
 
+    def customParamsDone(self):
+        return(self.handleCustomParamsDone)
     #def refresh_token(self):
     #    logging.debug('checking token for refresh')
         
 
     # Your service may need to access custom params as well...
-    '''
+    
+    def main_module_enabled(self, node_name):
+        logging.debug('main_module_enabled called {}'.format(node_name))
+        if node_name in self.customParameters :           
+            return(int(self.customParameters[node_name]) == 1)
+        else:
+            self.customParameters[node_name] = 1 #add and enable by default
+            self.poly.Notices['home_id'] = 'Check config to select which home/modules should be used (1 - used, 0 - not used) - then restart'
+            return(True)
+
+                
     def customParamsHandler(self, userParams):
-        self.Parameters.load(userParams)
-        logging.debug('customParamsHandler called')
+        self.customParameters.load(userParams)
+        logging.debug('customParamsHandler called {}'.format(userParams))
+        client_ok = False
+        client_secret = False
+        oauthSettingsUpdate = {}
         # Example for a boolean field
 
-        if 'clientID' in userParams and self.client_ID is None:
-            self.client_ID = self.Parameters['clientID'] 
-            #self.addOauthParameter('client_id',self.client_ID )
-            #self.oauthConfig['client_id'] =  self.client_ID
+        if 'clientID' in userParams:
+            if self.customParameters['clientID'] != 'enter client_id':
+                self.client_ID = self.customParameters['clientID']
+                oauthSettingsUpdate['client_id'] = self.customParameters['clientID']
+                client_ok = True
         else:
-            self.Parameters['clientID'] = 'enter client_id'
+            logging.warnig('No clientID found')
+            self.customParameters['clientID'] = 'enter client_id'
             self.client_ID = None
             
-        if 'clientSecret' in self.Parameters:
-            self.client_SECRET = self.Parameters['clientSecret'] 
-            #self.addOauthParameter('client_secret',self.client_SECRET )
-            #self.oauthConfig['client_secret'] =  self.client_SECRET
+        if 'clientSecret' in self.customParameters:
+            if self.customParameters['clientSecret'] != 'enter client_secret':
+                self.client_SECRET = self.customParameters['clientSecret'] 
+                oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+                secret_ok = True
         else:
-            self.Parameters['clientSecret'] = 'enter client_secret'
+            logging.warnig('No clientSecret found')
+            self.customParameters['clientSecret'] = 'enter client_secret'
             self.client_SECRET = None
-            
-        #if 'scope' in self.Parameters:
-        #    temp = self.Parameters['scope'] 
+
+        if not client_ok  or not secret_ok:
+            self.poly.Notices['client'] = 'Please enter valid clientID and clientSecret - then restart'
+        #if 'scope' in self.customParameters:
+        #    temp = self.customParameters['scope'] 
         #    temp1 = temp.split()
         #    self.scope_str = ''
         #    for net_scope in temp1:
@@ -122,67 +157,100 @@ class NetatmoCloud(OAuth):
         #            logging.error('Unknown scope provided: {} - removed '.format(net_scope))
         #    self.scope = self.scope_str.split()
         #else:
-        #    self.Parameters['scope'] = 'enter desired scopes space separated'
+        #    self.customParameters['scope'] = 'enter desired scopes space separated'
         #    self.scope_str = ""
 
-        if "TEMP_UNIT" in self.Parameters:
-            self.temp_unit = self.Parameters['TEMP_UNIT'][0].upper()
+        if "TEMP_UNIT" in self.customParameters:
+            self.temp_unit = self.customParameters['TEMP_UNIT'][0].upper()
         else:
             self.temp_unit = 0
-            self.Parameters['TEMP_UNIT'] = 'C'
+            self.customParameters['TEMP_UNIT'] = 'C'
 
-            #attempts = 0
-            #while not self.customData and attempts <3:
-            #    attempts = attempts + 1
-            #    time.sleep(1)
-
-            #if self.customData:
-            #    if 'scope' in self.customData:
-            #        if self.scope_str != self.customData['scope']:
-            #           #scope changed - we need to generate a new token/refresh token
-            #           logging.debug('scope has changed - need to get new token')
-            #           self.poly.Notices['auth'] = 'Please initiate authentication - scope has changed'
-            #           self.customData['scope'] = self.scope_str
-            #    else: 
-            #        if self.oauthConfig['client_id'] is None or self.oauthConfig['client_secret'] is None:
-            #            self.updateOauthConfig()           
-            #        self.poly.Notices['auth'] = 'Please initiate authentication - scope has changed'
-            #        self.customData['scope'] = self.scope_str
-
-
-            #self.addOauthParameter('scope',self.scope_str )
-            #self.oauthConfig['scope'] = self.scope_str
-            #logging.debug('Following scopes are selected : {}'.format(self.scope_str))
-
-
-        #if 'refresh_token' in self.Parameters:
-        #    if self.Parameters['refresh_token'] is not None and self.Parameters['refresh_token'] != "":
-        #        self.customData.token['refresh_token'] = self.Parameters['refresh_token']
-        self.handleCustomParamsDone = True
+        #if 'refresh_token' in self.customParameters:
+        #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
+        #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
+        oauthSettingsUpdate['scope'] = self.scope
+        oauthSettingsUpdate['auth_endpoint'] = 'https://api.netatmo.com/oauth2/authorize'
+        oauthSettingsUpdate['token_endpoint'] = 'https://api.netatmo.com/oauth2/token'
+        oauthSettingsUpdate['cloudlink'] = True
+        oauthSettingsUpdate['addRedirect'] = True
+        self.updateOauthSettings(oauthSettingsUpdate)    
+        #logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
+        if client_ok and secret_ok:
+            self.handleCustomParamsDone = True
+            self.poly.Notices.clear()
 
         #self.updateOauthConfig()
-        #self.myParamBoolean = ('myParam' in self.Parametersand self.Parameters['myParam'].lower() == 'true')
+        #self.myParamBoolean = ('myParam' in self.customParametersand self.customParameters['myParam'].lower() == 'true')
         #logging.info(f"My param boolean: { self.myParamBoolean }")
     
-    '''
-    """
+
     def add_to_parameters(self,  key, value):
         '''add_to_parameters'''
-        self.Parameters[key] = value
+        self.customParameters[key] = value
 
     def check_parameters(self, key, value):
         '''check_parameters'''
-        if key in self.Parameters:
-            return(self.Parameters[key]  == value)
+        if key in self.customParameters:
+            return(self.customParameters[key]  == value)
         else:
             return(False)
-    """
+    
+    def authendicated(self):
+        try:
+            logging.debug('authendicated - {}'.format(self.getOauthSettings()))
+            self.getAccessToken()
+            return(True)
+        except ValueError as err:
+            logging.warning('Access token is not yet available. Please authenticate.')
+            #self.poly.Notices['auth'] = 'Please initiate authentication'
+            return (False)
+        
+
+    def setOauthScope(self, scope):
+        oauthSettingsUpdate = {}
+        logging.debug('Set Scope to {}'.format(scope))
+        oauthSettingsUpdate['scope'] = str(scope)
+        self.updateOauthSettings(oauthSettingsUpdate)
+    
+    def setOauthName(self, name):
+        oauthSettingsUpdate = {} 
+        logging.debug('Set name to {}'.format(name))
+        oauthSettingsUpdate['name'] = str(name)
+        self.updateOauthSettings(oauthSettingsUpdate)
+    
+    '''
+    def _insert_refreshToken(self, refresh_token, clientId, clientSecret):
+        data = {
+                'grant_type': 'refresh_token',
+                'refresh_token': refresh_token,
+                'client_id': clientId,
+                'client_secret':  clientSecret
+                }
+        try:
+            response = requests.post('https://api.netatmo.com/oauth2/token' , data=data)
+            response.raise_for_status()
+            token = response.json()
+            logging.info('Refreshing tokens successful')
+            logging.debug(f"Token refresh result [{ type(token) }]: { token }")
+            self._saveToken(token)
+            return('Success')
+          
+        except requests.exceptions.HTTPError as error:
+            logging.error(f"Failed to refresh  token: { error }")
+            return(None)
+            # NOTE: If refresh tokens fails, we keep the existing tokens available.
+    '''
 
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=None):
         # When calling an API, get the access token (it will be refreshed if necessary)
-        accessToken = self.getAccessToken()
-
+        try:
+            accessToken = self.getAccessToken()
+        except ValueError as err:
+            logging.warning('Access token is not yet available. Please authenticate.')
+            self.poly.Notices['auth'] = 'Please initiate authentication'
+            return
         if accessToken is None:
             logging.error('Access token is not available')
             return None
@@ -224,6 +292,7 @@ class NetatmoCloud(OAuth):
             return None
 
     # Then implement your service specific APIs
+    '''
     def getAllDevices(self):
         return self._callApi(url='/devices')
 
@@ -232,8 +301,8 @@ class NetatmoCloud(OAuth):
 
     def getUserInfo(self):
         return self._callApi(url='/user/info')
-
-
+    '''
+    '''
     def updateOauthConfig(self):
         logging.debug('updateOauthConfig')
         logging.debug(' {} {} {}'.format(self.client_ID,self.client_SECRET, self.scope_str  ))
@@ -246,7 +315,7 @@ class NetatmoCloud(OAuth):
         self.addOauthParameter('cloudlink', True )
         self.addOauthParameter('addRedirect', True )
         logging.debug('updateOauthConfig = {}'.format(self.oauthConfig))
-
+    '''
 ### Main node server code
 
     #def set_temp_unit(self, value):
