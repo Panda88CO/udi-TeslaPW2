@@ -26,7 +26,7 @@ class TeslaPWApi():
         self.API = "/api/1"
         self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         self.TOU_MODES = ["economics", "balanced"]
-        self.teslaApi = teslaCloudApi(Rtoken)
+        self.teslaApi = teslaCloudApi()
 
         self.daysConsumption = {}
         self.tokeninfo = {}

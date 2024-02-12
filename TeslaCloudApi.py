@@ -21,14 +21,14 @@ class teslaCloudApi(object):
         self.tokenInfo = None
         self.Rtoken = refreshToken
         self.tokenExpMargin = 600 #10min
-        self.TESLA_URL = "https://owner-api.teslamotors.com"
+        self.TESLA_URL = "https://fleet-api.prd.na.vn.cloud.tesla.com"  # needs to update to support other regions
         self.API = "/api/1"
         self.Header= {'Accept':'application/json'}
 
         self.cookies = None
         self.data = {}
         
-        self.tokenInfo = self.tesla_refresh_token()
+        #self.tokenInfo = self.tesla_refresh_token()
 
 
     '''

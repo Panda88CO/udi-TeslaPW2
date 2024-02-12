@@ -29,8 +29,8 @@ except ImportError:
 
 # Implements the API calls to your external service
 # It inherits the OAuth class
-class NetatmoCloud(OAuth):
-    yourApiEndpoint = 'https://api.netatmo.com/api'
+class TeslaCloud(OAuth):
+    yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
 
     def __init__(self, polyglot, scope):
         super().__init__(polyglot)
@@ -39,7 +39,7 @@ class NetatmoCloud(OAuth):
         self.scope = scope
         self.customParameters = Custom(self.poly, 'customparams')
         #self.scope_str = None
-        self.apiEndpoint = 'https://api.netatmo.com'
+        self.apiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
         self.client_ID = None
         self.client_SECRET = None
         self.handleCustomParamsDone = False
