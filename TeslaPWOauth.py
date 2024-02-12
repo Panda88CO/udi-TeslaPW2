@@ -14,6 +14,7 @@ MIT License
 import requests
 import time
 import json
+import secret
 import urllib.parse
 #from udi_interface import LOGGER, Custom
 #from oauth import OAuth
@@ -39,7 +40,12 @@ class TeslaCloud(OAuth):
         self.scope = scope
         self.customParameters = Custom(self.poly, 'customparams')
         #self.scope_str = None
-        self.apiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
+        self.apiEndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
+        self.apiEndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1'
+        self.apiEndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn/api/1'
+
+        self.state = secret.token_hex(16)
+        self.region = 'NA'
         self.client_ID = None
         self.client_SECRET = None
         self.handleCustomParamsDone = False
@@ -123,28 +129,27 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate = {}
         # Example for a boolean field
 
-        if 'clientID' in userParams:
-            if self.customParameters['clientID'] != 'enter client_id':
-                self.client_ID = self.customParameters['clientID']
-                oauthSettingsUpdate['client_id'] = self.customParameters['clientID']
+        if 'region' in userParams:
+            if self.customParameters['region'] != 'enter region (NA, EU, CN)':
+                self.region = self.customParameters['region']
                 client_ok = True
         else:
-            logging.warnig('No clientID found')
-            self.customParameters['clientID'] = 'enter client_id'
+            logging.warnig('No region found')
+            self.customParameters['region'] = 'enter region (NA, EU, CN)'
             self.client_ID = None
             
-        if 'clientSecret' in self.customParameters:
-            if self.customParameters['clientSecret'] != 'enter client_secret':
-                self.client_SECRET = self.customParameters['clientSecret'] 
-                oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                secret_ok = True
-        else:
-            logging.warnig('No clientSecret found')
-            self.customParameters['clientSecret'] = 'enter client_secret'
-            self.client_SECRET = None
+        #if 'clientSecret' in self.customParameters:
+        #    if self.customParameters['clientSecret'] != 'enter client_secret':
+        #        self.client_SECRET = self.customParameters['clientSecret'] 
+        #        oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+        #        secret_ok = True
+        #else:
+        #    logging.warnig('No clientSecret found')
+        #    self.customParameters['clientSecret'] = 'enter client_secret'
+        #    self.client_SECRET = None
 
-        if not client_ok  or not secret_ok:
-            self.poly.Notices['client'] = 'Please enter valid clientID and clientSecret - then restart'
+        #if not client_ok  or not secret_ok:
+        #   self.poly.Notices['client'] = 'Please enter valid clientID and clientSecret - then restart'
         #if 'scope' in self.customParameters:
         #    temp = self.customParameters['scope'] 
         #    temp1 = temp.split()
@@ -159,11 +164,11 @@ class TeslaCloud(OAuth):
         #    self.customParameters['scope'] = 'enter desired scopes space separated'
         #    self.scope_str = ""
 
-        if "TEMP_UNIT" in self.customParameters:
-            self.temp_unit = self.customParameters['TEMP_UNIT'][0].upper()
-        else:
-            self.temp_unit = 0
-            self.customParameters['TEMP_UNIT'] = 'C'
+        #if "TEMP_UNIT" in self.customParameters:
+        #    self.temp_unit = self.customParameters['TEMP_UNIT'][0].upper()
+        #else:
+        #    self.temp_unit = 0
+        #    self.customParameters['TEMP_UNIT'] = 'C'
 
         #if 'refresh_token' in self.customParameters:
         #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
@@ -173,11 +178,22 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['token_endpoint'] = 'https://api.netatmo.com/oauth2/token'
         oauthSettingsUpdate['cloudlink'] = True
         oauthSettingsUpdate['addRedirect'] = True
-        self.updateOauthSettings(oauthSettingsUpdate)    
+        oauthSettingsUpdate['state'] = self.state
+        if self.region.upper() == 'NA':
+            self.apiEndpoint = self.apiEndpointNA
+        elif self.region.upper() == 'EU':
+            self.apiEndpoint = self.apiEndpointEU
+        elif self.region.upper() == 'CN':
+            self.apiEndpoint = self.apiEndpointCN
+        else:
+            logging.error('Unknow region specified {}'.format(self.region))
+            self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+        oauthSettingsUpdate['audience'] = self.apiEndpoint
+        self.updateOauthSettings(oauthSettingsUpdate)
         #logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
-        if client_ok and secret_ok:
-            self.handleCustomParamsDone = True
-            self.poly.Notices.clear()
+        #if client_ok and secret_ok:
+        #    self.handleCustomParamsDone = True
+        #    self.poly.Notices.clear()
 
         #self.updateOauthConfig()
         #self.myParamBoolean = ('myParam' in self.customParametersand self.customParameters['myParam'].lower() == 'true')
