@@ -95,7 +95,9 @@ class TeslaPWController(udi_interface.Node):
         #else:
         #    self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration REFRESH_TOKEN and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
-
+        while not self.myTeslaCloud.authendicated():
+            time.sleep(1)
+            logging.info('Waiting for authendication - press autendicate button')
    
 
     def check_config(self):
