@@ -39,6 +39,7 @@ class TeslaCloud(OAuth):
         self.poly = polyglot
         self.scope = scope
         self.customParameters = Custom(self.poly, 'customparams')
+        self._oauthConfig = Custom(self.poly, 'oauth')
         #self.scope_str = None
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
@@ -220,8 +221,9 @@ class TeslaCloud(OAuth):
         #oauthSettingsUpdate['grant_type'] = 'refresh_token'
         self.yourApiEndpoint = self.Endpoint+self.api
         self.updateOauthSettings(oauthSettingsUpdate)
-        temp = self.getOauthSettings()
-        logging.debug('Updated oAuth config: {}'.format(temp))
+        time.sleep(0.1)
+        temp = self._oauthConfig
+        logging.debug('Internal oAuth config: {}'.format(temp))
         #oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
         #oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
         self.updateOauthSettings(oauthSettingsUpdate)
