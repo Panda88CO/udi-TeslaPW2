@@ -130,7 +130,7 @@ class TeslaCloud(OAuth):
         client_ok = False
         client_secret = False
         oauthSettingsUpdate = {}
-        oauthSettingsUpdate['parameters'] = {}
+        #oauthSettingsUpdate['parameters'] = {}
         oauthSettingsUpdate['token_parameters'] = {}
         # Example for a boolean field
 
