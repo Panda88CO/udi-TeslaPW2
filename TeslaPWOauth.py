@@ -198,6 +198,7 @@ class TeslaCloud(OAuth):
         #if 'refresh_token' in self.customParameters:
         #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
         #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
+        temp = self.getOauthSettings()
         oauthSettingsUpdate['scope'] = self.scope
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
@@ -215,6 +216,8 @@ class TeslaCloud(OAuth):
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
+        oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
+        oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
         #oauthSettingsUpdate['grant_type'] = 'refresh_token'
         self.yourApiEndpoint = self.Endpoint+self.api
         self.updateOauthSettings(oauthSettingsUpdate)
