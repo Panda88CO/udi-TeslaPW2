@@ -224,8 +224,8 @@ class TeslaCloud(OAuth):
         time.sleep(0.1)
         temp = self._oauthConfig
         logging.debug('Internal oAuth config: {}'.format(temp))
-        #oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
-        #oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
+        oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
+        oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
         self.updateOauthSettings(oauthSettingsUpdate)
         temp = self.getOauthSettings()
         logging.debug('Updated oAuth config 2: {}'.format(temp))
