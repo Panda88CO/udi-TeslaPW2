@@ -86,7 +86,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.updateProfile()
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
-        self.check_config()
+        #self.check_config()
         #while not self.initialized:
         #    time.sleep(1)
        
@@ -113,10 +113,10 @@ class TeslaPWController(udi_interface.Node):
         else:
             self.localAccess = True
 
-        if self.Rtoken == '':
-            self.Parameters['REFRESH_TOKEN'] = ''
-        else:
-            self.cloudAccess = True
+        #if self.Rtoken == '':
+        #    self.Parameters['REFRESH_TOKEN'] = ''
+        #else:
+        #    self.cloudAccess = True
          
 
     '''
