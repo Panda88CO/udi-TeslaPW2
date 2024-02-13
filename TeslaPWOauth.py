@@ -39,7 +39,6 @@ class TeslaCloud(OAuth):
         self.poly = polyglot
         self.scope = scope
         self.customParameters = Custom(self.poly, 'customparams')
-        logging.debug(self._oauthConfig)
         #self.scope_str = None
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
@@ -199,8 +198,6 @@ class TeslaCloud(OAuth):
         #if 'refresh_token' in self.customParameters:
         #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
         #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
-        temp = self.getOauthSettings()
-        logging.debug('oauth setting before ; {}'.format(temp))
         oauthSettingsUpdate['scope'] = self.scope
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
@@ -218,13 +215,12 @@ class TeslaCloud(OAuth):
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
         self.yourApiEndpoint = self.Endpoint+self.api 
-        self.updateOauthSettings(oauthSettingsUpdate)
-        logging.debug('Internal oAuth config: {}'.format(temp))
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
-        oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
-        oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
+        oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
+        oauthSettingsUpdate['token_parameters']['client_secret'] = '"!GBQbeMcua2zZ5WERTSF3KX@'
         oauthSettingsUpdate['token_parameters']['addRedirect'] = True
         self.updateOauthSettings(oauthSettingsUpdate)
+        time.sleep(0.1)
         temp = self.getOauthSettings()
         logging.debug('Updated oAuth config 2: {}'.format(temp))
         #if client_ok and secret_ok:
