@@ -196,8 +196,8 @@ class TeslaCloud(OAuth):
         #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
         #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
         oauthSettingsUpdate['scope'] = self.scope
-        oauthSettingsUpdate['auth_endpoint'] = 'https://api.netatmo.com/oauth2/authorize'
-        oauthSettingsUpdate['token_endpoint'] = 'https://api.netatmo.com/oauth2/token'
+        oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
+        oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
         oauthSettingsUpdate['cloudlink'] = True
         oauthSettingsUpdate['addRedirect'] = True
         oauthSettingsUpdate['state'] = self.state
