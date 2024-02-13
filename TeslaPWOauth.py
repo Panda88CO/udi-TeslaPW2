@@ -39,7 +39,7 @@ class TeslaCloud(OAuth):
         self.poly = polyglot
         self.scope = scope
         self.customParameters = Custom(self.poly, 'customparams')
-        self._oauthConfig = Custom(self.poly, 'oauth')
+        logging.debug(self._oauthConfig)
         #self.scope_str = None
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
@@ -218,9 +218,7 @@ class TeslaCloud(OAuth):
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
         self.yourApiEndpoint = self.Endpoint+self.api 
-        
         self.updateOauthSettings(oauthSettingsUpdate)
-        temp = self._oauthConfig
         logging.debug('Internal oAuth config: {}'.format(temp))
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
         oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
