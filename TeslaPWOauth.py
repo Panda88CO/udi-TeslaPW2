@@ -199,6 +199,7 @@ class TeslaCloud(OAuth):
         #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
         #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
         temp = self.getOauthSettings()
+        logging.debug('oauth setting before ; {}'.format(temp))
         oauthSettingsUpdate['scope'] = self.scope
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
