@@ -46,7 +46,7 @@ class TeslaCloud(OAuth):
         self.LOCAL_USER_EMAIL = ""
         self.LOCAL_USER_PASSWORD = ""
         self.LOCAL_IP_ADDRESS = ""
-        self.state = secrets.token_hex(16)
+        #self.state = secrets.token_hex(16)
         self.region = 'NA' #North America
         #self.client_ID = None
         #self.client_SECRET = None
@@ -201,7 +201,7 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
         oauthSettingsUpdate['cloudlink'] = True
         oauthSettingsUpdate['addRedirect'] = True
-        oauthSettingsUpdate['state'] = self.state
+        #oauthSettingsUpdate['state'] = self.state
         if self.region.upper() == 'NA':
             self.apiEndpoint = self.apiEndpointNA
         elif self.region.upper() == 'EU':
