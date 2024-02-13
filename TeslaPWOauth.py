@@ -31,7 +31,7 @@ except ImportError:
 # Implements the API calls to your external service
 # It inherits the OAuth class
 class TeslaCloud(OAuth):
-    yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
+    yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com'
 
     def __init__(self, polyglot, scope):
         super().__init__(polyglot)
@@ -40,9 +40,10 @@ class TeslaCloud(OAuth):
         self.scope = scope
         self.customParameters = Custom(self.poly, 'customparams')
         #self.scope_str = None
-        self.apiEndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
-        self.apiEndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1'
-        self.apiEndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn/api/1'
+        self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
+        self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
+        self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
+        self.api  = 'api/1'
         self.LOCAL_USER_EMAIL = ""
         self.LOCAL_USER_PASSWORD = ""
         self.LOCAL_IP_ADDRESS = ""
@@ -203,15 +204,16 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['addRedirect'] = True
         #oauthSettingsUpdate['state'] = self.state
         if self.region.upper() == 'NA':
-            self.apiEndpoint = self.apiEndpointNA
+            self.Endpoint = self.EndpointNA
         elif self.region.upper() == 'EU':
-            self.apiEndpoint = self.apiEndpointEU
+            self.Endpoint = self.EndpointEU
         elif self.region.upper() == 'CN':
-            self.apiEndpoint = self.apiEndpointCN
+            self.Endpoint = self.EndpointCN
         else:
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-        oauthSettingsUpdate['audience'] = self.apiEndpoint
+        oauthSettingsUpdate['audience'] = self.Endpoint
+        self.yourApiEndpoint = self.Endpoint+self.api
         self.updateOauthSettings(oauthSettingsUpdate)
         logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
         #if client_ok and secret_ok:
