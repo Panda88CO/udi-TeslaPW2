@@ -191,7 +191,7 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
         oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
         oauthSettingsUpdate['token_parameters']['client_secret'] = '!GBQbeMcua2zZ5WERTSF3KX@'
-        oauthSettingsUpdate['token_parameters']['addRedirect'] = True
+        #oauthSettingsUpdate['token_parameters']['addRedirect'] = True
         self.updateOauthSettings(oauthSettingsUpdate)
         time.sleep(0.1)
         temp = self.getOauthSettings()
