@@ -216,13 +216,18 @@ class TeslaCloud(OAuth):
         else:
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-        oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
-        oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
+
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
         #oauthSettingsUpdate['grant_type'] = 'refresh_token'
         self.yourApiEndpoint = self.Endpoint+self.api
         self.updateOauthSettings(oauthSettingsUpdate)
-        logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
+        temp = self.getOauthSettings()
+        logging.debug('Updated oAuth config: {}'.format(temp))
+        oauthSettingsUpdate['token_parameters']['client_id'] = temp['client_id']
+        oauthSettingsUpdate['token_parameters']['client_secret'] = temp['client_secret']
+        self.updateOauthSettings(oauthSettingsUpdate)
+        temp = self.getOauthSettings()
+        logging.debug('Updated oAuth config 2: {}'.format(temp))
         #if client_ok and secret_ok:
         #    self.handleCustomParamsDone = True
         #    self.poly.Notices.clear()
