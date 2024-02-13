@@ -217,8 +217,9 @@ class TeslaCloud(OAuth):
         else:
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-        
         self.yourApiEndpoint = self.Endpoint+self.api 
+        
+        self.updateOauthSettings(oauthSettingsUpdate)
         temp = self._oauthConfig
         logging.debug('Internal oAuth config: {}'.format(temp))
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
