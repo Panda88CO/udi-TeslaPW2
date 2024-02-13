@@ -130,6 +130,8 @@ class TeslaCloud(OAuth):
         client_ok = False
         client_secret = False
         oauthSettingsUpdate = {}
+        oauthSettingsUpdate['parameters'] = {}
+        oauthSettingsUpdate['token_parameters'] = {}
         # Example for a boolean field
 
         if 'region' in userParams:
@@ -212,8 +214,8 @@ class TeslaCloud(OAuth):
         else:
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-        oauthSettingsUpdate['audience'] = self.Endpoint
-        oauthSettingsUpdate['grant_type'] = 'refresh_token'
+        oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
+        #oauthSettingsUpdate['grant_type'] = 'refresh_token'
         self.yourApiEndpoint = self.Endpoint+self.api
         self.updateOauthSettings(oauthSettingsUpdate)
         logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
