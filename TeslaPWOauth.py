@@ -43,7 +43,9 @@ class TeslaCloud(OAuth):
         self.apiEndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1'
         self.apiEndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1'
         self.apiEndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn/api/1'
-
+        self.LOCAL_USER_EMAIL = ""
+        self.LOCAL_USER_PASSWORD = ""
+        self.LOCAL_IP_ADDRESS = ""
         self.state = secrets.token_hex(16)
         self.region = 'NA' #North America
         #self.client_ID = None
@@ -138,15 +140,35 @@ class TeslaCloud(OAuth):
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
             self.client_ID = None
             
-        #if 'clientSecret' in self.customParameters:
-        #    if self.customParameters['clientSecret'] != 'enter client_secret':
-        #        self.client_SECRET = self.customParameters['clientSecret'] 
-        #        oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-        #        secret_ok = True
-        #else:
-        #    logging.warnig('No clientSecret found')
-        #    self.customParameters['clientSecret'] = 'enter client_secret'
-        #    self.client_SECRET = None
+        if 'LOCAL_USER_EMAIL' in self.customParameters:
+            if self.customParameters['LOCAL_USER_EMAIL'] != '':
+                self.LOCAL_EMAIL= self.customParameters['LOCAL_USER_EMAIL'] 
+                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+                #secret_ok = True
+        else:
+            logging.warnig('No LOCAL_USER_EMAIL found')
+            self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
+            self.LOCAL_EMAIL = None
+
+        if 'LOCAL_USER_PASSWORD' in self.customParameters:
+            if self.customParameters['LOCAL_USER_PASSWORD'] != '':
+                self.LOCAL_USER_PASSWORD= self.customParameters['LOCAL_USER_PASSWORD'] 
+                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+                #secret_ok = True
+        else:
+            logging.warnig('No LOCAL_USER_PASSWORD found')
+            self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
+            self.LOCAL_USER_PASSWORD = None
+
+        if 'LOCAL_IP_ADDRESS' in self.customParameters:
+            if self.customParameters['LOCAL_IP_ADDRESS'] != 'xxx.xxx.xxx.xxx':
+                self.LOCAL_IP_ADDRESS= self.customParameters['LOCAL_IP_ADDRESS'] 
+                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+                #secret_ok = True
+        else:
+            logging.warnig('No LOCAL_IP_ADDRESS found')
+            self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
+            self.LOCAL_IP_ADDRESS = None
 
         #if not client_ok  or not secret_ok:
         #   self.poly.Notices['client'] = 'Please enter valid clientID and clientSecret - then restart'

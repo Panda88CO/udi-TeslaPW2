@@ -42,7 +42,7 @@ class TeslaPWController(udi_interface.Node):
         #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
+        #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.myTeslaCloud.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
         self.poly.subscribe(self.poly.CUSTOMNS, self.myTeslaCloud.customNsHandler)
