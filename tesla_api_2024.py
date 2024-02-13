@@ -44,7 +44,7 @@ tesla_scopes = "user_data vehicle_device_data vehicle_cmds vehicle_charging_cmds
 CLIENT_ID = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
 #CLIENT_SECRET = config.tesla_client_secret # this is the developer account, not the customer !!
 CLIENT_SECRET = '!GBQbeMcua2zZ5WERTSF3KX@'
-AUDIENCE = https://fleet-api.prd.na.vn.cloud.tesla.com
+AUDIENCE = 'https://fleet-api.prd.na.vn.cloud.tesla.com'
 SCOPE = 'energy_cmds'
 class TeslaAPI:
     def __init__(self, _tesla_account_name: str = "tesla"):

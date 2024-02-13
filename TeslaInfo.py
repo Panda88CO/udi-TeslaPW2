@@ -13,7 +13,7 @@ import time
 import os
 from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 from TeslaPWApi import TeslaPWApi
-from TeslaPWOauth import 
+
 
 
 class tesla_info:

@@ -14,7 +14,7 @@ MIT License
 import requests
 import time
 import json
-import secret
+import secrets
 import urllib.parse
 #from udi_interface import LOGGER, Custom
 #from oauth import OAuth
@@ -44,7 +44,7 @@ class TeslaCloud(OAuth):
         self.apiEndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1'
         self.apiEndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn/api/1'
 
-        self.state = secret.token_hex(16)
+        self.state = secrets.token_hex(16)
         self.region = 'NA' #North America
         #self.client_ID = None
         #self.client_SECRET = None
@@ -190,7 +190,7 @@ class TeslaCloud(OAuth):
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
         oauthSettingsUpdate['audience'] = self.apiEndpoint
         self.updateOauthSettings(oauthSettingsUpdate)
-        #logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
+        logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
         #if client_ok and secret_ok:
         #    self.handleCustomParamsDone = True
         #    self.poly.Notices.clear()
