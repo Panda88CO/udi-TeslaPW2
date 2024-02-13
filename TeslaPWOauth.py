@@ -44,13 +44,11 @@ class TeslaCloud(OAuth):
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
         self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
         self.api  = 'api/1'
-        self.LOCAL_USER_EMAIL = ""
-        self.LOCAL_USER_PASSWORD = ""
-        self.LOCAL_IP_ADDRESS = ""
+        self.LOCAL_USER_EMAIL = ''
+        self.LOCAL_USER_PASSWORD = ''
+        self.LOCAL_IP_ADDRESS = ''
         #self.state = secrets.token_hex(16)
-        self.region = 'NA' #North America
-        #self.client_ID = None
-        #self.client_SECRET = None
+        self.region = ''
         self.handleCustomParamsDone = False
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
@@ -164,7 +162,7 @@ class TeslaCloud(OAuth):
             self.LOCAL_USER_PASSWORD = None
 
         if 'LOCAL_IP_ADDRESS' in self.customParameters:
-            if self.customParameters['LOCAL_IP_ADDRESS'] != 'xxx.xxx.xxx.xxx':
+            if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
                 self.LOCAL_IP_ADDRESS= self.customParameters['LOCAL_IP_ADDRESS'] 
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
@@ -173,31 +171,6 @@ class TeslaCloud(OAuth):
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
 
-        #if not client_ok  or not secret_ok:
-        #   self.poly.Notices['client'] = 'Please enter valid clientID and clientSecret - then restart'
-        #if 'scope' in self.customParameters:
-        #    temp = self.customParameters['scope'] 
-        #    temp1 = temp.split()
-        #    self.scope_str = ''
-        #    for net_scope in temp1:
-        #        if net_scope in self.scopeList:
-        #            self.scope_str = self.scope_str + ' ' + net_scope
-        #        else:
-        #            logging.error('Unknown scope provided: {} - removed '.format(net_scope))
-        #    self.scope = self.scope_str.split()
-        #else:
-        #    self.customParameters['scope'] = 'enter desired scopes space separated'
-        #    self.scope_str = ""
-
-        #if "TEMP_UNIT" in self.customParameters:
-        #    self.temp_unit = self.customParameters['TEMP_UNIT'][0].upper()
-        #else:
-        #    self.temp_unit = 0
-        #    self.customParameters['TEMP_UNIT'] = 'C'
-
-        #if 'refresh_token' in self.customParameters:
-        #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
-        #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
         oauthSettingsUpdate['scope'] = self.scope
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
@@ -217,19 +190,15 @@ class TeslaCloud(OAuth):
         self.yourApiEndpoint = self.Endpoint+self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
         oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
-        oauthSettingsUpdate['token_parameters']['client_secret'] = '"!GBQbeMcua2zZ5WERTSF3KX@'
+        oauthSettingsUpdate['token_parameters']['client_secret'] = '!GBQbeMcua2zZ5WERTSF3KX@'
         oauthSettingsUpdate['token_parameters']['addRedirect'] = True
         self.updateOauthSettings(oauthSettingsUpdate)
         time.sleep(0.1)
         temp = self.getOauthSettings()
         logging.debug('Updated oAuth config 2: {}'.format(temp))
-        #if client_ok and secret_ok:
-        #    self.handleCustomParamsDone = True
-        #    self.poly.Notices.clear()
-
-        #self.updateOauthConfig()
-        #self.myParamBoolean = ('myParam' in self.customParametersand self.customParameters['myParam'].lower() == 'true')
-        #logging.info(f"My param boolean: { self.myParamBoolean }")
+        
+        self.handleCustomParamsDone = True
+        self.poly.Notices.clear()
     
 
     def add_to_parameters(self,  key, value):
@@ -253,7 +222,7 @@ class TeslaCloud(OAuth):
             #self.poly.Notices['auth'] = 'Please initiate authentication'
             return (False)
         
-
+    '''
     def setOauthScope(self, scope):
         oauthSettingsUpdate = {}
         logging.debug('Set Scope to {}'.format(scope))
@@ -266,7 +235,7 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['name'] = str(name)
         self.updateOauthSettings(oauthSettingsUpdate)
     
-    '''
+
     def _insert_refreshToken(self, refresh_token, clientId, clientSecret):
         data = {
                 'grant_type': 'refresh_token',
