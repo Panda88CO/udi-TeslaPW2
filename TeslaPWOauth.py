@@ -200,7 +200,7 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
         #oauthSettingsUpdate['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
-        oauthSettingsUpdate['cloudlink'] = True
+        #oauthSettingsUpdate['cloudlink'] = True
         oauthSettingsUpdate['addRedirect'] = True
         #oauthSettingsUpdate['state'] = self.state
         if self.region.upper() == 'NA':
@@ -213,6 +213,7 @@ class TeslaCloud(OAuth):
             logging.error('Unknow region specified {}'.format(self.region))
             self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
         oauthSettingsUpdate['audience'] = self.Endpoint
+        oauthSettingsUpdate['grant_type'] = 'authorization_code'
         self.yourApiEndpoint = self.Endpoint+self.api
         self.updateOauthSettings(oauthSettingsUpdate)
         logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
