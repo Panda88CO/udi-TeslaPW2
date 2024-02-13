@@ -7,7 +7,7 @@ from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPWStatusNode import teslaPWStatusNode
 from TeslaPWSolarNode import teslaPWSolarNode
 from TeslaPWGenNode import teslaPWGenNode
-
+from TeslaPWOauth import TeslaCloud
 try:
     import udi_interface
     logging = udi_interface.LOGGER
@@ -36,14 +36,17 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
-
+        self.myTeslaCloud = TeslaCloud(self.poly, 'energy_cmds')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-
+        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.myTeslaCloud.customParamsHandler)
+        #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
+        self.poly.subscribe(self.poly.CUSTOMNS, self.myTeslaCloud.customNsHandler)
+        self.poly.subscribe(self.poly.OAUTH, self.myTeslaCloud.oauthHandler)
         self.n_queue = []
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))

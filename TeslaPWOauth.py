@@ -45,9 +45,9 @@ class TeslaCloud(OAuth):
         self.apiEndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn/api/1'
 
         self.state = secret.token_hex(16)
-        self.region = 'NA'
-        self.client_ID = None
-        self.client_SECRET = None
+        self.region = 'NA' #North America
+        #self.client_ID = None
+        #self.client_SECRET = None
         self.handleCustomParamsDone = False
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
