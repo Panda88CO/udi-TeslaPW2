@@ -98,6 +98,7 @@ class TeslaPWController(udi_interface.Node):
         while not self.myTeslaCloud.authendicated():
             time.sleep(1)
             logging.info('Waiting for authendication - press autendicate button')
+            self.poly.Notices['auth'] = 'Please initiate authentication'
    
 
     def check_config(self):
