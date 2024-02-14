@@ -91,9 +91,10 @@ class TeslaCloud(OAuth):
 
     def oauthHandler(self, token):
         logging.debug('oauthHandler called')
-        #while not (self.customParamsDone() and self.customNsDone()):
-        #    logging.debug('Waiting for oauthHandler to complete')
-        #    time.sleep(1)
+        while not (self.customParamsDone() and self.customNsDone()):
+            logging.debug('Waiting for oauthHandler to complete')
+            time.sleep(1)
+        logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
         logging.debug('oauthHandler Finished')
