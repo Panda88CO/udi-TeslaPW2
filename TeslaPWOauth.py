@@ -96,6 +96,7 @@ class TeslaCloud(OAuth):
             time.sleep(1)
         logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
+        self._oAuthTokensRefresh()
         #self.customOauthHandlerDone = True
         logging.debug('oauthHandler Finished')
 
