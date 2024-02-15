@@ -104,6 +104,7 @@ class OAuth:
     def getAccessToken(self):
         # Make sure we have received tokens before attempting to renew
 
+        LOGGER.debug('getAccessToken - {}'.format(self._oauthTokens))
         if self._oauthTokens is not None and self._oauthTokens.get('refresh_token'):
             expiry = self._oauthTokens.get('expiry')
 
