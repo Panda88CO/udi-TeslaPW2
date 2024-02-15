@@ -19,7 +19,7 @@ import urllib.parse
 #from udi_interface import LOGGER, Custom
 #from oauth import OAuth
 try:
-    from udi_interface import LOGGER, Custom, OAuth
+    from .udi_interface import LOGGER, Custom, OAuth
     logging = LOGGER
     Custom = Custom
 except ImportError:
