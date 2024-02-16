@@ -126,8 +126,7 @@ class TeslaCloud(OAuth):
     def customParamsHandler(self, userParams):
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
-        client_ok = False
-        client_secret = False
+
         oauthSettingsUpdate = {}
         #oauthSettingsUpdate['parameters'] = {}
         oauthSettingsUpdate['token_parameters'] = {}
@@ -135,8 +134,9 @@ class TeslaCloud(OAuth):
 
         if 'region' in userParams:
             if self.customParameters['region'] != 'enter region (NA, EU, CN)':
-                self.region = self.customParameters['region']
-                client_ok = True
+                self.region = str(self.customParameters['region'])
+                if self.region.upper() not in ['NA', 'EU', 'CN']:
+                    logging.error('Unsupported region {}'.format(self.region))
         else:
             logging.warnig('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
@@ -144,17 +144,15 @@ class TeslaCloud(OAuth):
             
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
-                self.LOCAL_EMAIL= self.customParameters['LOCAL_USER_EMAIL'] 
-                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                #secret_ok = True
+                self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
         else:
             logging.warnig('No LOCAL_USER_EMAIL found')
             self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
-            self.LOCAL_EMAIL = None
+            self.LOCAL_USER_EMAIL = None
 
         if 'LOCAL_USER_PASSWORD' in self.customParameters:
             if self.customParameters['LOCAL_USER_PASSWORD'] != '':
-                self.LOCAL_USER_PASSWORD= self.customParameters['LOCAL_USER_PASSWORD'] 
+                self.LOCAL_USER_PASSWORD= str(self.customParameters['LOCAL_USER_PASSWORD'] )
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
@@ -164,7 +162,7 @@ class TeslaCloud(OAuth):
 
         if 'LOCAL_IP_ADDRESS' in self.customParameters:
             if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
-                self.LOCAL_IP_ADDRESS= self.customParameters['LOCAL_IP_ADDRESS'] 
+                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] )
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
