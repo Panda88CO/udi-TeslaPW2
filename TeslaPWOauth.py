@@ -173,7 +173,7 @@ class TeslaCloud(OAuth):
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
 
-        oauthSettingsUpdate['scope'] = self.scope
+        oauthSettingsUpdate['scope'] = self.scope + 'open_id offline_access'
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
         #oauthSettingsUpdate['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
