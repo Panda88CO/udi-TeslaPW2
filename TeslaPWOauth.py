@@ -94,9 +94,8 @@ class TeslaCloud(OAuth):
         while not (self.customParamsDone() and self.customNsDone()):
             logging.debug('Waiting for oauthHandler to complete')
             time.sleep(1)
-        logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
+        #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
-        self._oAuthTokensRefresh()
         #self.customOauthHandlerDone = True
         logging.debug('oauthHandler Finished')
 
@@ -197,7 +196,7 @@ class TeslaCloud(OAuth):
         self.updateOauthSettings(oauthSettingsUpdate)
         time.sleep(0.1)
         temp = self.getOauthSettings()
-        logging.debug('Updated oAuth config 2: {}'.format(temp))
+        #logging.debug('Updated oAuth config 2: {}'.format(temp))
         
         self.handleCustomParamsDone = True
         self.poly.Notices.clear()
@@ -216,7 +215,7 @@ class TeslaCloud(OAuth):
     
     def authendicated(self):
         try:
-            logging.debug('authendicated - {}'.format(self.getOauthSettings()))
+            #logging.debug('authendicated - {}'.format(self.getOauthSettings()))
             self.getAccessToken()
             return(True)
         except ValueError as err:
