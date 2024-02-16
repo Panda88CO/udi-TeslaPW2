@@ -138,7 +138,7 @@ class TeslaCloud(OAuth):
                 if self.region.upper() not in ['NA', 'EU', 'CN']:
                     logging.error('Unsupported region {}'.format(self.region))
         else:
-            logging.warnig('No region found')
+            logging.warning('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
             self.region = None
             
@@ -146,7 +146,7 @@ class TeslaCloud(OAuth):
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
                 self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
         else:
-            logging.warnig('No LOCAL_USER_EMAIL found')
+            logging.warning('No LOCAL_USER_EMAIL found')
             self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
             self.LOCAL_USER_EMAIL = None
 
@@ -156,7 +156,7 @@ class TeslaCloud(OAuth):
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
-            logging.warnig('No LOCAL_USER_PASSWORD found')
+            logging.warning('No LOCAL_USER_PASSWORD found')
             self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
             self.LOCAL_USER_PASSWORD = None
 
@@ -166,7 +166,7 @@ class TeslaCloud(OAuth):
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
-            logging.warnig('No LOCAL_IP_ADDRESS found')
+            logging.warning('No LOCAL_IP_ADDRESS found')
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
 
