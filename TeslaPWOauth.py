@@ -140,7 +140,7 @@ class TeslaCloud(OAuth):
         else:
             logging.warnig('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
-            self.client_ID = None
+            self.region = None
             
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
