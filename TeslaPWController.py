@@ -36,7 +36,7 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
-        self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds')
+        self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.myTeslaCloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
@@ -97,7 +97,7 @@ class TeslaPWController(udi_interface.Node):
         #    self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration REFRESH_TOKEN and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
         while not self.myTeslaCloud.authendicated():
-            time.sleep(1)
+            time.sleep(5)
             logging.info('Waiting for authendication - press autendicate button')
             self.poly.Notices['auth'] = 'Please initiate authentication'
    

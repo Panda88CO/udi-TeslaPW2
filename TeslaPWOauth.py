@@ -93,7 +93,7 @@ class TeslaCloud(OAuth):
         logging.debug('oauthHandler called')
         while not (self.customParamsDone() and self.customNsDone()):
             logging.debug('Waiting for oauthHandler to complete')
-            time.sleep(1)
+            time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
@@ -170,7 +170,7 @@ class TeslaCloud(OAuth):
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
 
-        oauthSettingsUpdate['scope'] = self.scope + 'open_id offline_access'
+        oauthSettingsUpdate['scope'] = self.scope 
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
         #oauthSettingsUpdate['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
