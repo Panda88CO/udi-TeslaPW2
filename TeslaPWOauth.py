@@ -92,7 +92,7 @@ class TeslaCloud(OAuth):
     def oauthHandler(self, token):
         logging.debug('oauthHandler called')
         while not (self.customParamsDone() and self.customNsDone()):
-            logging.debug('Waiting for oauthHandler to complete')
+            logging.debug('Waiting for initilization to complete before oAuth')
             time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
@@ -137,10 +137,14 @@ class TeslaCloud(OAuth):
                 self.region = str(self.customParameters['region'])
                 if self.region.upper() not in ['NA', 'EU', 'CN']:
                     logging.error('Unsupported region {}'.format(self.region))
+                    self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+                elif 'region' in self.poly.Notices:
+                    self.poly.Notices['region'].clear()
         else:
             logging.warning('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
             self.region = None
+            self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
             
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
@@ -185,7 +189,7 @@ class TeslaCloud(OAuth):
             self.Endpoint = self.EndpointCN
         else:
             logging.error('Unknow region specified {}'.format(self.region))
-            self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+           
         self.yourApiEndpoint = self.Endpoint+self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
         #oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
