@@ -145,9 +145,10 @@ class TeslaCloud(OAuth):
                 self.region = str(self.customParameters['region'])
                 if self.region.upper() not in ['NA', 'EU', 'CN']:
                     logging.error('Unsupported region {}'.format(self.region))
-                    self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+                    self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
                 elif 'region' in self.poly.Notices:
-                    self.poly.Notices['region'].clear()
+                    if 'region' in self.poly.Notices:
+                        self.poly.Notices['region'].clear()
         else:
             logging.warning('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
@@ -181,7 +182,7 @@ class TeslaCloud(OAuth):
             logging.warning('No LOCAL_IP_ADDRESS found')
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
-
+        logging.debug('region {}'.fotmat(self.region))
         oauthSettingsUpdate['scope'] = self.scope 
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
