@@ -135,41 +135,8 @@ class TeslaPWApi():
     def supportedTouModes(self):
         return(self.TOU_MODES)
 
-    def teslaCloudInfo(self):
-        if self.site_id == '':
-            try:
-                products = self.teslaGetProduct()
-                nbrProducts = products['count']
-                for index in range(0,nbrProducts): #Can only handle one power wall setup - will use last one found
-                    if 'resource_type' in products['response'][index]:
-                        if products['response'][index]['resource_type'] == 'battery':
-                            self.site_id ='/'+ str(products['response'][index]['energy_site_id'] )
-                            self.products = products['response'][index]
-                return(True)
-            except Exception as e:
-                logging.error('Exception teslaCloudInfo: ' + str(e))
-                return(False)
-        else:
-            return(True)
+   
 
-    '''
-    def __teslaGetToken(self):
-        if self.tokeninfo:
-            dateNow = datetime.now()
-            tokenExpires = datetime.fromtimestamp(self.tokeninfo['created_at'] + self.tokeninfo['expires_in']-self.tokenExpMargin)
-            if dateNow > tokenExpires:
-                logging.info('Renewing token')
-                self.tokeninfo = self.teslaAuth.tesla_refresh_token()
-        else:
-            logging.error('New Refresh Token required - please generate  New Token')
-
-        return(self.tokeninfo)
-
-
-    def __teslaConnect(self):
-        return(self.__teslaGetToken())
-
-    '''
     def isConnectedToEV(self):
        return(self.teslaApi.isConnectedToTesla())
 
