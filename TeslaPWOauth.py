@@ -59,13 +59,22 @@ class TeslaCloud(OAuth):
         self.scopeList = ['energy_cmds']
         
         self.poly = polyglot
-        #self.customParameters= Custom(polyglot, 'customparams')
-        #self.Notices = Custom(self.poly, 'notices')
 
         logging.info('External service connectivity initialized...')
-        #logging.debug('oauth : {}'.format(self.oauthConfig))
 
         time.sleep(1)
+
+        self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
+        self.TOU_MODES = ["economics", "balanced"]
+        self.daysConsumption = {}
+        self.tokeninfo = {}
+        self.touScheduleList = []
+        self.connectionEstablished = False
+        self.cloudAccess =  self.connectionEstablished
+        self.products = {}
+        self.site_id = ''
+
+
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customParams to complete - getAccessToken')
         #    time.sleep(0.2)
@@ -262,28 +271,7 @@ class TeslaCloud(OAuth):
         oauthSettingsUpdate['name'] = str(name)
         self.updateOauthSettings(oauthSettingsUpdate)
     
-    '''
-    def _insert_refreshToken(self, refresh_token, clientId, clientSecret):
-        data = {
-                'grant_type': 'refresh_token',
-                'refresh_token': refresh_token,
-                'client_id': clientId,
-                'client_secret':  clientSecret
-                }
-        try:
-            response = requests.post('https://api.netatmo.com/oauth2/token' , data=data)
-            response.raise_for_status()
-            token = response.json()
-            logging.info('Refreshing tokens successful')
-            logging.debug(f"Token refresh result [{ type(token) }]: { token }")
-            self._saveToken(token)
-            return('Success')
-          
-        except requests.exceptions.HTTPError as error:
-            logging.error(f"Failed to refresh  token: { error }")
-            return(None)
-            # NOTE: If refresh tokens fails, we keep the existing tokens available.
-    '''
+
 
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=None):
@@ -335,165 +323,270 @@ class TeslaCloud(OAuth):
             return None
 
     # Then implement your service specific APIs
-    '''
-    def getAllDevices(self):
-        return self._callApi(url='/devices')
+    ########################################
+    ############################################
 
-    def unsubscribe(self):
-        return self._callApi(method='DELETE', url='/subscription')
+    def teslaGetProduct(self):
+        temp = self._callApi('GET', '/products')
+        return(temp)
 
-    def getUserInfo(self):
-        return self._callApi(url='/user/info')
-    '''
-    '''
-    def updateOauthConfig(self):
-        logging.debug('updateOauthConfig')
-        logging.debug(' {} {} {}'.format(self.client_ID,self.client_SECRET, self.scope_str  ))
-        self.addOauthParameter('client_id',self.client_ID )
-        self.addOauthParameter('client_secret',self.client_SECRET )
-        self.addOauthParameter('scope','read_station' )
-        #self.addOauthParameter('state','dette er en test' )
-        #self.addOauthParameter('redirect_uri','https://my.isy/io/api/cloudlink/redirect' )
-        self.addOauthParameter('name','Netatmo Weather' )
-        self.addOauthParameter('cloudlink', True )
-        self.addOauthParameter('addRedirect', True )
-        logging.debug('updateOauthConfig = {}'.format(self.oauthConfig))
-    '''
-### Main node server code
-
-    #def set_temp_unit(self, value):
-    #    self.temp_unit = value
-
-    
-    def get_weather_info(self):
-        logging.debug('get_weather_info')
-        api_str = '/getstationsdata'
-        res = self._callApi('GET', api_str )
-        logging.debug(res)
-
-    def get_weather_info2(self):
-        logging.debug('get_weather_info')
-        api_str = '/homestatus'
-        res = self._callApi('GET', api_str )
-        logging.debug(res)
-
-    def process_homes_data(self, net_system):
-        homes_list = {}
-        for home in range(0, len(net_system['homes'])):
-            tmp = net_system['homes'][home]
-            homes_list[tmp['id']]= {}
-            homes_list[tmp['id']]['name']= tmp['name']
-            homes_list[tmp['id']]['modules'] = {}
-            homes_list[tmp['id']]['module_types'] = []
-            if 'modules' in tmp:
-                for mod in range(0,len(tmp['modules'])):
-                    homes_list[tmp['id']]['modules'][tmp['modules'][mod]['id']] = tmp['modules'][mod]
-                    homes_list[tmp['id']]['module_types'].append( tmp['modules'][mod]['type'] )
-        return(homes_list)
+    def teslaCloudInfo(self):
+        if self.site_id == '':
+            try:
+                products = self.teslaGetProduct()
+                nbrProducts = products['count']
+                for index in range(0,nbrProducts): #Can only handle one power wall setup - will use last one found
+                    if 'resource_type' in products['response'][index]:
+                        if products['response'][index]['resource_type'] == 'battery':
+                            self.site_id ='/'+ str(products['response'][index]['energy_site_id'] )
+                            self.products = products['response'][index]
+                return(True)
+            except Exception as e:
+                logging.error('Exception teslaCloudInfo: ' + str(e))
+                return(False)
+        else:
+            return(True)
 
 
-
-    def get_homes_info(self):
-        logging.debug('get_home_info')
-        api_str = '/homesdata'
-        temp = self._callApi('GET', api_str )
-        self.netatmo_systems = temp['body']
-        logging.debug(self.netatmo_systems)
-        self.homes_list = self.process_homes_data(self.netatmo_systems)
-        return(self.homes_list)
-
-
-    def get_home_status(self, home_id):
-        status = {}
-        logging.debug('get_home_status')
+    def teslaSetOperationMode(self, mode):
+        logging.debug('teslaSetOperationMode : {}'.format(mode))
         try:
-            if home_id:
-                home_id_str = urllib.parse.quote_plus(home_id )
-                api_str = '/homestatus?home_id='+str(home_id_str)
-
-
-            tmp = self._callApi('GET', api_str)
-            if tmp:
-                tmp = tmp['body']
-                if 'errors' not in tmp:
-                    tmp = tmp['home']
-                    status[home_id] = home_id #tmp['body']['body']['home']
-                    if 'modules' in tmp:
-                        status['modules'] = {}
-                        status['module_types'] = []
-                        for mod in range(0,len(tmp['modules'])):
-                            status['modules'][tmp['modules'][mod]['id']]= tmp['modules'][mod]
-                            status['module_types'].append(tmp['modules'][mod]['type'])
-                    logging.debug(status)
+          
+            if mode  in self.OPERATING_MODES:
+                payload = {'default_real_mode': mode}
+                site = self._callApi('POST', '/energy_sites'+self.site_id +'/operation', payload)
+                logging.debug('site {}'.format(site))
+                if site['response']['code'] <210:
+                    self.site_info['default_real_mode'] = mode
+                    return (True)
                 else:
-                    status['error'] = tmp['error']
-
-                return(status)
-        except Exception as e:
-            logging.error('Error get hiome status : {}'.format(e))
-
-    def get_modules(self, home_id):
-        '''get_modules'''
-        logging.debug('get_modules')
-        if home_id in self.homes_list:
-            # Find relevan modules
-            return(self.homes_list[home_id]['modules'])
-        
-    def get_module_types(self, home_id):
-        '''get_module_types'''
-        if home_id in self.homes_list:
-            return(self.homes_list[home_id]['module_types'])
-
-    def get_home_name(self, home_id):
-        '''get_home_name'''
-        if home_id in self.homes_list:
-            return(self.homes_list[home_id]['name'])
-
-    def get_modules_present(self, home_id):
-        '''get_modules_present'''
-        logging.debug('get_modules_present')
-        modules = {}
-        if home_id in self.homes_list:
-            for tmp in range(0,len(self.homes_list[home_id]['modules'])):
-                modules[tmp[id]] = tmp
-        return(modules)
-    
-    def get_sub_modules(self, home_id, main_module_id):
-        '''get_sub_modules'''
-        logging.debug('get_sub_modules')
-        if home_id in  self.homes_list:
-            if main_module_id in self.homes_list[home_id]['modules']:
-                if 'modules_bridged' in self.homes_list[home_id]['modules'][main_module_id]:
-                    return(self.homes_list[home_id]['modules'][main_module_id]['modules_bridged'])
-
-    def get_module_info(self, home_id, module_id):
-        '''get_module_info'''
-        logging.debug('get_module_info')
-        if home_id in  self.homes_list:
-            if module_id in self.homes_list[home_id]['modules']:
-                return(self.homes_list[home_id]['modules'][module_id])
-
-
-    def _get_modules(self, home_id, mod_type_lst):
-        '''get list of weather modules of type attached to house_id'''
-        try:
-            mod_dict = {}
-            if home_id in self.homes_list:
-               for module in self.homes_list[home_id]['modules']:
-                    if self.homes_list[home_id]['modules'][module]['type'] in mod_type_lst:
-                        mod_dict[module] = {}
-                        if 'name' in  self.homes_list[home_id]['modules'][module]:
-                            mod_dict[module]['name'] = self.homes_list[home_id]['modules'][module]['name']
-                        else:
-                            mod_dict[module]['name'] = self.homes_list[home_id]['modules'][module]['id']
-                    
-
-
-                    
+                    return(False)
             else:
-                logging.error('No data found for {} {}'.format(home_id, mod_type_lst))
-            return(mod_dict)
-    
+                return(False)
+     
         except Exception as e:
-            logging.error('Exception : {}'.format(e))
+            logging.error('Exception teslaSetOperationMode: ' + str(e))
+            logging.error('Error setting operation mode')
+            return(False)    
+            
+    def teslaGet_backup_time_remaining(self):
+       
+        temp = self._callApi('GET','/energy_sites'+self.site_id +'/backup_time_remaining' )
+        self.backup_time_remaining = temp['response']['time_remaining_hours'] 
+        return(self.backup_time_remaining )       
+        '''
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])   
+                r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/backup_time_remaining', headers=self.Header)          
+                temp = r.json()
+                self.backup_time_remaining = temp['response']['time_remaining_hours'] 
+                return(self.backup_time_remaining )
+            except Exception as e:
+                logging.error('Exception teslaGetSiteInfo: ' + str(e))
+                logging.error('Trying to reconnect')
+                self.teslaApi.tesla_refresh_token( )
+                return(None)                
+        '''
+        
+    def teslaGet_tariff_rate(self):
+        tariff_data = self._callApi('GET', '/energy_sites'+self.site_id +'/tariff_rate')
+        if tariff_data['response']:
+            return(tariff_data['response'])
+        else:
             return(None)
+            '''
+            S = self.teslaApi.teslaConnect()
+            with requests.Session() as s:
+                try:
+                    s.auth = OAuth2BearerToken(S['access_token'])   
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/tariff_rate', headers=self.Header)          
+                    tariff_data = r.json()
+                    return(tariff_data['response'])
+                except Exception as e:
+                    logging.error('Exception teslaGetSiteInfo: ' + str(e))
+                    logging.error('Trying to reconnect')
+                    self.teslaApi.tesla_refresh_token( )
+                    return(None)    
+            '''
+
+    def teslaGetSiteInfo(self, mode):
+        #if self.connectionEstablished:
+        #S = self.__teslaConnect()
+        if mode == 'site_status':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/site_status' )          
+
+        elif mode == 'site_live':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/live_status' )          
+
+        elif mode == 'site_info':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/site_info' )          
+        
+        elif mode == 'site_history_day':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/history',{'kind':'power', 'period':'day'}) 
+
+        elif mode == 'rate_tariffs':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/rate_tariffs' )          
+
+        elif mode == 'tariff_rate':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/tariff_rate' )          
+
+        elif mode == 'backup_time_remaining':
+            site = self._callApi('GET', '/energy_sites'+self.site_id +'/backup_time_remaining')          
+                                                                                                                            
+        else:
+            #logging.debug('Unknown mode: '+mode)
+            return(None)
+        return(site['response'])
+
+        '''
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                if mode == 'site_status':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/site_status', headers=self.Header)          
+                    site = r.json()
+                elif mode == 'site_live':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/live_status', headers=self.Header)          
+                    site = r.json()
+                elif mode == 'site_info':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/site_info', headers=self.Header)          
+                    site = r.json()            
+                elif mode == 'site_history_day':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/history', headers=self.Header, json={'kind':'power', 'period':'day'}) 
+                    site = r.json() 
+                elif mode == 'rate_tariffs':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/rate_tariffs', headers=self.Header)          
+                    site = r.json()
+                elif mode == 'tariff_rate':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/tariff_rate', headers=self.Header)          
+                    site = r.json()
+                elif mode == 'backup_time_remaining':
+                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/backup_time_remaining', headers=self.Header)          
+                    site = r.json()
+                                                                                                                                  
+                else:
+                    #logging.debug('Unknown mode: '+mode)
+                    return(None)
+                return(site['response'])
+            except Exception as e:
+                logging.error('Exception teslaGetSiteInfo: ' + str(e))
+                logging.error('Error getting data' + str(mode))
+                logging.error('Trying to reconnect')
+                self.teslaApi.tesla_refresh_token( )
+                return(None)
+        '''
+
+    def teslaSetBackoffLevel(self, backupPercent):
+        #if self.connectionEstablished:
+        logging.debug('teslaSetBackoffLevel {}'.format(backupPercent))
+        if backupPercent >=0 and backupPercent <=100:
+            payload = {'backup_reserve_percent': backupPercent}
+            site = self._callApi('POST', '/energy_sites'+self.site_id +'/backup', payload)        
+            if site['response']['code'] <210:
+                self.site_info['backup_reserve_percent'] = backupPercent
+                return (True)
+            else:
+                return(False) 
+        else: return(False)      
+        '''
+        S = self.teslaApi.teslaConnect()
+        #S = self.__teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])
+                if backupPercent >=0 and backupPercent <=100:
+                    payload = {'backup_reserve_percent': backupPercent}
+                    r = s.post(self.TESLA_URL +  self.API + '/energy_sites'+self.site_id +'/backup', headers= self.Header,  json=payload)        
+                    site = r.json()
+                    if site['response']['code'] <210:
+                        self.site_info['backup_reserve_percent'] = backupPercent
+                        return (True)
+                    else:
+                        return(False)
+
+                else:
+                    return(False)
+                    #site="Backup Percent out of range 0-100:" + str(backupPercent)
+                    #logging.debug(site)   
+            except  Exception as e:
+                logging.error('Exception teslaSetBackoffLEvel: ' + str(e))
+                logging.error('Error setting bacup percent')
+                self.teslaApi.tesla_refresh_token( ) 
+                return(False)
+        '''
+
+
+    def teslaSetTimeOfUse (self):
+        #if self.connectionEstablished:
+        temp = {}
+        temp['tou_settings'] = {}
+        temp['tou_settings']['optimization_strategy'] = self.touMode
+        temp['tou_settings']['schedule'] = self.touScheduleList
+        payload = temp
+        site = self._callApi('POST', '/energy_sites'+self.site_id +'/time_of_use_settings', json=payload)
+
+        if site['response']['code'] <210:
+            self.site_info['tou_settings']['optimization_strategy'] = self.touMode
+            self.site_info['tou_settings']['schedule']= self.touScheduleList
+            return (True)
+        else:
+            return(False)
+        '''
+        S = self.teslaApi.teslaConnect() 
+        #S = self.__teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])
+
+                payload = temp
+                r = s.post(self.TESLA_URL +  self.API+ '/energy_sites'+self.site_id +'/time_of_use_settings', headers=self.Header, json=payload)
+                site = r.json()
+                if site['response']['code'] <210:
+                    self.site_info['tou_settings']['optimization_strategy'] = self.touMode
+                    self.site_info['tou_settings']['schedule']= self.touScheduleList
+                    return (True)
+                else:
+                    return(False)
+            except Exception as e:
+                logging.error('Exception teslaSetTimeOfUse: ' + str(e))
+                logging.error('Error setting time of use parameters')
+                self.teslaApi.tesla_refresh_token( ) 
+                return(False)
+        '''
+
+
+
+    def teslaSetStormMode(self, EnableBool):
+        #if self.connectionEstablished:
+
+        payload = {'enabled': EnableBool}
+        site = self._callApi('POST',  '/energy_sites'+self.site_id +'/storm_mode', payload)
+        site = r.json()
+        if site['response']['code'] <210:
+            self.site_info['user_settings']['storm_mode_enabled'] = EnableBool
+            return (True)
+        else:
+            return(False)
+        '''
+        S = self.teslaApi.teslaConnect()
+        #S = self.__teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])
+                payload = {'enabled': EnableBool}
+                r = s.post(self.TESLA_URL +  self.API+ '/energy_sites'+self.site_id +'/storm_mode', headers = self.Header, json=payload)
+                site = r.json()
+                if site['response']['code'] <210:
+                    self.site_info['user_settings']['storm_mode_enabled'] = EnableBool
+                    return (True)
+                else:
+                    return(False)
+            except Exception as e:
+                logging.error('Exception teslaSetStormMode: ' + str(e))
+                logging.error('Error setting storm mode')
+                self.teslaApi.tesla_refresh_token( )
+                return(False)
+        '''
