@@ -44,13 +44,11 @@ class TeslaCloud(OAuth):
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
         self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
         self.api  = 'api/1'
-        self.LOCAL_USER_EMAIL = ""
-        self.LOCAL_USER_PASSWORD = ""
-        self.LOCAL_IP_ADDRESS = ""
+        self.LOCAL_USER_EMAIL = ''
+        self.LOCAL_USER_PASSWORD = ''
+        self.LOCAL_IP_ADDRESS = ''
         #self.state = secrets.token_hex(16)
-        self.region = 'NA' #North America
-        #self.client_ID = None
-        #self.client_SECRET = None
+        self.region = ''
         self.handleCustomParamsDone = False
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
@@ -102,9 +100,10 @@ class TeslaCloud(OAuth):
 
     def oauthHandler(self, token):
         logging.debug('oauthHandler called')
-        #while not (self.customParamsDone() and self.customNsDone()):
-        #    logging.debug('Waiting for oauthHandler to complete')
-        #    time.sleep(1)
+        while not (self.customParamsDone() and self.customNsDone()):
+            logging.debug('Waiting for initilization to complete before oAuth')
+            time.sleep(5)
+        #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
         logging.debug('oauthHandler Finished')
@@ -136,8 +135,7 @@ class TeslaCloud(OAuth):
     def customParamsHandler(self, userParams):
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
-        client_ok = False
-        client_secret = False
+
         oauthSettingsUpdate = {}
         #oauthSettingsUpdate['parameters'] = {}
         oauthSettingsUpdate['token_parameters'] = {}
@@ -145,69 +143,47 @@ class TeslaCloud(OAuth):
 
         if 'region' in userParams:
             if self.customParameters['region'] != 'enter region (NA, EU, CN)':
-                self.region = self.customParameters['region']
-                client_ok = True
+                self.region = str(self.customParameters['region'])
+                if self.region.upper() not in ['NA', 'EU', 'CN']:
+                    logging.error('Unsupported region {}'.format(self.region))
+                    self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+                elif 'region' in self.poly.Notices:
+                    self.poly.Notices['region'].clear()
         else:
-            logging.warnig('No region found')
+            logging.warning('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
-            self.client_ID = None
+            self.region = None
+            self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
             
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
-                self.LOCAL_EMAIL= self.customParameters['LOCAL_USER_EMAIL'] 
-                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                #secret_ok = True
+                self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
         else:
-            logging.warnig('No LOCAL_USER_EMAIL found')
+            logging.warning('No LOCAL_USER_EMAIL found')
             self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
-            self.LOCAL_EMAIL = None
+            self.LOCAL_USER_EMAIL = None
 
         if 'LOCAL_USER_PASSWORD' in self.customParameters:
             if self.customParameters['LOCAL_USER_PASSWORD'] != '':
-                self.LOCAL_USER_PASSWORD= self.customParameters['LOCAL_USER_PASSWORD'] 
+                self.LOCAL_USER_PASSWORD= str(self.customParameters['LOCAL_USER_PASSWORD'] )
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
-            logging.warnig('No LOCAL_USER_PASSWORD found')
+            logging.warning('No LOCAL_USER_PASSWORD found')
             self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
             self.LOCAL_USER_PASSWORD = None
 
         if 'LOCAL_IP_ADDRESS' in self.customParameters:
-            if self.customParameters['LOCAL_IP_ADDRESS'] != 'xxx.xxx.xxx.xxx':
-                self.LOCAL_IP_ADDRESS= self.customParameters['LOCAL_IP_ADDRESS'] 
+            if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
+                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] )
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
-            logging.warnig('No LOCAL_IP_ADDRESS found')
+            logging.warning('No LOCAL_IP_ADDRESS found')
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
 
-        #if not client_ok  or not secret_ok:
-        #   self.poly.Notices['client'] = 'Please enter valid clientID and clientSecret - then restart'
-        #if 'scope' in self.customParameters:
-        #    temp = self.customParameters['scope'] 
-        #    temp1 = temp.split()
-        #    self.scope_str = ''
-        #    for net_scope in temp1:
-        #        if net_scope in self.scopeList:
-        #            self.scope_str = self.scope_str + ' ' + net_scope
-        #        else:
-        #            logging.error('Unknown scope provided: {} - removed '.format(net_scope))
-        #    self.scope = self.scope_str.split()
-        #else:
-        #    self.customParameters['scope'] = 'enter desired scopes space separated'
-        #    self.scope_str = ""
-
-        #if "TEMP_UNIT" in self.customParameters:
-        #    self.temp_unit = self.customParameters['TEMP_UNIT'][0].upper()
-        #else:
-        #    self.temp_unit = 0
-        #    self.customParameters['TEMP_UNIT'] = 'C'
-
-        #if 'refresh_token' in self.customParameters:
-        #    if self.customParameters['refresh_token'] is not None and self.customParameters['refresh_token'] != "":
-        #        self.customData.token['refresh_token'] = self.customParameters['refresh_token']
-        oauthSettingsUpdate['scope'] = self.scope
+        oauthSettingsUpdate['scope'] = self.scope 
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
         oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
         #oauthSettingsUpdate['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
@@ -222,19 +198,19 @@ class TeslaCloud(OAuth):
             self.Endpoint = self.EndpointCN
         else:
             logging.error('Unknow region specified {}'.format(self.region))
-            self.poly.Notices['region'] = 'Unknown Region specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+           
+        self.yourApiEndpoint = self.Endpoint+self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
-        #oauthSettingsUpdate['grant_type'] = 'refresh_token'
-        self.yourApiEndpoint = self.Endpoint+self.api
+        #oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
+        #oauthSettingsUpdate['token_parameters']['client_secret'] = 'ta-secret.S@z5uUjp*sxoS2rS'
+        #oauthSettingsUpdate['token_parameters']['addRedirect'] = True
         self.updateOauthSettings(oauthSettingsUpdate)
-        logging.debug('Updated oAuth config: {}'.format(self.getOauthSettings()))
-        #if client_ok and secret_ok:
-        #    self.handleCustomParamsDone = True
-        #    self.poly.Notices.clear()
-
-        #self.updateOauthConfig()
-        #self.myParamBoolean = ('myParam' in self.customParametersand self.customParameters['myParam'].lower() == 'true')
-        #logging.info(f"My param boolean: { self.myParamBoolean }")
+        time.sleep(0.1)
+        temp = self.getOauthSettings()
+        #logging.debug('Updated oAuth config 2: {}'.format(temp))
+        
+        self.handleCustomParamsDone = True
+        self.poly.Notices.clear()
     
 
     def add_to_parameters(self,  key, value):
@@ -250,7 +226,7 @@ class TeslaCloud(OAuth):
     
     def authendicated(self):
         try:
-            logging.debug('authendicated - {}'.format(self.getOauthSettings()))
+            #logging.debug('authendicated - {}'.format(self.getOauthSettings()))
             self.getAccessToken()
             return(True)
         except ValueError as err:
@@ -258,7 +234,7 @@ class TeslaCloud(OAuth):
             #self.poly.Notices['auth'] = 'Please initiate authentication'
             return (False)
         
-
+    '''
     def setOauthScope(self, scope):
         oauthSettingsUpdate = {}
         logging.debug('Set Scope to {}'.format(scope))
@@ -272,6 +248,27 @@ class TeslaCloud(OAuth):
         self.updateOauthSettings(oauthSettingsUpdate)
     
 
+    def _insert_refreshToken(self, refresh_token, clientId, clientSecret):
+        data = {
+                'grant_type': 'refresh_token',
+                'refresh_token': refresh_token,
+                'client_id': clientId,
+                'client_secret':  clientSecret
+                }
+        try:
+            response = requests.post('https://api.netatmo.com/oauth2/token' , data=data)
+            response.raise_for_status()
+            token = response.json()
+            logging.info('Refreshing tokens successful')
+            logging.debug(f"Token refresh result [{ type(token) }]: { token }")
+            self._saveToken(token)
+            return('Success')
+          
+        except requests.exceptions.HTTPError as error:
+            logging.error(f"Failed to refresh  token: { error }")
+            return(None)
+            # NOTE: If refresh tokens fails, we keep the existing tokens available.
+    '''
 
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=None):
