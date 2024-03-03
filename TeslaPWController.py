@@ -94,10 +94,10 @@ class TeslaPWController(udi_interface.Node):
         #while not self.initialized:
         #    time.sleep(1)
        
-        #if self.cloudAccess or self.localAccess:
-        #    self.tesla_initialize(self.local_email, self.local_password, self.local_ip, self.Rtoken)
-        #else:
-        #    self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration REFRESH_TOKEN and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
+        if self.cloudAccess or self.localAccess:
+            self.tesla_initialize(self.local_email, self.local_password, self.local_ip, self.Rtoken)
+        else:
+            self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration REFRESH_TOKEN and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
         while not self.myTeslaCloud.authendicated():
             time.sleep(5)
@@ -138,6 +138,7 @@ class TeslaPWController(udi_interface.Node):
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
             self.TPW = tesla_info(self.name, self.address, self.localAccess, self.cloudAccess)
+            '''
             if self.localAccess:
                 logging.debug('Attempting to log in via local auth')
                 try:
@@ -149,7 +150,7 @@ class TeslaPWController(udi_interface.Node):
                 except:
                     logging.error('local authenticated failed.')
                     self.localAccess = False
-
+            '''
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 #self.TPW.loginCloud(cloud_email, cloud_password)
