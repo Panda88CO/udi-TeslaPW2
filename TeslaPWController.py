@@ -37,7 +37,7 @@ class TeslaPWController(udi_interface.Node):
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
         
-        self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        #self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.myTeslaCloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
@@ -88,6 +88,8 @@ class TeslaPWController(udi_interface.Node):
        
         logging.debug('start')
         self.poly.updateProfile()
+        self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
         #self.check_config()
@@ -95,7 +97,7 @@ class TeslaPWController(udi_interface.Node):
         #    time.sleep(1)
        
         if self.cloudAccess or self.localAccess:
-            self.tesla_initialize(self.local_email, self.local_password, self.local_ip, self.Rtoken)
+            self.tesla_initialize(self.local_email, self.local_password, self.local_ip)
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration REFRESH_TOKEN and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
@@ -104,7 +106,7 @@ class TeslaPWController(udi_interface.Node):
             logging.info('Waiting for authendication - press autendicate button')
             self.poly.Notices['auth'] = 'Please initiate authentication'
    
-
+    '''
     def check_config(self):
         logging.debug('check_config  {} {} {} {}'.format(self.local_email ,self.local_password,self.local_ip , self.Rtoken ))
         if self.local_email == '':
@@ -125,7 +127,7 @@ class TeslaPWController(udi_interface.Node):
         #else:
         #    self.cloudAccess = True
          
-
+    '''
     '''
     This may be called multiple times with different settings as the user
     could be enabling or disabling the various types of access.  So if the
@@ -133,12 +135,12 @@ class TeslaPWController(udi_interface.Node):
     '''
 
 
-    def tesla_initialize(self, local_email, local_password, local_ip, Rtoken):
+    def tesla_initialize(self, local_email, local_password, local_ip):
         logging.debug('starting Login process')
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
             self.TPW = tesla_info(self.name, self.address, self.localAccess, self.cloudAccess)
-            '''
+            
             if self.localAccess:
                 logging.debug('Attempting to log in via local auth')
                 try:
@@ -150,7 +152,7 @@ class TeslaPWController(udi_interface.Node):
                 except:
                     logging.error('local authenticated failed.')
                     self.localAccess = False
-            '''
+            
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 #self.TPW.loginCloud(cloud_email, cloud_password)
@@ -176,6 +178,7 @@ class TeslaPWController(udi_interface.Node):
                 node = teslaPWStatusNode(self.poly, self.address, 'pwstatus', 'Power Wall Status', self.TPW)
                 self.poly.addNode(node)
                 self.wait_for_node_done()
+
             if self.TPW.solarInstalled:
                 if not self.poly.getNode('solarstatus'):
                     node = teslaPWSolarNode(self.poly, self.address, 'solarstatus', 'Solar Status', self.TPW)
@@ -220,6 +223,7 @@ class TeslaPWController(udi_interface.Node):
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
 
+    '''
     def handleParams (self, customParams ):
         logging.debug('handleParams')
         #supportParams = ['LOCAL_USER_EMAIL','LOCAL_USER_PASSWORD','LOCAL_IP_ADDRESS', 'REFRESH_TOKEN'   ]
@@ -237,12 +241,12 @@ class TeslaPWController(udi_interface.Node):
         self.localAccess = False
         self.cloudAccess = False
         #temp = self.Parameters
-        '''
+        
         for param in customParams:
             if param not in supportParams:
                 del self.Parameters[param]
                 logging.debug ('erasing key: ' + str(param))
-        '''
+        
         local_valid = True
         cloud_valid = True
         if self.Parameters.LOCAL_USER_EMAIL == None:
@@ -295,7 +299,7 @@ class TeslaPWController(udi_interface.Node):
         #logging.debug ('Trying t initialize APIs local: {} and cloud: {}'.format(local_valid, cloud_valid))
 
         logging.debug('done with parameter processing')
-        
+    ''' 
     def stop(self):
         #self.removeNoticesAll()
         self.poly.Notices.clear()
@@ -304,7 +308,7 @@ class TeslaPWController(udi_interface.Node):
         self.setDriver('ST', 0 )
         self.poly.stop()
         logging.debug('stop - Cleaning up')
-
+    
 
     def heartbeat(self):
         logging.debug('heartbeat: ' + str(self.hb))

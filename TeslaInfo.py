@@ -29,9 +29,6 @@ class tesla_info:
         self.cloudPassword = ''
         self.controllerID = ISY_Id
         self.controllerName = ISYname
-        self.captchaMethod = ''
-        self.captchaCode = ''
-        self.captchaAPIKey = ''
         self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there
         self.solarInstalled = False
         self.ISYCritical = {}
