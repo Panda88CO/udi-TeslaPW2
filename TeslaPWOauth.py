@@ -147,8 +147,7 @@ class TeslaCloud(OAuth):
                     logging.error('Unsupported region {}'.format(self.region))
                     self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
                 elif 'region' in self.poly.Notices:
-                    if 'region' in self.poly.Notices:
-                        self.poly.Notices['region'].clear()
+                    self.poly.Notices.clear()
         else:
             logging.warning('No region found')
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
