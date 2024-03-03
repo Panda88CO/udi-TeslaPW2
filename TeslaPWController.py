@@ -36,6 +36,7 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
+        
         self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.myTeslaCloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -53,7 +54,7 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
         self.poly.updateProfile()
-        
+        self.poly.Notices.clear()
         self.nodeDefineDone = False
         self.longPollCountMissed = 0
 
