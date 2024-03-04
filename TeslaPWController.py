@@ -2,12 +2,12 @@
 
 import sys
 import time 
-from  TeslaInfo import tesla_info
+#from  TeslaInfo import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPWStatusNode import teslaPWStatusNode
 from TeslaPWSolarNode import teslaPWSolarNode
 from TeslaPWGenNode import teslaPWGenNode
-from TeslaPWOauth import TeslaCloud
+from TeslaPWOauth import teslaAccess
 try:
     import udi_interface
     logging = udi_interface.LOGGER
@@ -32,7 +32,7 @@ class TeslaPWController(udi_interface.Node):
         self.initialized = False
         self.localAcccessUp = False
         self.cloudAcccessUp = False
-        self.Rtoken = None
+        #self.Rtoken = None
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
@@ -138,8 +138,11 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('starting Login process')
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
-            self.TPW = tesla_info(self.name, self.address, self.localAccess, self.cloudAccess)
-            
+
+            #self.TPW = tesla_info(self.name, self.address, self.localAccess, self.cloudAccess)
+            self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
+            self.localAccess = self.TPW.localAccess()
+            self.cloudAccess = self.TPW.cloudAccess()
             if self.localAccess:
                 logging.debug('Attempting to log in via local auth')
                 try:

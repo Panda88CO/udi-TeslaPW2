@@ -13,7 +13,6 @@ MIT License
 '''
 import requests
 import time
-
 import datetime
 #from udi_interface import LOGGER, Custom
 #from oauth import OAuth
@@ -29,7 +28,7 @@ except ImportError:
 
 # Implements the API calls to your external service
 # It inherits the OAuth class
-class TeslaCloud(OAuth):
+class teslaAccess(OAuth):
     yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com'
 
     def __init__(self, polyglot, scope):
@@ -153,7 +152,13 @@ class TeslaCloud(OAuth):
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
             self.region = None
             self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-            
+        if 'local_access_enabled' in self.customParameters:
+            self.local_acccess = self.customParameters['local_access_enabled'].upper() == 'TRUE'
+
+
+        if 'cloud_access_enabled' in self.customParameters:      
+            self.cloud_acccess = self.customParameters['cloud_access_enabled'].upper() == 'TRUE'
+
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
                 self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
@@ -222,7 +227,14 @@ class TeslaCloud(OAuth):
             return(self.customParameters[key]  == value)
         else:
             return(False)
+        
+    def cloud_access(self):
+        return(self.cloud_acccess)
     
+    def local_access(self):
+        return(self.local_acccess)
+    
+
     def authendicated(self):
         try:
             #logging.debug('authendicated - {}'.format(self.getOauthSettings()))
@@ -522,7 +534,7 @@ class TeslaCloud(OAuth):
         temp['tou_settings']['optimization_strategy'] = self.touMode
         temp['tou_settings']['schedule'] = self.touScheduleList
         payload = temp
-        site = self._callApi('POST', '/energy_sites'+self.site_id +'/time_of_use_settings', json=payload)
+        site = self._callApi('POST', '/energy_sites'+self.site_id +'/time_of_use_settings', payload)
 
         if site['response']['code'] <210:
             self.site_info['tou_settings']['optimization_strategy'] = self.touMode

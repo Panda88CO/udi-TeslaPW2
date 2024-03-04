@@ -114,12 +114,13 @@ class tesla_info:
            
     
 
-    def getRtoken(self):
-        return(self.TPWcloud.getRtoken())
+    #def getRtoken(self):
+    #    return(self.TPWcloud.getRtoken())
 
     def teslaCloudConnect(self, Rtoken ):
         logging.debug('teslaCloudConnect')
         self.TPWcloud = TeslaPWApi(Rtoken)
+        
         self.TPWcloudAccess = True
         if not(self.TPWcloud.isConnectedToEV()):    
             logging.debug('Error connecting to Tesla Cloud - check refresh key')
