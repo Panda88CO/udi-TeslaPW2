@@ -707,7 +707,7 @@ class teslaAccess(OAuth):
 
    
 
-    def isConnectedToEV(self):
+    def isConnectedToPW(self):
        return( self.getAccessToken() != None)
 
     #def getRtoken(self):
