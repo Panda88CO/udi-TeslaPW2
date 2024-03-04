@@ -116,7 +116,7 @@ class OAuth:
                 LOGGER.info(f"Access tokens: Token is expired since { expiry }. Initiating refresh.")
                 self._oAuthTokensRefresh()
             else:
-                logger.info(f"Access tokens: Token is still valid until { expiry }, no need to refresh")
+                LOGGER.info(f"Access tokens: Token is still valid until { expiry }, no need to refresh")
 
             return self._oauthTokens.get('access_token')
         else:
