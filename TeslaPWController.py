@@ -87,7 +87,7 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         logging.debug('start')
         self.poly.updateProfile()
-        self.localAccess = self.my_Tesla.local_access_enabled
+        self.localAccess = self.my_Tesla.local_acccess_enabled
         self.cloudAccess = self.my_Tesla.cloud_acccess_enabled
         self.TPW = tesla_info(self.my_Tesla)
         #self.poly.setCustomParamsDoc()
