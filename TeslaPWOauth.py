@@ -104,7 +104,7 @@ class teslaAccess(OAuth):
             time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
-        self.customOauthHandlerDone = True
+        #self.customOauthHandlerDone = True
         logging.debug('oauthHandler Finished')
 
     def customNsDone(self):
@@ -116,8 +116,8 @@ class teslaAccess(OAuth):
     def customParamsDone(self):
         return(self.handleCustomParamsDone)
 
-    def customOauthDone(self):
-        return(self.customOauthHandlerDone )
+    #def customOauthDone(self):
+    #    return(self.customOauthHandlerDone )
     # Your service may need to access custom params as well...
 
 
