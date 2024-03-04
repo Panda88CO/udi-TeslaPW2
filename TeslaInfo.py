@@ -17,18 +17,11 @@ from TeslaPWApi import TeslaPWApi
 
 
 class tesla_info:
-    def __init__ (self,  ISYname, ISY_Id, local, cloud):
+    def __init__ (self,  local, cloud):
         self.TEST = False
 
         logging.debug('class tesla_info - init')
-        self.TPWcloud = None
-        self.localPassword = ''
-        self.localEmail = ''
-        self.IPAddress = ''
-        self.cloudEmail = ''
-        self.cloudPassword = ''
-        self.controllerID = ISY_Id
-        self.controllerName = ISYname
+
         self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there
         self.solarInstalled = False
         self.ISYCritical = {}

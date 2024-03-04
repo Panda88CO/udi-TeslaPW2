@@ -51,8 +51,6 @@ class teslaAccess(OAuth):
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
         self.temp_unit = 'C'
-
-        self.scopeList = ['energy_cmds']
         
         self.poly = polyglot
 

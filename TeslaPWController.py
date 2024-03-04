@@ -2,7 +2,7 @@
 
 import sys
 import time 
-#from  TeslaInfo import tesla_info
+from TeslaInfo import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPWStatusNode import teslaPWStatusNode
 from TeslaPWSolarNode import teslaPWSolarNode
@@ -87,8 +87,11 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         logging.debug('start')
         self.poly.updateProfile()
-        self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        self.myTesla = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
 
+        self.localAccess = self.myTesla.local_access
+        self.cloudAccess = self.myTesla.cloud_acccess
+        self.TPW = tesla_info(self.myTesla )
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
         #self.check_config()
@@ -96,11 +99,11 @@ class TeslaPWController(udi_interface.Node):
         #    time.sleep(1)
        
         if self.cloudAccess or self.localAccess:
-            self.tesla_initialize(self.local_email, self.local_password, self.local_ip)
+            self.tesla_initialize()
         else:
-            self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration REFRESH_TOKEN and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
+            self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
-        while not self.myTeslaCloud.authendicated():
+        while not self.myTesla.authendicated():
             time.sleep(5)
             logging.info('Waiting for authendication - press autendicate button')
             self.poly.Notices['auth'] = 'Please initiate authentication'
@@ -140,14 +143,15 @@ class TeslaPWController(udi_interface.Node):
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
 
             #self.TPW = tesla_info(self.name, self.address, self.localAccess, self.cloudAccess)
-            self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
-            self.localAccess = self.TPW.localAccess()
-            self.cloudAccess = self.TPW.cloudAccess()
+            #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
+            #self.localAccess = self.TPW.localAccess()
+            #self.cloudAccess = self.TPW.cloudAccess()
             if self.localAccess:
                 logging.debug('Attempting to log in via local auth')
                 try:
                     self.poly.Notices['localPW'] = 'Tesla PowerWall may need to be turned OFF and back ON to allow loacal access'
-                    self.localAccessUp  = self.TPW.loginLocal(local_email, local_password, local_ip)
+                    #self.localAccessUp  = self.TPW.loginLocal(local_email, local_password, local_ip)
+                    self.localAccessUp  = self.TPW.loginLocal()
                     logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                     if self.localAccessUp:
                         self.poly.Notices.delete('localPW')
