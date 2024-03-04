@@ -41,7 +41,7 @@ class teslaAccess(OAuth):
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
         self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
-        self.api  = 'api/1'
+        self.api  = '/api/1'
         self.LOCAL_USER_EMAIL = ''
         self.LOCAL_USER_PASSWORD = ''
         self.LOCAL_IP_ADDRESS = ''
