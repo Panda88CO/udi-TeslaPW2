@@ -37,8 +37,8 @@ class TeslaPWController(udi_interface.Node):
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
         
-        #self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
-        #self.myTeslaCloud = TeslaCloud(self.poly, 'vehicle_device_data')
+        #self.my_Tesla = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        #self.my_Tesla = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
@@ -46,10 +46,10 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.myTeslaCloud.customParamsHandler)
+        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.my_Tesla.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
-        self.poly.subscribe(self.poly.CUSTOMNS, self.myTeslaCloud.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.myTeslaCloud.oauthHandler)
+        self.poly.subscribe(self.poly.CUSTOMNS, self.my_Tesla.customNsHandler)
+        self.poly.subscribe(self.poly.OAUTH, self.my_Tesla.oauthHandler)
         self.n_queue = []
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
@@ -87,11 +87,10 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         logging.debug('start')
         self.poly.updateProfile()
-        self.myTesla = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
-
-        self.localAccess = self.myTesla.local_access
-        self.cloudAccess = self.myTesla.cloud_acccess
-        self.TPW = tesla_info(self.myTesla )
+        self.my_Tesla = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        self.localAccess = self.my_Tesla.local_access_enabled
+        self.cloudAccess = self.my_Tesla.cloud_acccess_enabled
+        self.TPW = tesla_info(self.my_Tesla)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
         #self.check_config()
@@ -103,7 +102,7 @@ class TeslaPWController(udi_interface.Node):
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
-        while not self.myTesla.authendicated():
+        while not self.my_Tesla.authendicated():
             time.sleep(5)
             logging.info('Waiting for authendication - press autendicate button')
             self.poly.Notices['auth'] = 'Please initiate authentication'
@@ -137,7 +136,7 @@ class TeslaPWController(udi_interface.Node):
     '''
 
 
-    def tesla_initialize(self, local_email, local_password, local_ip):
+    def tesla_initialize(self):
         logging.debug('starting Login process')
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
@@ -162,7 +161,7 @@ class TeslaPWController(udi_interface.Node):
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 #self.TPW.loginCloud(cloud_email, cloud_password)
-                self.cloudAcccessUp = self.TPW.teslaCloudConnect(Rtoken)
+                self.cloudAcccessUp = self.TPW.teslaCloudConnect()
                 logging.debug('finiahed login procedures' )
 
             if not self.localAccess and not self.cloudAccess:

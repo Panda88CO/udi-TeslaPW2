@@ -11,7 +11,7 @@ except ImportError:
 from datetime import date
 import time
 from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
-from TeslaPWApi import TeslaPWApi
+from OLD.TeslaPWApi import TeslaPWApi
 
 
 

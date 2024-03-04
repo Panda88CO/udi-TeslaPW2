@@ -12,35 +12,39 @@ from datetime import date
 import time
 import os
 from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
-from TeslaPWApi import TeslaPWApi
+from OLD.TeslaPWApi import TeslaPWApi
 
 
 
 class tesla_info:
-    def __init__ (self,  local, cloud):
+    def __init__ (self,  my_Tesla):
         self.TEST = False
 
         logging.debug('class tesla_info - init')
-
+        self.TPWcloud = my_Tesla
         self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there
         self.solarInstalled = False
         self.ISYCritical = {}
         self.lastDay = date.today()  
-        self.localAccessUp = local
-        self.TPWcloudAccess = cloud
+        #self.localAccessUp = 
+        #self.TPWcloudAccess = cloud
         self.systemReady = False 
         self.firstPollCompleted = False
-        if not local and not cloud:
+
+        self.localEmail = my_Tesla.LOCAL_USER_EMAIL
+        self.localPassword = my_Tesla.LOCAL_USER_PASSWORD
+        self.IPaddress = my_Tesla.LOCAL_IP_ADDRESS
+        self.local_access_enabled = my_Tesla.local_access_enabled
+        self.cloud_access_enabled = my_Tesla.cloud_access_enabled
+
+        if not self.local_access_enabled and not self.cloud_access_enabled:
             logging.debug('No connection specified')
 
 
-    def loginLocal (self, email, password, IPaddress):
-        self.localEmail = email
-        self.localPassword = password
-        self.IPAddress = IPaddress
+    def loginLocal (self):
         logging.debug('Local Access Supported')
 
-        self.TPWlocal = Powerwall(IPaddress)
+        self.TPWlocal = Powerwall(self.IPaddress)
         #logging.debug('self.TPWlocal - {}'.format(self.TPWlocal))
         self.TPWlocal.login(self.localPassword, self.localEmail)
         logging.debug('self.TPWlocal ')
@@ -96,23 +100,10 @@ class tesla_info:
 
 
 
-    #def loginCloud(self, email, password ):
-    ##    self.cloudEmail = email
-    #    self.cloudPassword = password
-    #    #self.captchaAPIKey = captchaAPIkey
 
-    #    logging.debug('Cloud Access Supported')
-    #    self.TPWcloud = TeslaCloudAPI(self.cloudEmail, self.cloudPassword)
-    #    self.TPWcloudAccess = True
-           
-    
-
-    #def getRtoken(self):
-    #    return(self.TPWcloud.getRtoken())
-
-    def teslaCloudConnect(self, Rtoken ):
+    def teslaCloudConnect(self ):
         logging.debug('teslaCloudConnect')
-        self.TPWcloud = TeslaPWApi(Rtoken)
+        #self.TPWcloud = TeslaPWApi(Rtoken)
         
         self.TPWcloudAccess = True
         if not(self.TPWcloud.isConnectedToEV()):    
