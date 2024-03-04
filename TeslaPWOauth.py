@@ -162,12 +162,19 @@ class teslaAccess(OAuth):
             self.region = None
             self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
    
-        if 'local_access_enabled' in self.customParameters:
-            self.local_access_enabled = self.customParameters['local_access_enabled'].upper() == 'TRUE'
+        if 'local_access_en' in self.customParameters:
+            if self.customParameters['local_access_en'] != '':
+                self.local_access_enabled = self.customParameters['local_access_en'].upper() == 'TRUE'
+        else:
+            logging.warning('No local_access_enabled found')
+            self.customParameters['local_access_enabled'] = 'True/False'
 
-
-        if 'cloud_access_enabled' in self.customParameters:      
-            self.cloud_access_enabled = self.customParameters['cloud_access_enabled'].upper() == 'TRUE'
+        if 'cloud_access_en' in self.customParameters:      
+            if self.customParameters['cloud_access_en'] != '':
+                self.local_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
+        else:
+            logging.warning('No cloud_access_en found')
+            self.customParameters['cloud_access_en'] = 'True/False'
 
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
