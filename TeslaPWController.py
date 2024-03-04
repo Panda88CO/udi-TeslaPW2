@@ -88,12 +88,13 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('start')
         self.poly.updateProfile()
 
-        while not self.my_Tesla.customParamsDone() and not self.my_Tesla.customNsDone() and not self.my_Tesla.customOauthDone(): 
+        while not self.my_Tesla.customParamsDone() or not self.my_Tesla.customNsDone() or not self.my_Tesla.customOauthDone(): 
             logging.info('Waiting for node to initialize')
             time.sleep(2)
 
         self.localAccess = self.my_Tesla.local_access()
         self.cloudAccess = self.my_Tesla.cloud_access()
+        logging.debug()
         self.TPW = tesla_info(self.my_Tesla)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
