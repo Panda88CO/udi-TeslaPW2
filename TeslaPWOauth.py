@@ -238,12 +238,6 @@ class teslaAccess(OAuth):
         else:
             return(False)
         
-    def cloud_access(self):
-        return(self.cloud_acccess)
-    
-    def local_access(self):
-        return(self.local_acccess)
-    
 
     def authendicated(self):
         try:
