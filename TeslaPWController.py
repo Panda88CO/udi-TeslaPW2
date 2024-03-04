@@ -85,7 +85,6 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('handle Notices: {}'.format(notices))
 
     def start(self):
-       
         logging.debug('start')
         self.poly.updateProfile()
         self.myTeslaCloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')

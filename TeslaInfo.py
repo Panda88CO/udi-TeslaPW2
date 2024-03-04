@@ -122,7 +122,7 @@ class tesla_info:
         self.TPWcloud = TeslaPWApi(Rtoken)
         self.TPWcloudAccess = True
         if not(self.TPWcloud.isConnectedToEV()):    
-            logging.debug('Error connecting to Tesla Could - check refresh key')
+            logging.debug('Error connecting to Tesla Cloud - check refresh key')
             self.cloudAccessUp=False
             self.TPWcloudAccess = False
         else:
