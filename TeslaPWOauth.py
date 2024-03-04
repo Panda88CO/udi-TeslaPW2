@@ -248,7 +248,7 @@ class teslaAccess(OAuth):
 
     def authendicated(self):
         try:
-            #logging.debug('authendicated - {}'.format(self.getOauthSettings()))
+            logging.debug('authendicated - {}'.format(self.getOauthSettings()))
             self.getAccessToken()
             return(True)
         except ValueError as err:
@@ -312,7 +312,8 @@ class teslaAccess(OAuth):
         completeUrl = self.yourApiEndpoint + url
 
         headers = {
-            'Authorization': f"Bearer { accessToken }"
+            'Authorization': f'Bearer { accessToken }',
+            'Content-Type': 'application/json' 
         }
 
         if method in [ 'PATCH', 'POST'] and body is None:

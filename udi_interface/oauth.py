@@ -108,8 +108,8 @@ class OAuth:
         
         if self._oauthTokens is not None and self._oauthTokens.get('refresh_token'):
             expiry = self._oauthTokens.get('expiry')
-            #LOGGER.debug('getAccessToken - expiry  {}'.format(expiry))
-            #LOGGER.debug('getAccessToken - access_token  {}'.format(self._oauthTokens.get('access_token')))
+            LOGGER.debug('getAccessToken - expiry  {}'.format(expiry))
+            LOGGER.debug('getAccessToken - access_token  {}'.format(self._oauthTokens.get('access_token')))
             # If expired or expiring in less than 60 seconds, refresh
             if (expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now()) or True:
 
