@@ -167,11 +167,11 @@ class teslaAccess(OAuth):
                 self.local_access_enabled = self.customParameters['local_access_en'].upper() == 'TRUE'
         else:
             logging.warning('No local_access_enabled found')
-            self.customParameters['local_access_enabled'] = 'True/False'
+            self.customParameters['local_access_en'] = 'True/False'
 
         if 'cloud_access_en' in self.customParameters:      
             if self.customParameters['cloud_access_en'] != '':
-                self.local_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
+                self.cloud_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
         else:
             logging.warning('No cloud_access_en found')
             self.customParameters['cloud_access_en'] = 'True/False'

@@ -95,7 +95,7 @@ class TeslaPWController(udi_interface.Node):
 
         self.localAccess = self.my_Tesla.local_access()
         self.cloudAccess = self.my_Tesla.cloud_access()
-        logging.debug('Access: {self.localAccess} {self.cloudAccess}')
+        logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
         self.TPW = tesla_info(self.my_Tesla)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
@@ -169,6 +169,8 @@ class TeslaPWController(udi_interface.Node):
                 #self.TPW.loginCloud(cloud_email, cloud_password)
                 self.cloudAcccessUp = self.TPW.teslaCloudConnect()
                 logging.debug('finiahed login procedures' )
+            else:
+                logging.info('Cloud Acces not enabled')
 
             if not self.localAccess and not self.cloudAccess:
                 logging.error('Configuration invalid, initialization aborted.')
