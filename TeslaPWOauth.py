@@ -13,7 +13,7 @@ MIT License
 '''
 import requests
 import time
-import datetime
+from datetime import datetime 
 #from udi_interface import LOGGER, Custom
 #from oauth import OAuth
 try:
@@ -45,6 +45,8 @@ class teslaAccess(OAuth):
         self.LOCAL_USER_EMAIL = ''
         self.LOCAL_USER_PASSWORD = ''
         self.LOCAL_IP_ADDRESS = ''
+        self.local_acccess_enabled = False
+        self.cloud_acccess_enabled = False
         #self.state = secrets.token_hex(16)
         self.region = ''
         self.handleCustomParamsDone = False
@@ -571,7 +573,6 @@ class teslaAccess(OAuth):
 
         payload = {'enabled': EnableBool}
         site = self._callApi('POST',  '/energy_sites'+self.site_id +'/storm_mode', payload)
-        site = r.json()
         if site['response']['code'] <210:
             self.site_info['user_settings']['storm_mode_enabled'] = EnableBool
             return (True)
