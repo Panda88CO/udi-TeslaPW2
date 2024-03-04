@@ -90,7 +90,7 @@ class TeslaPWController(udi_interface.Node):
 
         while not self.my_Tesla.customParamsDone() or not self.my_Tesla.customNsDone() : 
             logging.info('Waiting for node to initialize')
-            logging.debug(' 1 2 3 : {} {} {}'.format(self.my_Tesla.customParamsDone() ,self.my_Tesla.customNsDone()))
+            logging.debug(' 1 2 : {} {} '.format(self.my_Tesla.customParamsDone() ,self.my_Tesla.customNsDone()))
             time.sleep(2)
 
         self.localAccess = self.my_Tesla.local_access()
