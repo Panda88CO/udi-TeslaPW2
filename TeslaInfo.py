@@ -102,11 +102,11 @@ class tesla_info:
 
 
     def teslaCloudConnect(self ):
-        logging.debug('teslaCloudConnect')
+        logging.debug('teslaCloudConnect {}'.format(self.TPWcloud))
         #self.TPWcloud = TeslaPWApi(Rtoken)
         
         self.TPWcloudAccess = True
-        if not(self.TPWcloud.isConnectedToPW()):    
+        if not(self.TPWcloud.isConnectedToPW()):
             logging.debug('Error connecting to Tesla Cloud - check refresh key')
             self.cloudAccessUp=False
             self.TPWcloudAccess = False
