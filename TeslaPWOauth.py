@@ -353,6 +353,9 @@ class teslaAccess(OAuth):
     def teslaCloudInfo(self):
         if self.site_id == '':
             try:
+                while not self.authendicated():
+                    logging.info('Waiting for authntication to complete - teslaCloudInfo')
+                    time.sleep(2)
                 products = self.teslaGetProduct()
                 nbrProducts = products['count']
                 for index in range(0,nbrProducts): #Can only handle one power wall setup - will use last one found
