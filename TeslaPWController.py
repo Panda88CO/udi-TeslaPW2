@@ -16,7 +16,7 @@ try:
 except ImportError:
     import logging
     logging.basicConfig(level=30)
-
+VERSION = '0..1.0'
 class TeslaPWController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
         super(TeslaPWController, self).__init__(polyglot, primary, address, name)
@@ -414,7 +414,7 @@ if __name__ == "__main__":
     try:
         #logging.info('Starting Tesla Power Wall Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.3.69')
+        polyglot.start(VERSION)
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWall')
