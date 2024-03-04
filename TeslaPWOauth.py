@@ -45,13 +45,14 @@ class teslaAccess(OAuth):
         self.LOCAL_USER_EMAIL = ''
         self.LOCAL_USER_PASSWORD = ''
         self.LOCAL_IP_ADDRESS = ''
-        self.local_acccess_enabled = False
-        self.cloud_acccess_enabled = False
+        self.local_access_enabled = False
+        self.cloud_access_enabled = False
         #self.state = secrets.token_hex(16)
         self.region = ''
         self.handleCustomParamsDone = False
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
+        self.customOauthHandlerDone = False
         self.temp_unit = 'C'
         
         self.poly = polyglot
@@ -103,7 +104,7 @@ class teslaAccess(OAuth):
             time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
-        #self.customOauthHandlerDone = True
+        self.customOauthHandlerDone = True
         logging.debug('oauthHandler Finished')
 
     def customNsDone(self):
@@ -114,11 +115,19 @@ class teslaAccess(OAuth):
 
     def customParamsDone(self):
         return(self.handleCustomParamsDone)
-    #def refresh_token(self):
-    #    logging.debug('checking token for refresh')
-        
 
+    def customOauthDone(self):
+        return(self.customOauthHandlerDone )
     # Your service may need to access custom params as well...
+
+
+    def local_access(self):
+        return(self.local_access_enabled)
+    
+    def cloud_access(self):
+        return(self.cloud_access_enabled)
+    
+    
     
     def main_module_enabled(self, node_name):
         logging.debug('main_module_enabled called {}'.format(node_name))
@@ -152,12 +161,13 @@ class teslaAccess(OAuth):
             self.customParameters['region'] = 'enter region (NA, EU, CN)'
             self.region = None
             self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+   
         if 'local_access_enabled' in self.customParameters:
-            self.local_acccess = self.customParameters['local_access_enabled'].upper() == 'TRUE'
+            self.local_access_enabled = self.customParameters['local_access_enabled'].upper() == 'TRUE'
 
 
         if 'cloud_access_enabled' in self.customParameters:      
-            self.cloud_acccess = self.customParameters['cloud_access_enabled'].upper() == 'TRUE'
+            self.cloud_access_enabled = self.customParameters['cloud_access_enabled'].upper() == 'TRUE'
 
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
