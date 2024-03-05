@@ -17,13 +17,11 @@ import time
 from datetime import datetime 
 #from udi_interface import logging, Custom
 #from oauth import OAuth
-try:
-    from udi_interface import logging, Custom, OAuth
-    logging = logging
-    Custom = Custom
-except ImportError:
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
+
+from udi_interface import logging, Custom, OAuth
+logging = logging
+Custom = Custom
+
 
 
 
