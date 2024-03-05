@@ -99,6 +99,14 @@ class TeslaPWController(udi_interface.Node):
         self.localAccess = self.my_Tesla.local_access()
         self.cloudAccess = self.my_Tesla.cloud_access()
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
+
+        if self.cloudAccess:
+            while not self.my_Tesla.authendicated():
+                time.sleep(5)
+                logging.info('Waiting for authendication - press autendicate button')
+                self.poly.Notices['auth'] = 'Please initiate authentication'
+   
+
         self.TPW = tesla_info(self.my_Tesla)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
@@ -111,11 +119,7 @@ class TeslaPWController(udi_interface.Node):
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
-        while not self.my_Tesla.authendicated():
-            time.sleep(5)
-            logging.info('Waiting for authendication - press autendicate button')
-            self.poly.Notices['auth'] = 'Please initiate authentication'
-   
+
     '''
     def check_config(self):
         logging.debug('check_config  {} {} {} {}'.format(self.local_email ,self.local_password,self.local_ip , self.Rtoken ))
@@ -160,38 +164,41 @@ class TeslaPWController(udi_interface.Node):
                     self.poly.Notices['localPW'] = 'Tesla PowerWall may need to be turned OFF and back ON to allow loacal access'
                     #self.localAccessUp  = self.TPW.loginLocal(local_email, local_password, local_ip)
                     self.localAccessUp  = self.TPW.loginLocal()
+                    count = 1
+                    while not self.localAccessUp and count < 5:
+                        time.sleep(1)
+                        self.localAccessUp  = self.TPW.loginLocal()
+                        count = count +1
+                        logging.info('Waiting for local system access to be established')
+                    if not  self.localAccessUp:
+                        logging.error('Failed to establish local access - check email, password and IP address')   
+                        return
                     logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
-                    if self.localAccessUp:
-                        self.poly.Notices.delete('localPW')
+
                 except:
                     logging.error('local authenticated failed.')
                     self.localAccess = False
             
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
-                #self.TPW.loginCloud(cloud_email, cloud_password)
+                count = 1
                 self.cloudAcccessUp = self.TPW.teslaCloudConnect()
+                while not self.localAccessUp and count < 5:
+                    self.poly.Notices['auth'] = 'Please initiate authentication'
+                    time.sleep(5)
+                    self.cloudAcccessUp = self.TPW.teslaCloudConnect()
+                    count = count +1
+                    logging.info('Waiting for cloud system access to be established')
+                    self.poly.Notices['auth'] = 'Please initiate authentication'
+                if not  self.cloudAcccessUp:
+                    logging.error('Failed to establish cloud access - ')   
+                    return
+                logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
+                self.poly.Notices.clear()
                 logging.debug('finiahed login procedures' )
             else:
                 logging.info('Cloud Acces not enabled')
-
-            if not self.localAccess and not self.cloudAccess:
-                logging.error('Configuration invalid, initialization aborted.')
-                self.poly.Notices['err'] = 'Configuration is not valid, please update configuration.'
-                return
-            if self.localAccess and self.cloudAccess:
-                while not self.localAcccessUp or not self.cloudAcccessUp:
-                    logging.info('Waiting for system access to be established')
-                    time.sleep(2)
-            elif self.localAccess and not self.cloudAccess:
-                while not self.localAcccessUp:
-                    logging.info('Waiting for local system access to be established')
-                    time.sleep(2)
-            if self.cloudAccess:
-                while not self.cloudAcccessUp:
-                    logging.info('Waiting for cloud system access to be established')
-                    time.sleep(2)
-                                          
+ 
             self.TPW.teslaInitializeData()
             '''
             node addresses:
