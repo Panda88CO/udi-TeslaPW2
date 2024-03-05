@@ -11,14 +11,15 @@ Copyright (C) 2023 Universal Devices
 
 MIT License
 '''
+import json
 import requests
 import time
 from datetime import datetime 
-#from udi_interface import LOGGER, Custom
+#from udi_interface import logging, Custom
 #from oauth import OAuth
 try:
-    from udi_interface import LOGGER, Custom, OAuth
-    logging = LOGGER
+    from udi_interface import logging, Custom, OAuth
+    logging = logging
     Custom = Custom
 except ImportError:
     import logging
@@ -246,6 +247,39 @@ class teslaAccess(OAuth):
         else:
             return(False)
         
+    def _oAuthTokensRefresh(self):
+        logging.debug(f"Refresh token before: { self._oauthTokens }")
+        data = {
+            'grant_type': 'refresh_token',
+            'refresh_token': self._oauthTokens['refresh_token'],
+            'client_id': self._oauthConfig['client_id'],
+            'client_secret': self._oauthConfig['client_secret']
+        }
+
+        if self._oauthConfig['addRedirect']:
+            data['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
+
+        if self._oauthConfig['scope']:
+            data['scope'] = self._oauthConfig['scope']
+
+        if self._oauthConfig['token_parameters'] and isinstance(self._oauthConfig['token_parameters'], dict):
+            for key, value in self._oauthConfig['token_parameters'].items():
+                data[key] = value
+
+        logging.debug(f"Token refresh body { json.dumps(data) }")
+
+        try:
+            response = requests.post(self._oauthConfig['token_endpoint'], data=data)
+            response.raise_for_status()
+            token = response.json()
+            logging.info('Refreshing oAuth tokens successfully')
+            logging.debug(f"Token refresh result [{ type(token) }]: { token }")
+            self._setExpiry(token)
+            self._oauthTokens.load(token)
+
+        except requests.exceptions.HTTPError as error:
+            logging.error(f"Failed to refresh oAuth token: { error }")
+            # NOTE: If refresh tokens fails, we keep the existing tokens available.        
 
     def authendicated(self):
         try:
