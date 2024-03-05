@@ -252,6 +252,7 @@ class teslaAccess(OAuth):
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
             self.poly.Notices['auth'] = 'Please initiate authentication'
+            logging.debug('oauth error: {}'.format(err))
             return(False)
         if accessToken is None:
             logging.error('Access token is not available')
@@ -301,6 +302,7 @@ class teslaAccess(OAuth):
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
             self.poly.Notices['auth'] = 'Please initiate authentication'
+            logging.debug('_callAPI oauth error: {}'.format(err))
             return
         if accessToken is None:
             logging.error('Access token is not available')
