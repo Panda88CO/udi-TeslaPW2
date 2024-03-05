@@ -219,6 +219,7 @@ class teslaAccess(OAuth):
             self.Endpoint = self.EndpointCN
         else:
             logging.error('Unknow region specified {}'.format(self.region))
+            return
            
         self.yourApiEndpoint = self.Endpoint+self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
@@ -256,6 +257,7 @@ class teslaAccess(OAuth):
             return(False)
         if accessToken is None:
             logging.error('Access token is not available')
+            return(False)
         else:
             return(True)
     '''
@@ -715,7 +717,7 @@ class teslaAccess(OAuth):
    
 
     def isConnectedToPW(self):
-       return( self.getAccessToken() != None)
+        return( self.authendicated())
 
     #def getRtoken(self):
     #    return(self.teslaApi.getRtoken())
