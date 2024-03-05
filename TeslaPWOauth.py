@@ -290,6 +290,7 @@ class teslaAccess(udi_interface.OAuth):
 
     def authendicated(self):
         try:
+            
             accessToken = self.getAccessToken()
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
