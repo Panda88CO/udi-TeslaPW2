@@ -10,6 +10,7 @@ from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWOauth import teslaAccess
 try:
     import udi_interface
+    from udi_interface import OAuth
     logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
     ISY = udi_interface.ISY
@@ -87,6 +88,7 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         logging.debug('start')
         self.poly.updateProfile()
+        self.poly.Notices.clear()
 
         while not self.my_Tesla.customParamsDone() or not self.my_Tesla.customNsDone() : 
             logging.info('Waiting for node to initialize')
