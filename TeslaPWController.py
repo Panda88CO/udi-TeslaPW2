@@ -10,7 +10,6 @@ from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWOauth import teslaAccess
 try:
     import udi_interface
-    from udi_interface import OAuth
     logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
     ISY = udi_interface.ISY
