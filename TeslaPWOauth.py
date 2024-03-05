@@ -18,7 +18,7 @@ from datetime import datetime
 #from udi_interface import logging, Custom
 #from oauth import OAuth
 
-from udi_interface import logging, Custom, OAuth
+from udi_interface import LOGGER, Custom, OAuth, ISY
 logging = udi_interface.LOGGER
 Custom = udi_interface.Custom
 ISY = udi_interface.ISY
