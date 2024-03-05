@@ -16,6 +16,8 @@ try:
 except ImportError:
     import logging
     logging.basicConfig(level=30)
+
+
 VERSION = '0..1.0'
 class TeslaPWController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
@@ -177,7 +179,19 @@ class TeslaPWController(udi_interface.Node):
                 logging.error('Configuration invalid, initialization aborted.')
                 self.poly.Notices['err'] = 'Configuration is not valid, please update configuration.'
                 return
-         
+            if self.localAccess and self.cloudAccess:
+                while not self.localAcccessUp or not self.cloudAcccessUp:
+                    logging.info('Waiting for system access to be established')
+                    time.sleep(2)
+            elif self.localAccess and not self.cloudAccess:
+                while not self.localAcccessUp:
+                    logging.info('Waiting for local system access to be established')
+                    time.sleep(2)
+            if self.cloudAccess:
+                while not self.cloudAcccessUp:
+                    logging.info('Waiting for cloud system access to be established')
+                    time.sleep(2)
+                                          
             self.TPW.teslaInitializeData()
             '''
             node addresses:
