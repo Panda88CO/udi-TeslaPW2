@@ -248,14 +248,15 @@ class teslaAccess(OAuth):
 
     def authendicated(self):
         try:
-            logging.debug('authendicated - {}'.format(self.getOauthSettings()))
-            self.getAccessToken()
-            return(True)
+            accessToken = self.getAccessToken()
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
-            #self.poly.Notices['auth'] = 'Please initiate authentication'
-            return (False)
-        
+            self.poly.Notices['auth'] = 'Please initiate authentication'
+            return(False)
+        if accessToken is None:
+            logging.error('Access token is not available')
+        else:
+            return(True)
     '''
     def setOauthScope(self, scope):
         oauthSettingsUpdate = {}
