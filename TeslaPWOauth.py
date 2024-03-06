@@ -14,7 +14,7 @@ MIT License
 import json
 import requests
 import time
-from datetime import datetime 
+from datetime import timedelta, datetime
 #from udi_interface import logging, Custom
 #from oauth import OAuth
 try:
@@ -253,7 +253,26 @@ class teslaAccess(udi_interface.OAuth):
             return(self.customParameters[key]  == value)
         else:
             return(False)
-        
+
+    def getAccessToken(self):
+        # Make sure we have received tokens before attempting to renew
+
+        if self._oauthTokens is not None and self._oauthTokens.get('refresh_token'):
+            expiry = self._oauthTokens.get('expiry')
+
+            # If expired or expiring in less than 60 seconds, refresh
+            if (expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now()):
+
+                logging.info(f"Access tokens: Token is expired since { expiry }. Initiating refresh.")
+                self._oAuthTokensRefresh()
+            else:
+                logging.info(f"Access tokens: Token is still valid until { expiry }, no need to refresh")
+
+            return self._oauthTokens.get('access_token')
+        else:
+            raise ValueError('Access token is not available')
+
+
     def _oAuthTokensRefresh(self):
         logging.debug(f"Refresh token before: { self._oauthTokens }")
         data = {
@@ -359,13 +378,14 @@ class teslaAccess(udi_interface.OAuth):
         completeUrl = self.yourApiEndpoint + url
 
         headers = {
-            'Authorization': f'Bearer { accessToken }',
-            'Content-Type': 'application/json' 
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer { accessToken }'
+            
         }
 
         if method in [ 'PATCH', 'POST'] and body is None:
             logging.error(f"body is required when using { method } { completeUrl }")
-        logging.debug(' call info url={}, header= {}, body = {}'.format(completeUrl, headers, body))
+        logging.debug(' call info url={}, header {}, body ={}'.format(completeUrl, headers, body))
 
         try:
             if method == 'GET':
