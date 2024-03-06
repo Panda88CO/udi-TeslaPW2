@@ -284,8 +284,7 @@ class TeslaPWController(udi_interface.Node):
         
         local_valid = True
         cloud_valid = True
-        if self.Parameters.LOCAL_USER_EMAIL == None:
-            self.poly.Notices['lu'] = 'Missing Local User Email parameter (LOCAL_USER_EMAIL)'
+        if self.ParametersC0issing Local User Email parameter (LOCAL_USER_EMAIL)'
             self.local_email = ''
             local_valid = False
         else:

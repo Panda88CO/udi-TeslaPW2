@@ -61,6 +61,7 @@ class teslaAccess(udi_interface.OAuth):
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
         self.customOauthHandlerDone = False
+        self.authendication_done = False
         self.temp_unit = 'C'
         
         self.poly = polyglot
@@ -113,6 +114,7 @@ class teslaAccess(udi_interface.OAuth):
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
+        self.authendication_done = True
         logging.debug('oauthHandler Finished')
 
     def customNsDone(self):
@@ -308,9 +310,12 @@ class teslaAccess(udi_interface.OAuth):
             # NOTE: If refresh tokens fails, we keep the existing tokens available.        
 
     def authendicated(self):
+        return(self.authendication_done)
+        '''
         try:
             
             accessToken = self.getAccessToken()
+            logging.debug('Authendication {}'.format(accessToken))
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
             self.poly.Notices['auth'] = 'Please initiate authentication'
@@ -321,6 +326,7 @@ class teslaAccess(udi_interface.OAuth):
             return(False)
         else:
             return(True)
+        '''
     '''
     def setOauthScope(self, scope):
         oauthSettingsUpdate = {}
