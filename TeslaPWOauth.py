@@ -389,7 +389,7 @@ class teslaAccess(udi_interface.OAuth):
 
         try:
             if method == 'GET':
-                response = requests.get(completeUrl, headers=headers)
+                response = requests.get(completeUrl, headers=headers, json=body)
             elif method == 'DELETE':
                 response = requests.delete(completeUrl, headers=headers)
             elif method == 'PATCH':
