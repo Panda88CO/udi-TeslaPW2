@@ -114,7 +114,15 @@ class teslaAccess(udi_interface.OAuth):
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
-        self.authendication_done = True
+        while not self.authendication_done :
+            try:
+                accessToken = self.getAccessToken()
+                self.authendication_done = True
+            except ValueError as err:
+                logging.error(' No access tyoken exist - try again : {}'.format(err))
+                time.sleep(1)
+                self.authendication_done = False
+
         logging.debug('oauthHandler Finished')
 
     def customNsDone(self):
