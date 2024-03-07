@@ -273,6 +273,7 @@ class teslaAccess(udi_interface.OAuth):
             raise ValueError('Access token is not available')
 
 
+    
     def _oAuthTokensRefresh(self):
         logging.debug(f"Refresh token before: { self._oauthTokens }")
         data = {
@@ -306,7 +307,7 @@ class teslaAccess(udi_interface.OAuth):
         except requests.exceptions.HTTPError as error:
             logging.error(f"Failed to refresh oAuth token: { error }")
             # NOTE: If refresh tokens fails, we keep the existing tokens available.        
-
+    
     def authendicated(self):
         try:
             
