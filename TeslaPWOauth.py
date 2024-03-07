@@ -365,7 +365,7 @@ class teslaAccess(udi_interface.OAuth):
     '''
 
     # Call your external service API
-    def _callApi(self, method='GET', url=None, body=None):
+    def _callApi(self, method='GET', url=None, body=''):
         # When calling an API, get the access token (it will be refreshed if necessary)
         try:
             accessToken = self.getAccessToken()
