@@ -106,16 +106,17 @@ class tesla_info:
         #self.TPWcloud = TeslaPWApi(Rtoken)
         
         self.TPWcloudAccess = True
-        if not(self.TPWcloud.isConnectedToPW()):
+        if not(self.TPWcloud.authendicated()):
             logging.debug('Error connecting to Tesla Cloud - check refresh key')
             self.cloudAccessUp=False
             self.TPWcloudAccess = False
         else:
             logging.debug('Logged in Cloud - retrieving data')
             self.TPWcloudAccess = True
-            self.TPWcloud.teslaCloudInfo()
-            self.TPWcloud.teslaRetrieveCloudData()
-            self.solarInstalled = self.TPWcloud.teslaGetSolar()
+            self.TPWcloud.tesla_get_products()
+            self.TPWcloud.tesla_get_live_status()
+            self.TPWcloud.tesla_get_site_info()
+
             self.cloudAccessUp = True
         return(self.cloudAccessUp)
 

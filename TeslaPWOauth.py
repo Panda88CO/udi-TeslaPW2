@@ -71,8 +71,9 @@ class teslaAccess(udi_interface.OAuth):
 
         time.sleep(1)
 
-        self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
-        self.TOU_MODES = ["economics", "balanced"]
+        self.OPERATING_MODES = [ "self_consumption", "autonomous"]
+        self.EXPORT_RULES = ['battery_ok', 'pv_only', 'never']
+        #self.TOU_MODES = ["economics", "balanced"]
         self.daysConsumption = {}
         self.tokeninfo = {}
         self.touScheduleList = []
@@ -505,7 +506,7 @@ class teslaAccess(udi_interface.OAuth):
     # Then implement your service specific APIs
     ########################################
     ############################################
-
+    '''
     def teslaGetProduct(self):
         temp = self._callApi('GET', '/products')
         return(temp)
@@ -551,13 +552,71 @@ class teslaAccess(udi_interface.OAuth):
             logging.error('Exception teslaSetOperationMode: ' + str(e))
             logging.error('Error setting operation mode')
             return(False)    
-            
+    '''         
+
+    def tesla_get_products(self):
+        logging.debug('tesla_get_products ')
+        temp = self._callApi('GET','/products' )
+        logging.debug('products: {} '.format(temp))
+
+
+    def tesla_get_live_status(self):
+        logging.debug('tesla_get_live_status ')
+        temp = self._callApi('GET','/energy_sites'+self.site_id +'/live_status' )
+        logging.debug('live_status: {} '.format(temp))
+
+    def tesla_get_site_info(self):
+        logging.debug('tesla_get_site_info ')
+        temp = self._callApi('GET','/energy_sites'+self.site_id +'/site_info' )
+        logging.debug('site_info: {} '.format(temp))   
+
+
+    def tesla_set_backup_percent(self, reserve_pct):
+        logging.debug('tesla_set_backup_percent : {}'.format(reserve_pct))
+        reserve = int(reserve_pct)
+        body = {'backup_reserve_percent': reserve}
+        temp = self._callApi('POST','/energy_sites'+self.site_id +'/backup', body )
+        logging.debug('backup_percent: {} '.format(temp))   
+
+
+    def tesla_set_off_grid_vehicle_charging(self, reserve_pct ):
+        logging.debug('tesla_set_off_grid_vehicle_charging : {}'.format(reserve_pct))
+        reserve = int(reserve_pct)
+        body = {'off_grid_vehicle_charging_reserve_percent': reserve}
+        temp = self._callApi('POST','/energy_sites'+self.site_id +'/off_grid_vehicle_charging_reserve', body )
+        logging.debug('off_grid_vehicle_charging: {} '.format(temp))   
+
+    def tesla_set_grid_import_export(self, solar_charge, pref_export):
+        logging.debug('tesla_set_grid_import_export : {} {}'.format(solar_charge, pref_export))
+        if pref_export in self.EXPORT_RULES:
+            body = {'disallow_charge_from_grid_with_solar_installed' : solar_charge,
+                    'customer_preferred_export_rule': pref_export}
+            temp = self._callApi('POST','/energy_sites'+self.site_id +'/grid_import_export', body )
+            logging.debug('operation: {} '.format(temp))               
+
+
+    def tesla_set_operation(self, mode):
+        logging.debug('tesla_set_operation : {}'.format(mode))
+        if mode in self.OPERATING_MODES:
+            body = {'default_real_mode' : mode}
+            temp = self._callApi('POST','/energy_sites'+self.site_id +'/operation', body )
+            logging.debug('operation: {} '.format(temp))               
+
+
+    def tesla_set_storm_mode(self, mode):
+        logging.debug('tesla_set_storm_mode : {}'.format(mode))
+        body = {'enabled' : mode}
+        temp = self._callApi('POST','/energy_sites'+self.site_id +'/storm_mode', body )
+        logging.debug('storm_mode: {} '.format(temp))               
+
+
+    '''
     def teslaGet_backup_time_remaining(self):
        
         temp = self._callApi('GET','/energy_sites'+self.site_id +'/backup_time_remaining' )
         self.backup_time_remaining = temp['response']['time_remaining_hours'] 
         return(self.backup_time_remaining )       
-        '''
+        
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -571,15 +630,15 @@ class teslaAccess(udi_interface.OAuth):
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(None)                
-        '''
-        
+    '''
+    '''
     def teslaGet_tariff_rate(self):
         tariff_data = self._callApi('GET', '/energy_sites'+self.site_id +'/tariff_rate')
         if tariff_data['response']:
             return(tariff_data['response'])
         else:
             return(None)
-            '''
+     
             S = self.teslaApi.teslaConnect()
             with requests.Session() as s:
                 try:
@@ -593,7 +652,7 @@ class teslaAccess(udi_interface.OAuth):
                     self.teslaApi.tesla_refresh_token( )
                     return(None)    
             '''
-
+    '''
     def teslaGetSiteInfo(self, mode):
         #if self.connectionEstablished:
         #S = self.__teslaConnect()
@@ -623,7 +682,7 @@ class teslaAccess(udi_interface.OAuth):
             return(None)
         return(site['response'])
 
-        '''
+        
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:

@@ -32,8 +32,8 @@ class TeslaPWController(udi_interface.Node):
         self.cloudAccess = False
         self.localAccess = False
         self.initialized = False
-        self.localAcccessUp = False
-        self.cloudAcccessUp = False
+        self.localAccessUp = False
+        self.cloudAccessUp = False
         #self.Rtoken = None
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
@@ -154,7 +154,7 @@ class TeslaPWController(udi_interface.Node):
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
 
-            #self.TPW = tesla_info(self.name, self.address, self.localAccess, self.cloudAccess)
+            self.TPW = tesla_info(self.my_Tesla )
             #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
             #self.localAccess = self.TPW.localAccess()
             #self.cloudAccess = self.TPW.cloudAccess()
@@ -182,20 +182,26 @@ class TeslaPWController(udi_interface.Node):
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
-                self.cloudAcccessUp = self.TPW.teslaCloudConnect()
+                self.cloudAccessUp = self.TPW.teslaCloudConnect()
                 while not self.localAccessUp and count < 5:
                     self.poly.Notices['auth'] = 'Please initiate authentication'
                     time.sleep(5)
-                    self.cloudAcccessUp = self.TPW.teslaCloudConnect()
+                    self.cloudAccessUp = self.TPW.teslaCloudConnect()
                     count = count +1
                     logging.info('Waiting for cloud system access to be established')
                     self.poly.Notices['auth'] = 'Please initiate authentication'
-                if not  self.cloudAcccessUp:
+                if not  self.cloudAccessUp:
                     logging.error('Failed to establish cloud access - ')   
                     return
                 logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
                 logging.debug('finiahed login procedures' )
+                self.my_Tesla .tesla_get_products()
+                self.my_Tesla .tesla_get_live_status()
+                self.my_Tesla .tesla_get_site_info()
+
+
+                
             else:
                 logging.info('Cloud Acces not enabled')
  
