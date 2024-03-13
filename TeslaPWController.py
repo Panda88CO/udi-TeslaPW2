@@ -38,7 +38,7 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
-        self.my_Tesla = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        self.my_Tesla = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access ')
         #self.my_Tesla = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.my_Tesla = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)

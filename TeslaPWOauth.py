@@ -11,6 +11,7 @@ Copyright (C) 2023 Universal Devices
 
 MIT License
 '''
+import http.client
 import json
 import requests
 import time
@@ -19,7 +20,7 @@ from datetime import timedelta, datetime
 #from oauth import OAuth
 try:
     import udi_interface
-    logging = udi_interface.LOGGER
+    logging = udi_interface.logging
     Custom = udi_interface.Custom
     ISY = udi_interface.ISY
 except ImportError:
@@ -27,8 +28,8 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-#from udi_interface import LOGGER, Custom, OAuth, ISY
-#logging = udi_interface.LOGGER
+#from udi_interface import logging, Custom, OAuth, ISY
+#logging = udi_interface.logging
 #Custom = udi_interface.Custom
 #ISY = udi_interface.ISY
 
@@ -424,6 +425,83 @@ class teslaAccess(udi_interface.OAuth):
             logging.error(f"Call { method } { completeUrl } failed: { error }")
             return None
 
+
+    '''
+    def tesla_get_partner_auth_token(self, client_id, client_secret, audience_list):
+        """
+        Get a special access token for the partner role, which is used to register the customer.
+        :param client_id:
+        :param client_secret:
+        :param audience_list: list in one string, separated by semicolon
+        :return:
+        """
+        # Prepare the data for the POST request
+        data = {
+            "grant_type": "client_credentials",
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "scope": "openid offline_access " + self.scope,  # the openid and offline_access is necessary for the partner token and for refreshing tokens without re-login of the user!
+            "audience": self.Endpoint,
+        }
+        # Make the POST request to obtain the authentication token
+        url = "https://auth.tesla.com/oauth2/v3/token"
+        response = requests.post(url, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+        # Check if the request was successful
+        if response.status_code == 200:
+            token_data = response.json()
+            return token_data.get("access_token")
+        else:
+            logging.error(f"Partner auth token request error {response.status_code}, {response.text}")
+            return None
+
+    def tesla_generic_command(_audience, _target_url, _access_token, _payload =''):
+        """
+        send a generic command
+        :param _audience:
+        :param _target_url:
+        :param _access_token:
+        :param _payload:
+        :return:
+        """
+        if _access_token is None:
+            logging.error("No Token specified!")
+            return None
+        logging.debug(f"Tesla Command: {_target_url}")
+        conn = http.client.HTTPSConnection(_audience)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {_access_token}'
+        }
+        conn.request("POST", _target_url, _payload, headers)
+        res = conn.getresponse()
+        data = res.read()
+        data_string = data.decode("utf-8")
+
+        if res.status == 200:
+            json_data = json.loads(data_string)['response']
+        else:
+            json_data = None
+
+        return json_data
+
+
+    def tesla_register_partner_account(self, _partner_token):
+        """
+        Call in an interactive session!
+        Do one call once, to verify your domain you entered during registration. API will not work, if not done.
+
+        :param _partner_token: your partner token you got from tesla_get_partner_auth_token()
+        :param _audience: The audience (server) to register the partner token for
+        :return:
+        """
+        payload = json.dumps({
+            "domain": config.tesla_redirect_domain
+        })
+        target = "/api/1/partner_accounts"
+        rv = tesla_generic_command(self.Endpoint, target,_partner_token, payload)
+        print(rv)
+        return rv
+    '''
     # Then implement your service specific APIs
     ########################################
     ############################################
