@@ -20,7 +20,7 @@ from datetime import timedelta, datetime
 #from oauth import OAuth
 try:
     import udi_interface
-    logging = udi_interface.logging
+    logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
     ISY = udi_interface.ISY
 except ImportError:
