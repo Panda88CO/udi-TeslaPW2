@@ -444,7 +444,8 @@ class teslaAccess(udi_interface.OAuth):
         temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
-    def tesla_get_today_history(self, site_id, time_zone):
+
+    def tesla_get_today_history(self, site_id, type):
         logging.debug('tesla_get_day_energy_history : {}'.format(time_zone))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
@@ -454,7 +455,7 @@ class teslaAccess(udi_interface.OAuth):
             tz_offset = tz_offset2 = t_now.strftime('%z')   
             tz_str = t_now.tzname()
             t_start_str = t_now_date+'T00:00:00'+tz_offset
-            t_stop_str = t_now.isoformat('T')
+            t_stop_str = t_now_date+t_now_time+tz_offset
             body = {
                     'kind'          : type,
                     'start_date'    : t_start_str,

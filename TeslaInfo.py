@@ -103,7 +103,6 @@ class tesla_info:
 
     def teslaCloudConnect(self ):
         logging.debug('teslaCloudConnect {}'.format(self.TPWcloud))
-        #self.TPWcloud = TeslaPWApi(Rtoken)
         
         self.TPWcloudAccess = True
         if not(self.TPWcloud.authendicated()):
@@ -113,17 +112,25 @@ class tesla_info:
         else:
             logging.debug('Logged in Cloud - retrieving data')
             self.TPWcloudAccess = True
+            self.cloudAccessUp = True
             tmp = self.TPWcloud.tesla_get_products()
             for pw in tmp:
                 site_id = str(pw)
                 logging.debug('PW product info {} - {}'.format(site_id, tmp[pw],))
                 self.TPWcloud.tesla_get_live_status(site_id)
+                time.sleep(2)
                 self.TPWcloud.tesla_get_site_info(site_id)
-                self.TPWcloud.tesla_get_today_history(site_id, 'backup')
+                time.sleep(2)
+                #self.TPWcloud.tesla_get_today_history(site_id, 'backup')
+                time.sleep(2)
                 self.TPWcloud.tesla_get_today_history(site_id, 'charge')
+                time.sleep(2)
                 self.TPWcloud.tesla_get_today_history(site_id, 'energy')
-                self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
+                time.sleep(2)
+                #self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
+                time.sleep(2)
                 self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
+                time.sleep(2)
                 self.TPWcloud.tesla_get_yesterday_history(site_id, 'energy')
 
             self.cloudAccessUp = True
