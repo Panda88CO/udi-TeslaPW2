@@ -461,7 +461,8 @@ class teslaAccess(udi_interface.OAuth):
                     'start_date'    : t_start_str,
                     'end_date'      : t_stop_str,
                     'period'        : 'day',
-                    'time_zone'     : tz_str
+                    #'time_zone'     : tz_str
+                    'time_zone'     : 'America/Los_Angeles'
                     }
 
             logging.debug('body = {}'.format(body))
@@ -486,7 +487,8 @@ class teslaAccess(udi_interface.OAuth):
                     'start_date'    : t_start_str,
                     'end_date'      : t_stop_str,
                     'period'        : 'day',
-                    'time_zone'     : tz_str
+                    #'time_zone'     : tz_str
+                    'time_zone'     : 'America/Los_Angeles'                    
                     }
 
             logging.debug('body = {}'.format(body))
