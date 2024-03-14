@@ -115,9 +115,10 @@ class tesla_info:
             self.TPWcloudAccess = True
             tmp = self.TPWcloud.tesla_get_products()
             for pw in tmp:
-                logging.debug('PW product info {} - {}'.format(pw, tmp[pw],))
-                self.TPWcloud.tesla_get_live_status(pw)
-                self.TPWcloud.tesla_get_site_info(pw)
+                site_id = str(pw)
+                logging.debug('PW product info {} - {}'.format(site_id, tmp[pw],))
+                self.TPWcloud.tesla_get_live_status(site_id)
+                self.TPWcloud.tesla_get_site_info(site_id)
 
             self.cloudAccessUp = True
         return(self.cloudAccessUp)
