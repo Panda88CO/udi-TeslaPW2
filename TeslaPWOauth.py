@@ -458,7 +458,7 @@ class teslaAccess(udi_interface.OAuth):
             tz_str = t_now.tzname()
             t_start_str = t_now_date+'T00:00:00'+tz_offset
             t_end_str = t_now_date+t_now_time+tz_offset
-            body = {
+            params = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
@@ -467,9 +467,9 @@ class teslaAccess(udi_interface.OAuth):
                     #'time_zone'     : 'America/Los_Angeles'
                     }
 
-            logging.debug('body = {}'.format(body))
+            logging.debug('body = {}'.format(params))
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(body) )
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result = {}'.format(temp))
 
 
@@ -485,7 +485,7 @@ class teslaAccess(udi_interface.OAuth):
             tz_str = t_now.tzname()
             t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
             t_end_str = t_yesterday_date+'T23:59:59'+tz_offset
-            body = {
+            params = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
@@ -494,9 +494,9 @@ class teslaAccess(udi_interface.OAuth):
                     #'time_zone'     : 'America/Los_Angeles'                    
                     }
 
-            logging.debug('body = {}'.format(body))
+            logging.debug('body = {}'.format(params))
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(body) )
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result = {}'.format(temp))
 
 
