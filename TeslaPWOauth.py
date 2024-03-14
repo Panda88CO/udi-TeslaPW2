@@ -16,6 +16,7 @@ import json
 import requests
 import time
 from datetime import timedelta, datetime
+from tzlocal import get_localzone
 #from udi_interface import logging, Custom
 #from oauth import OAuth
 try:
@@ -73,6 +74,7 @@ class teslaAccess(udi_interface.OAuth):
 
         self.OPERATING_MODES = [ "self_consumption", "autonomous"]
         self.EXPORT_RULES = ['battery_ok', 'pv_only', 'never']
+        self.HISTORY_TYPES = ['backup', 'charge', 'energy' ]
         #self.TOU_MODES = ["economics", "balanced"]
         self.daysConsumption = {}
         self.tokeninfo = {}
@@ -442,10 +444,55 @@ class teslaAccess(udi_interface.OAuth):
         temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
-    def tesla_get_day_energy_history(self, site_id, time_zone):
+    def tesla_get_today_history(self, site_id, time_zone):
         logging.debug('tesla_get_day_energy_history : {}'.format(time_zone))
-        body = {'enabled' : time_zone}
-        temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history', body )
+        if type in self.HISTORY_TYPES:
+            t_now = datetime.now(get_localzone())
+
+            t_now_date = t_now.strftime('%Y-%m-%d')
+            t_now_time = t_now.strftime('T%H:%M:%S%z')
+            tz_offset = tz_offset2 = t_now.strftime('%z')   
+            tz_str = t_now.tz_name
+            t_start_str = t_now_date+'T00:00:00'+tz_offset
+            t_stop_str = t_now.isoformat('T')
+            body = {
+                    'kind'          : type,
+                    'start_date'    : t_start_str,
+                    'end_date'      : t_stop_str,
+                    'period'        : 'day',
+                    'time_zone'     : tz_str
+                    }
+
+            logging.debug('body = {}'.format(body))
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history', body )
+            logging.debug('result = {}'.format(temp))
+
+
+    def tesla_get_yesterday_history(self, site_id, type):
+        logging.debug('tesla_get_day_energy_history : {}'.format(type))
+        if type in self.HISTORY_TYPES:
+            t_now = datetime.now(get_localzone())
+            t_yesterday = t_now - timedelta(days = 1)
+
+            t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+            #t_now_time = t_yesterday.strftime('T%H:%M:%S%z')
+            tz_offset = tz_offset2 = t_now.strftime('%z')   
+            tz_str = t_now.tz_name
+            t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
+            t_stop_str = t_yesterday_date+'T23:59:59'+tz_offset
+            body = {
+                    'kind'          : type,
+                    'start_date'    : t_start_str,
+                    'end_date'      : t_stop_str,
+                    'period'        : 'day',
+                    'time_zone'     : tz_str
+                    }
+
+            logging.debug('body = {}'.format(body))
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history', body ) 
+            logging.debug('result = {}'.format(temp))
+
+
     '''
     def teslaGet_backup_time_remaining(self):
        
@@ -1005,7 +1052,7 @@ class teslaAccess(udi_interface.OAuth):
   
 
     def teslaExtractDaysSolar(self):
-        return(self.daysConsumption['solar_power'])
+        return(self.daysConsmuption['solar_power'])
     
     def teslaExtractDaysConsumption(self):     
         return(self.daysConsumption['consumed_power'])

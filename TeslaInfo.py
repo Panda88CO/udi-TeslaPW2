@@ -119,6 +119,12 @@ class tesla_info:
                 logging.debug('PW product info {} - {}'.format(site_id, tmp[pw],))
                 self.TPWcloud.tesla_get_live_status(site_id)
                 self.TPWcloud.tesla_get_site_info(site_id)
+                self.TPWcloud.tesla_get_today_history(site_id, 'backup')
+                self.TPWcloud.tesla_get_today_history(site_id, 'charge')
+                self.TPWcloud.tesla_get_today_history(site_id, 'energy')
+                self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
+                self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
+                self.TPWcloud.tesla_get_yesterday_history(site_id, 'energy')
 
             self.cloudAccessUp = True
         return(self.cloudAccessUp)
