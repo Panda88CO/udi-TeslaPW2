@@ -114,6 +114,7 @@ class tesla_info:
             self.TPWcloudAccess = True
             self.cloudAccessUp = True
             tmp = self.TPWcloud.tesla_get_products()
+            logging.debug('tesla_get_products: {}'.format(tmp))
             for pw in tmp:
                 site_id = str(pw)
                 logging.debug('PW product info {} - {}'.format(site_id, tmp[pw],))
@@ -121,13 +122,13 @@ class tesla_info:
                 time.sleep(2)
                 self.TPWcloud.tesla_get_site_info(site_id)
                 time.sleep(2)
-                #self.TPWcloud.tesla_get_today_history(site_id, 'backup')
+                self.TPWcloud.tesla_get_today_history(site_id, 'backup')
                 time.sleep(2)
                 self.TPWcloud.tesla_get_today_history(site_id, 'charge')
                 time.sleep(2)
                 self.TPWcloud.tesla_get_today_history(site_id, 'energy')
                 time.sleep(2)
-                #self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
+                self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
                 time.sleep(2)
                 self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
                 time.sleep(2)

@@ -84,6 +84,7 @@ class teslaAccess(udi_interface.OAuth):
         self.cloudAccess =  self.connectionEstablished
         self.products = {}
         self.site_id = ''
+        self.history_data = {}
 
 
         #while not self.handleCustomParamsDone:
@@ -467,11 +468,11 @@ class teslaAccess(udi_interface.OAuth):
                     'time_zone'     : tz_str
                     #'time_zone'     : 'America/Los_Angeles'
                     }
-
             logging.debug('body = {}'.format(params))
             temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result = {}'.format(temp))
+            self.process_history_data(temp)
 
 
     def tesla_get_yesterday_history(self, site_id, type):
@@ -492,15 +493,17 @@ class teslaAccess(udi_interface.OAuth):
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
                     'period'        : 'day',
-                    #'time_zone'     : tz_str
-                    'time_zone'     : 'America/Los_Angeles'                    
+                    'time_zone'     : tz_str
+                    #'time_zone'     : 'America/Los_Angeles'
                     }
-
             logging.debug('body = {}'.format(params))
             temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result = {}'.format(temp))
+            self.process_history_data(temp)
 
+    
+    def process_history_data(self, hist_data):
 
     '''
     def teslaGet_backup_time_remaining(self):
