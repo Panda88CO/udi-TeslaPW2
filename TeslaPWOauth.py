@@ -452,7 +452,7 @@ class teslaAccess(udi_interface.OAuth):
             t_now_date = t_now.strftime('%Y-%m-%d')
             t_now_time = t_now.strftime('T%H:%M:%S%z')
             tz_offset = tz_offset2 = t_now.strftime('%z')   
-            tz_str = t_now.tz_name()
+            tz_str = t_now.tzname()
             t_start_str = t_now_date+'T00:00:00'+tz_offset
             t_stop_str = t_now.isoformat('T')
             body = {
@@ -477,7 +477,7 @@ class teslaAccess(udi_interface.OAuth):
             t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
             #t_now_time = t_yesterday.strftime('T%H:%M:%S%z')
             tz_offset = tz_offset2 = t_now.strftime('%z')   
-            tz_str = t_now.tz_name()
+            tz_str = t_now.tzname()
             t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
             t_stop_str = t_yesterday_date+'T23:59:59'+tz_offset
             body = {

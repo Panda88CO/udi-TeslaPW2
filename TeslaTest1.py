@@ -33,6 +33,7 @@ tz_offset2 = now2.strftime('%z')
 
 print(now2.isoformat('T'))
 print(now2.tzname())
+p#rint(now2.tzinfo()))
 
 
 
