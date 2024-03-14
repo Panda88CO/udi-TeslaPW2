@@ -322,63 +322,13 @@ class teslaAccess(udi_interface.OAuth):
     
     def authendicated(self):
         return(self.authendication_done)
-        '''
-        try:
-            
-            accessToken = self.getAccessToken()
-            logging.debug('Authendication {}'.format(accessToken))
-        except ValueError as err:
-            logging.warning('Access token is not yet available. Please authenticate.')
-            self.poly.Notices['auth'] = 'Please initiate authentication'
-            logging.debug('oauth error: {}'.format(err))
-            return(False)
-        if accessToken is None:
-            logging.error('Access token is not available')
-            return(False)
-        else:
-            return(True)
-        '''
-    '''
-    def setOauthScope(self, scope):
-        oauthSettingsUpdate = {}
-        logging.debug('Set Scope to {}'.format(scope))
-        oauthSettingsUpdate['scope'] = str(scope)
-        self.updateOauthSettings(oauthSettingsUpdate)
-    
-    def setOauthName(self, name):
-        oauthSettingsUpdate = {} 
-        logging.debug('Set name to {}'.format(name))
-        oauthSettingsUpdate['name'] = str(name)
-        self.updateOauthSettings(oauthSettingsUpdate)
-    
-
-    def _insert_refreshToken(self, refresh_token, clientId, clientSecret):
-        data = {
-                'grant_type': 'refresh_token',
-                'refresh_token': refresh_token,
-                'client_id': clientId,
-                'client_secret':  clientSecret
-                }
-        try:
-            response = requests.post('https://api.netatmo.com/oauth2/token' , data=data)
-            response.raise_for_status()
-            token = response.json()
-            logging.info('Refreshing tokens successful')
-            logging.debug(f"Token refresh result [{ type(token) }]: { token }")
-            self._saveToken(token)
-            return('Success')
-          
-        except requests.exceptions.HTTPError as error:
-            logging.error(f"Failed to refresh  token: { error }")
-            return(None)
-            # NOTE: If refresh tokens fails, we keep the existing tokens available.
-    '''
-
+ 
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=''):
         # When calling an API, get the access token (it will be refreshed if necessary)
         try:
             accessToken = self.getAccessToken()
+            self.poly.Notices.clear()
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
             self.poly.Notices['auth'] = 'Please initiate authentication'
@@ -427,133 +377,10 @@ class teslaAccess(udi_interface.OAuth):
             return None
 
 
-    '''
-    def tesla_get_partner_auth_token(self, client_id, client_secret, audience_list):
-        """
-        Get a special access token for the partner role, which is used to register the customer.
-        :param client_id:
-        :param client_secret:
-        :param audience_list: list in one string, separated by semicolon
-        :return:
-        """
-        # Prepare the data for the POST request
-        data = {
-            "grant_type": "client_credentials",
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "scope": "openid offline_access " + self.scope,  # the openid and offline_access is necessary for the partner token and for refreshing tokens without re-login of the user!
-            "audience": self.Endpoint,
-        }
-        # Make the POST request to obtain the authentication token
-        url = "https://auth.tesla.com/oauth2/v3/token"
-        response = requests.post(url, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        # Check if the request was successful
-        if response.status_code == 200:
-            token_data = response.json()
-            return token_data.get("access_token")
-        else:
-            logging.error(f"Partner auth token request error {response.status_code}, {response.text}")
-            return None
-
-    def tesla_generic_command(_audience, _target_url, _access_token, _payload =''):
-        """
-        send a generic command
-        :param _audience:
-        :param _target_url:
-        :param _access_token:
-        :param _payload:
-        :return:
-        """
-        if _access_token is None:
-            logging.error("No Token specified!")
-            return None
-        logging.debug(f"Tesla Command: {_target_url}")
-        conn = http.client.HTTPSConnection(_audience)
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {_access_token}'
-        }
-        conn.request("POST", _target_url, _payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        data_string = data.decode("utf-8")
-
-        if res.status == 200:
-            json_data = json.loads(data_string)['response']
-        else:
-            json_data = None
-
-        return json_data
-
-
-    def tesla_register_partner_account(self, _partner_token):
-        """
-        Call in an interactive session!
-        Do one call once, to verify your domain you entered during registration. API will not work, if not done.
-
-        :param _partner_token: your partner token you got from tesla_get_partner_auth_token()
-        :param _audience: The audience (server) to register the partner token for
-        :return:
-        """
-        payload = json.dumps({
-            "domain": config.tesla_redirect_domain
-        })
-        target = "/api/1/partner_accounts"
-        rv = tesla_generic_command(self.Endpoint, target,_partner_token, payload)
-        print(rv)
-        return rv
-    '''
     # Then implement your service specific APIs
     ########################################
     ############################################
-    '''
-    def teslaGetProduct(self):
-        temp = self._callApi('GET', '/products')
-        return(temp)
-
-    def teslaCloudInfo(self):
-        if self.site_id == '':
-            try:
-                while not self.authendicated():
-                    logging.info('Waiting for authntication to complete - teslaCloudInfo')
-                    time.sleep(2)
-                products = self.teslaGetProduct()
-                nbrProducts = products['count']
-                for index in range(0,nbrProducts): #Can only handle one power wall setup - will use last one found
-                    if 'resource_type' in products['response'][index]:
-                        if products['response'][index]['resource_type'] == 'battery':
-                            self.site_id ='/'+ str(products['response'][index]['energy_site_id'] )
-                            self.products = products['response'][index]
-                return(True)
-            except Exception as e:
-                logging.error('Exception teslaCloudInfo: ' + str(e))
-                return(False)
-        else:
-            return(True)
-
-
-    def teslaSetOperationMode(self, mode):
-        logging.debug('teslaSetOperationMode : {}'.format(mode))
-        try:
-          
-            if mode  in self.OPERATING_MODES:
-                payload = {'default_real_mode': mode}
-                site = self._callApi('POST', '/energy_sites'+self.site_id +'/operation', payload)
-                logging.debug('site {}'.format(site))
-                if site['response']['code'] <210:
-                    self.site_info['default_real_mode'] = mode
-                    return (True)
-                else:
-                    return(False)
-            else:
-                return(False)
-     
-        except Exception as e:
-            logging.error('Exception teslaSetOperationMode: ' + str(e))
-            logging.error('Error setting operation mode')
-            return(False)    
-    '''         
-
+   
     def tesla_get_products(self):
         power_walls= {}
         logging.debug('tesla_get_products ')
@@ -615,7 +442,10 @@ class teslaAccess(udi_interface.OAuth):
         temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
-
+    def tesla_get_day_energy_history(self, site_id, time_zone):
+        logging.debug('tesla_get_day_energy_history : {}'.format(time_zone))
+        body = {'enabled' : time_zone}
+        temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history', body )
     '''
     def teslaGet_backup_time_remaining(self):
        
@@ -725,46 +555,8 @@ class teslaAccess(udi_interface.OAuth):
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
-        '''
 
-    def teslaSetBackoffLevel(self, backupPercent):
-        #if self.connectionEstablished:
-        logging.debug('teslaSetBackoffLevel {}'.format(backupPercent))
-        if backupPercent >=0 and backupPercent <=100:
-            payload = {'backup_reserve_percent': backupPercent}
-            site = self._callApi('POST', '/energy_sites'+self.site_id +'/backup', payload)        
-            if site['response']['code'] <210:
-                self.site_info['backup_reserve_percent'] = backupPercent
-                return (True)
-            else:
-                return(False) 
-        else: return(False)      
-        '''
-        S = self.teslaApi.teslaConnect()
-        #S = self.__teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])
-                if backupPercent >=0 and backupPercent <=100:
-                    payload = {'backup_reserve_percent': backupPercent}
-                    r = s.post(self.TESLA_URL +  self.API + '/energy_sites'+self.site_id +'/backup', headers= self.Header,  json=payload)        
-                    site = r.json()
-                    if site['response']['code'] <210:
-                        self.site_info['backup_reserve_percent'] = backupPercent
-                        return (True)
-                    else:
-                        return(False)
-
-                else:
-                    return(False)
-                    #site="Backup Percent out of range 0-100:" + str(backupPercent)
-                    #logging.debug(site)   
-            except  Exception as e:
-                logging.error('Exception teslaSetBackoffLEvel: ' + str(e))
-                logging.error('Error setting bacup percent')
-                self.teslaApi.tesla_refresh_token( ) 
-                return(False)
-        '''
+     
 
 
     def teslaSetTimeOfUse (self):
@@ -782,7 +574,7 @@ class teslaAccess(udi_interface.OAuth):
             return (True)
         else:
             return(False)
-        '''
+
         S = self.teslaApi.teslaConnect() 
         #S = self.__teslaConnect()
         with requests.Session() as s:
@@ -803,41 +595,7 @@ class teslaAccess(udi_interface.OAuth):
                 logging.error('Error setting time of use parameters')
                 self.teslaApi.tesla_refresh_token( ) 
                 return(False)
-        '''
 
-
-
-    def teslaSetStormMode(self, EnableBool):
-
-        #if self.connectionEstablished:
-
-        payload = {'enabled': EnableBool}
-        site = self._callApi('POST',  '/energy_sites'+self.site_id +'/storm_mode', payload)
-        if site['response']['code'] <210:
-            self.site_info['user_settings']['storm_mode_enabled'] = EnableBool
-            return (True)
-        else:
-            return(False)
-        '''
-        S = self.teslaApi.teslaConnect()
-        #S = self.__teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])
-                payload = {'enabled': EnableBool}
-                r = s.post(self.TESLA_URL +  self.API+ '/energy_sites'+self.site_id +'/storm_mode', headers = self.Header, json=payload)
-                site = r.json()
-                if site['response']['code'] <210:
-                    self.site_info['user_settings']['storm_mode_enabled'] = EnableBool
-                    return (True)
-                else:
-                    return(False)
-            except Exception as e:
-                logging.error('Exception teslaSetStormMode: ' + str(e))
-                logging.error('Error setting storm mode')
-                self.teslaApi.tesla_refresh_token( )
-                return(False)
-        '''
 
     def teslaCloudConnect(self ):
         logging.debug('teslaCloudConnect')
@@ -871,13 +629,12 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug('Tou mode not set')
         logging.debug('self.touScheduleList : {}'.format(self.touScheduleList ) )
 
-    '''
     Query the cloud for the different types of data.  If all
     data access fails (i.e. returns None), then return
     false to indicate that.
 
     Otherwise, return true to indiate that access is good
-    '''
+
     def teslaUpdateCloudData(self, mode):
         if mode == 'critical':
             temp =self.teslaGetSiteInfo('site_live')
@@ -931,8 +688,6 @@ class teslaAccess(udi_interface.OAuth):
     def supportedOperatingModes(self):
         return( self.OPERATING_MODES )
 
-    def supportedTouModes(self):
-        return(self.TOU_MODES)
 
    
 
@@ -1085,7 +840,6 @@ class teslaAccess(udi_interface.OAuth):
                     else:
                         value = data['end_seconds']
             return(value)
-            '''
             for index in range(0,len(self.touScheduleList)):
                 if self.touScheduleList[index]['target'] == peakMode and (set(self.touScheduleList[index]['week_days']) == days or set(self.touScheduleList[index]['week_days']) ==[1,0]):
                     if startEnd == 'start':
@@ -1109,7 +863,7 @@ class teslaAccess(udi_interface.OAuth):
             if not(indexFound): 
                 logging.debug('No schedule appears to be set')            
                 return(-1)
-            '''
+
 
         except  Exception as e:
             logging.error('Exception teslaExtractTouTime ' + str(e))
@@ -1121,7 +875,6 @@ class teslaAccess(udi_interface.OAuth):
         self.touMode = touMode
         self.teslaSetTimeOfUse()
 
-    '''
     def teslaSetTimeOfUse (self):
         #if self.connectionEstablished:
         temp = {}
@@ -1147,7 +900,6 @@ class teslaAccess(udi_interface.OAuth):
                 logging.error('Error setting time of use parameters')
                 self.teslaApi.tesla_refresh_token( ) 
                 return(False)
-    '''
 
     def teslaExtractTouMode(self):
         return(self.site_info['tou_settings']['optimization_strategy'])
@@ -1181,7 +933,7 @@ class teslaAccess(udi_interface.OAuth):
 
     def teslaExtractGeneratorSupply (self):
         return(self.site_live['generator_power'])
-
+    '''
     def teslaCalculateDaysTotals(self):
         try:
             data = self.site_history['time_series']
