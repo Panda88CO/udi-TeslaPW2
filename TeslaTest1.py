@@ -29,11 +29,13 @@ t_now_str = now2.isoformat('T')
 
 date2 = now2.strftime('%Y-%m-%d')
 time2 = now2.strftime('T%H:%M:%S%z')                    
-tz_offset2 = now2.strftime('%z')   
+tz_offset2 = now2.strftime('%z') 
+tz_offset2 = '+1100' 
+tmp = tz_offset2[0:3]+':'+tz_offset2[-2:]
 
 print(now2.isoformat('T'))
 print(now2.tzname())
-p#rint(now2.tzinfo()))
+#rint(now2.tzinfo()))
 
 
 

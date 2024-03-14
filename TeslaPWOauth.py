@@ -454,7 +454,8 @@ class teslaAccess(udi_interface.OAuth):
 
             t_now_date = t_now.strftime('%Y-%m-%d')
             t_now_time = t_now.strftime('T%H:%M:%S%z')
-            tz_offset = tz_offset2 = t_now.strftime('%z')   
+            tz_offset = t_now.strftime('%z')   
+            tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
             tz_str = t_now.tzname()
             t_start_str = t_now_date+'T00:00:00'+tz_offset
             t_end_str = t_now_date+t_now_time+tz_offset
