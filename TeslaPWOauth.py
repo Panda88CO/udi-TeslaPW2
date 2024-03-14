@@ -446,7 +446,7 @@ class teslaAccess(udi_interface.OAuth):
 
 
     def tesla_get_today_history(self, site_id, type):
-        logging.debug('tesla_get_day_energy_history : {}'.format(time_zone))
+        logging.debug('tesla_get_day_energy_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
 
