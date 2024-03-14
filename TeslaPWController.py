@@ -18,7 +18,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0..1.0'
+VERSION = '0.1.0'
 class TeslaPWController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
         super(TeslaPWController, self).__init__(polyglot, primary, address, name)
