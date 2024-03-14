@@ -568,12 +568,12 @@ class teslaAccess(udi_interface.OAuth):
     
     def tesla_get_live_status(self, site_id):
         logging.debug('tesla_get_live_status ')
-        temp = self._callApi('GET','/energy_sites'+site_id +'/live_status' )
+        temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
         logging.debug('live_status: {} '.format(temp))
 
     def tesla_get_site_info(self, site_id):
         logging.debug('tesla_get_site_info ')
-        temp = self._callApi('GET','/energy_sites'+site_id +'/site_info' )
+        temp = self._callApi('GET','/energy_sites/'+site_id +'/site_info' )
         logging.debug('site_info: {} '.format(temp))   
 
 
@@ -581,7 +581,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_set_backup_percent : {}'.format(reserve_pct))
         reserve = int(reserve_pct)
         body = {'backup_reserve_percent': reserve}
-        temp = self._callApi('POST','/energy_sites'+site_id +'/backup', body )
+        temp = self._callApi('POST','/energy_sites/'+site_id +'/backup', body )
         logging.debug('backup_percent: {} '.format(temp))   
 
 
@@ -589,7 +589,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_set_off_grid_vehicle_charging : {}'.format(reserve_pct))
         reserve = int(reserve_pct)
         body = {'off_grid_vehicle_charging_reserve_percent': reserve}
-        temp = self._callApi('POST','/energy_sites'+site_id +'/off_grid_vehicle_charging_reserve', body )
+        temp = self._callApi('POST','/energy_sites/'+site_id +'/off_grid_vehicle_charging_reserve', body )
         logging.debug('off_grid_vehicle_charging: {} '.format(temp))   
 
     def tesla_set_grid_import_export(self, site_id, solar_charge, pref_export):
@@ -597,7 +597,7 @@ class teslaAccess(udi_interface.OAuth):
         if pref_export in self.EXPORT_RULES:
             body = {'disallow_charge_from_grid_with_solar_installed' : solar_charge,
                     'customer_preferred_export_rule': pref_export}
-            temp = self._callApi('POST','/energy_sites'+site_id +'/grid_import_export', body )
+            temp = self._callApi('POST','/energy_sites/'+site_id +'/grid_import_export', body )
             logging.debug('operation: {} '.format(temp))               
 
 
@@ -605,14 +605,14 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_set_operation : {}'.format(mode))
         if mode in self.OPERATING_MODES:
             body = {'default_real_mode' : mode}
-            temp = self._callApi('POST','/energy_sites'+site_id +'/operation', body )
+            temp = self._callApi('POST','/energy_sites/'+site_id +'/operation', body )
             logging.debug('operation: {} '.format(temp))               
 
 
     def tesla_set_storm_mode(self, site_id, mode):
         logging.debug('tesla_set_storm_mode : {}'.format(mode))
         body = {'enabled' : mode}
-        temp = self._callApi('POST','/energy_sites'+site_id +'/storm_mode', body )
+        temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
 
