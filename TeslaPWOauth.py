@@ -468,8 +468,8 @@ class teslaAccess(udi_interface.OAuth):
                     }
 
             logging.debug('body = {}'.format(params))
-            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result = {}'.format(temp))
 
 
@@ -490,13 +490,13 @@ class teslaAccess(udi_interface.OAuth):
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
                     'period'        : 'day',
-                    'time_zone'     : tz_str
-                    #'time_zone'     : 'America/Los_Angeles'                    
+                    #'time_zone'     : tz_str
+                    'time_zone'     : 'America/Los_Angeles'                    
                     }
 
             logging.debug('body = {}'.format(params))
-            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result = {}'.format(temp))
 
 
