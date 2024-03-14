@@ -11,10 +11,11 @@ Copyright (C) 2023 Universal Devices
 
 MIT License
 '''
-import http.client
+
 import json
 import requests
 import time
+import urllib
 from datetime import timedelta, datetime
 from tzlocal import get_localzone
 #from udi_interface import logging, Custom
@@ -414,6 +415,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('backup_percent: {} '.format(temp))   
 
 
+
     def tesla_set_off_grid_vehicle_charging(self, site_id, reserve_pct ):
         logging.debug('tesla_set_off_grid_vehicle_charging : {}'.format(reserve_pct))
         reserve = int(reserve_pct)
@@ -455,18 +457,19 @@ class teslaAccess(udi_interface.OAuth):
             tz_offset = tz_offset2 = t_now.strftime('%z')   
             tz_str = t_now.tzname()
             t_start_str = t_now_date+'T00:00:00'+tz_offset
-            t_stop_str = t_now_date+t_now_time+tz_offset
+            t_end_str = t_now_date+t_now_time+tz_offset
             body = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
-                    'end_date'      : t_stop_str,
+                    'end_date'      : t_end_str,
                     'period'        : 'day',
-                    #'time_zone'     : tz_str
-                    'time_zone'     : 'America/Los_Angeles'
+                    'time_zone'     : tz_str
+                    #'time_zone'     : 'America/Los_Angeles'
                     }
 
             logging.debug('body = {}'.format(body))
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history', body )
+            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(body) )
             logging.debug('result = {}'.format(temp))
 
 
@@ -481,18 +484,19 @@ class teslaAccess(udi_interface.OAuth):
             tz_offset = tz_offset2 = t_now.strftime('%z')   
             tz_str = t_now.tzname()
             t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
-            t_stop_str = t_yesterday_date+'T23:59:59'+tz_offset
+            t_end_str = t_yesterday_date+'T23:59:59'+tz_offset
             body = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
-                    'end_date'      : t_stop_str,
+                    'end_date'      : t_end_str,
                     'period'        : 'day',
-                    #'time_zone'     : tz_str
-                    'time_zone'     : 'America/Los_Angeles'                    
+                    'time_zone'     : tz_str
+                    #'time_zone'     : 'America/Los_Angeles'                    
                     }
 
             logging.debug('body = {}'.format(body))
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history', body ) 
+            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(body) )
             logging.debug('result = {}'.format(temp))
 
 
