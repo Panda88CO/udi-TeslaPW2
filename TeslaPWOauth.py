@@ -479,7 +479,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_get_yesterday_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
-            t_yesterday = t_now - timedelta(days = 2)
+            t_yesterday = t_now - timedelta(days = 1)
 
             t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
             #t_now_time = t_yesterday.strftime('T%H:%M:%S%z')
@@ -508,7 +508,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_get_2day_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
-            t_yesterday = t_now - timedelta(days = 1)
+            t_yesterday = t_now - timedelta(days = 2)
             t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
             t_now_date = t_now.strftime('%Y-%m-%d')
             t_now_time = t_now.strftime('T%H:%M:%S')
