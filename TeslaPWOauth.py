@@ -538,8 +538,7 @@ class teslaAccess(udi_interface.OAuth):
             self.history_data[site_id] = {}
         if type not in self.history_data[site_id]:
             self.history_data[site_id][type] = {}
-        if key not in self.history_data[site_id][type]:
-            self.history_data[site_id][type][key] = {}
+
         
 
         logging.debug('history data: {}'.format(self.history_data))
