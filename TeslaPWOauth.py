@@ -449,7 +449,7 @@ class teslaAccess(udi_interface.OAuth):
 
 
     def tesla_get_today_history(self, site_id, type):
-        logging.debug('tesla_get_day_energy_history : {}'.format(type))
+        logging.debug('tesla_get_today_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
 
@@ -469,14 +469,14 @@ class teslaAccess(udi_interface.OAuth):
                     #'time_zone'     : 'America/Los_Angeles'
                     }
             logging.debug('body = {}'.format(params))
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
-            logging.debug('result ({}) = {}'.format(type, temp))
-            self.process_history_data(temp)
+            logging.debug('result ({}) = {}'.format(type, hist_data))
+            self.process_history_data(type, 'yesterday', hist_data)
 
 
     def tesla_get_yesterday_history(self, site_id, type):
-        logging.debug('tesla_get_day_energy_history : {}'.format(type))
+        logging.debug('tesla_get_yesterday_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
             t_yesterday = t_now - timedelta(days = 1)
@@ -497,13 +497,56 @@ class teslaAccess(udi_interface.OAuth):
                     #'time_zone'     : 'America/Los_Angeles'
                     }
             logging.debug('body = {}'.format(params))
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
-            logging.debug('result ({})= {}'.format(type, temp))
-            self.process_history_data(temp)
+            logging.debug('result ({})= {}'.format(type, hist_data))
+            self.process_history_data(type, 'yesterday', hist_data)
+
+
+
+    def tesla_get_2day_history(self, site_id, type):
+        logging.debug('tesla_get_today_history : {}'.format(type))
+        if type in self.HISTORY_TYPES:
+            t_now = datetime.now(get_localzone())
+            t_yesterday = t_now - timedelta(days = 1)
+            t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+            t_now_date = t_now.strftime('%Y-%m-%d')
+            t_now_time = t_now.strftime('T%H:%M:%S')
+            tz_offset = t_now.strftime('%z')   
+            tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
+            tz_str = t_now.tzname()
+            t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
+            t_end_str = t_now_date+t_now_time+tz_offset
+            params = {
+                    'kind'          : type,
+                    'start_date'    : t_start_str,
+                    'end_date'      : t_end_str,
+                    'period'        : 'day',
+                    'time_zone'     : tz_str
+                    #'time_zone'     : 'America/Los_Angeles'
+                    }
+            logging.debug('body = {}'.format(params))
+            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
+            logging.debug('result ({}) = {}'.format(type, hist_data))
+            self.process_history_data(type, 'yesterday', hist_data)
 
     
-    def process_history_data(self, hist_data):
+    def process_history_data(self, site_id, type, key, hist_data):
+        logging.debug('process_history_data - {} {} {} {}'.format(site_id, type, key, hist_data))
+        if site_id not in self.history_data:
+            self.history_data[site_id] = {}
+        if type not in self.history_data[site_id]:
+            self.history_data[site_id][type] = {}
+        if key not in self.history_data[site_id][type]:
+            self.history_data[site_id][type][key] = {}
+        
+
+        logging.debug('history data: {}'.format(self.history_data))
+        
+
+
+
 
     '''
     def teslaGet_backup_time_remaining(self):

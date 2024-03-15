@@ -128,12 +128,13 @@ class tesla_info:
                 time.sleep(2)
                 self.TPWcloud.tesla_get_today_history(site_id, 'energy')
                 time.sleep(2)
-                self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
+                #self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
                 time.sleep(2)
-                self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
+                #self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
                 time.sleep(2)
                 self.TPWcloud.tesla_get_yesterday_history(site_id, 'energy')
-
+                time.sleep(2)
+                self.TPWcloud.tesla_get_2day_history(site_id, 'energy')
             self.cloudAccessUp = True
         return(self.cloudAccessUp)
 
