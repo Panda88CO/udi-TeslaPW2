@@ -519,8 +519,8 @@ class teslaAccess(udi_interface.OAuth):
             t_end_str = t_now_date+t_now_time+tz_offset
             params = {
                     'kind'          : type,
-                    'start_date'    : t_end_str,
-                    'end_date'      : t_start_str,
+                    'start_date'    : t_start_str,
+                    'end_date'      : t_end_str,
                     'period'        : 'day',
                     'time_zone'     : tz_str
                     #'time_zone'     : 'America/Los_Angeles'
