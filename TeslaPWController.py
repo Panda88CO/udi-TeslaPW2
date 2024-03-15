@@ -197,8 +197,8 @@ class TeslaPWController(udi_interface.Node):
                 self.poly.Notices.clear()
                 logging.debug('finiahed login procedures' )
                 self.my_Tesla .tesla_get_products()
-                self.my_Tesla .tesla_get_live_status()
-                self.my_Tesla .tesla_get_site_info()
+                #self.my_Tesla .tesla_get_live_status()
+                #self.my_Tesla .tesla_get_site_info()
 
 
                 
