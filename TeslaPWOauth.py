@@ -471,7 +471,7 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug('body = {}'.format(params))
             temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
-            logging.debug('result = {}'.format(temp))
+            logging.debug('result ({}) = {}'.format(type, temp))
             self.process_history_data(temp)
 
 
@@ -499,7 +499,7 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug('body = {}'.format(params))
             temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
-            logging.debug('result = {}'.format(temp))
+            logging.debug('result ({})= {}'.format(type, temp))
             self.process_history_data(temp)
 
     
