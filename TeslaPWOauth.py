@@ -402,12 +402,15 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_get_live_status ')
         temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
         logging.debug('live_status: {} '.format(temp))
+        if 'response' in temp:
+            self.site_live_info = temp['response']
 
     def tesla_get_site_info(self, site_id):
         logging.debug('tesla_get_site_info ')
         temp = self._callApi('GET','/energy_sites/'+site_id +'/site_info' )
         logging.debug('site_info: {} '.format(temp))   
-
+        if 'response' in temp:
+            self.site_info = temp['response']
 
     def tesla_set_backup_percent(self, site_id, reserve_pct):
         logging.debug('tesla_set_backup_percent : {}'.format(reserve_pct))
@@ -911,21 +914,41 @@ class teslaAccess(udi_interface.OAuth):
     def get_current_sell_price(self):
         logging.debug('get_current_sell_price')
 
-
+    '''
    
     def teslaGetSolar(self):
-        return(self.products['components']['solar'])
+        return(self.site_info['components']['solar'])
 
   
     def teslaExtractStormMode(self):
-        if self.site_info['user_settings']['storm_mode_enabled']:
-            return(1)
-        else:
-            return(0)
+        return(self.site_live_info['storm_mode_active'])
+
 
     def teslaExtractBackupPercent(self):
         return(self.site_info['backup_reserve_percent'])
+    
+    def tesla_total_battery(self):
+        return(self.site_live_info['total_pack_energy'])
+        
+    def tesla_remaining_battery (self):
+        return(self.site_live_info['energy_left'])
+    
+    def tesla_live_solar(self):
+        return(self.site_live_info['solar_power'])
+    
 
+    def tesla_island_staus(self):
+        return(self.site_live_info['island_status'])
+    
+    def tesla_grid_staus(self):
+        return(self.site_live_info['grid_status'])
+    
+    def tesla_grid_service_active(self):
+        return(self.site_live_info['grid_services_active'])
+
+
+
+    '''
     def teslaUpdateTouScheduleList(self, peakMode, weekdayWeekend, startEnd, time_s):
         indexFound = False
         try:
@@ -1048,6 +1071,7 @@ class teslaAccess(udi_interface.OAuth):
                 self.teslaApi.tesla_refresh_token( ) 
                 return(False)
     '''
+    '''
     def teslaExtractTouMode(self):
         return(self.site_info['tou_settings']['optimization_strategy'])
 
@@ -1080,7 +1104,7 @@ class teslaAccess(udi_interface.OAuth):
 
     def teslaExtractGeneratorSupply (self):
         return(self.site_live['generator_power'])
-    
+    '''
 
     '''
     		*'solar_energy_exported': 22458, 
@@ -1203,14 +1227,12 @@ class teslaAccess(udi_interface.OAuth):
     def teslaExtractOperationMode(self):         
         return(self.site_info['default_real_mode'])
 
-
-    
     def teslaExtractConnectedTesla(self):       
         return(True)
 
     def teslaExtractRunning(self):  
         return(True)
-    '''
+    
     #???
     def teslaExtractPowerSupplyMode(self):  
         return(True)
@@ -1220,3 +1242,4 @@ class teslaAccess(udi_interface.OAuth):
             return(1)
         else:
             return(0)
+    '''
