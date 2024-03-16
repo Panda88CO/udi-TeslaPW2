@@ -76,6 +76,7 @@ class teslaAccess(udi_interface.OAuth):
         self.OPERATING_MODES = [ "self_consumption", "autonomous"]
         self.EXPORT_RULES = ['battery_ok', 'pv_only', 'never']
         self.HISTORY_TYPES = ['backup', 'charge', 'energy' ]
+        self.DAY_HISTORY = ['today', 'yesterday']
         #self.TOU_MODES = ["economics", "balanced"]
         self.daysConsumption = {}
         self.tokeninfo = {}
@@ -508,7 +509,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('tesla_get_2day_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
             t_now = datetime.now(get_localzone())
-            t_yesterday = t_now - timedelta(days = 2)
+            t_yesterday = t_now - timedelta(days = 1)
             t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
             t_now_date = t_now.strftime('%Y-%m-%d')
             t_now_time = t_now.strftime('T%H:%M:%S')
@@ -528,18 +529,63 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug('body = {}'.format(params))
             hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
-            logging.debug('result ({}) = {}'.format(type, hist_data))
-            self.process_history_data(site_id, type, hist_data)
+            if 'response' in hist_data:
+                logging.debug('result ({}) = {}'.format(type, hist_data['response']))
+                self.process_history_data(site_id, type, hist_data['response'])
+            else:
+                logging.info ('No data obtained')
 
+    def update_dates(self):
+        t_now = datetime.now(get_localzone())
+        t_yesterday = t_now - timedelta(days = 1)
+        self.yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+        self.today_date = t_now.strftime('%Y-%m-%d')
+
+    def process_energy_data(self, side_id, hdata):
+        logging.debug('process_energy_data: {}'.format(hdata))
     
+        for indx in range(0,len(hdata['timeseries'])):
+            e_data = hdata['timeseries'][indx]
+            time_str = e_data['timestamp']
+            dt_object = datetime.fromisoformat(time_str)
+            date_str = dt_object.strftime('%Y-%m-%d')
+            if date_str == self.today_date:
+                date_key = 'today'                
+            elif date_str == self.yesterday_date:
+                date_key == 'yesterday'
+            else:
+                date_key == 'unknown'
+            if date_key != 'unknown':
+                self.history_data[side_id]['energy'][date_key] = e_data
+
+    def process_backup_data(self, side_id, hdata):
+        logging.debug('process_backup_data: {}'.format(hdata))
+        if hdata['events_count'] > 0:
+            for indx in range(0,len(hdata['events'])):
+                event = hdata['events'][indx]
+        # need to figure put how to deal with dates
+            
+
+
+    def process_charge_data(self, side_id, hdata):
+        logging.debug('process_charge_data: {}'.format(hdata))
+
     def process_history_data(self, site_id, type, hist_data):
         logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
+        self.update_dates()
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
         if type not in self.history_data[site_id]:
             self.history_data[site_id][type] = {}
 
-        
+        if type == 'energy':
+            self.process_energy_data(site_id, hist_data)
+        elif type == 'backup':
+            self.process_backup_data(site_id, hist_data)
+        elif type == 'charge':
+            self.process_charge_data(site_id, hist_data)
+        else:
+            logging.error('Unknown type provided: {}'.format(type))
 
         logging.debug('history data: {}'.format(self.history_data))
         
@@ -1001,7 +1047,7 @@ class teslaAccess(udi_interface.OAuth):
                 logging.error('Error setting time of use parameters')
                 self.teslaApi.tesla_refresh_token( ) 
                 return(False)
-
+    '''
     def teslaExtractTouMode(self):
         return(self.site_info['tou_settings']['optimization_strategy'])
 
@@ -1034,97 +1080,104 @@ class teslaAccess(udi_interface.OAuth):
 
     def teslaExtractGeneratorSupply (self):
         return(self.site_live['generator_power'])
-    '''
-    def teslaCalculateDaysTotals(self):
-        try:
-            data = self.site_history['time_series']
-            nbrRecords = len(data)
-            index = nbrRecords-1
-            dateStr = data[index]['timestamp']
-            Obj = datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%S%z")
-
-            solarPwr = 0
-            batteryPwr = 0
-            gridPwr = 0
-            gridServicesPwr = 0
-            generatorPwr = 0
-            loadPwr = 0
-
-            prevObj = Obj
-            while ((prevObj.day == Obj.day) and  (prevObj.month == Obj.month) and (prevObj.year == Obj.year) and (index >= 1)):
-
-                lastDuration =  prevObj - Obj
-                timeFactor= lastDuration.total_seconds()/60/60
-                solarPwr = solarPwr + data[index]['solar_power']*timeFactor
-                batteryPwr = batteryPwr + data[index]['battery_power']*timeFactor
-                gridPwr = gridPwr + data[index]['grid_power']*timeFactor
-                gridServicesPwr = gridServicesPwr + data[index]['grid_services_power']*timeFactor
-                generatorPwr = generatorPwr + data[index]['generator_power']*timeFactor
-
-                index = index - 1
-                prevObj = Obj
-                dateStr = data[index]['timestamp']
-                Obj = datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%S%z")
-            loadPwr = gridPwr + solarPwr + batteryPwr + generatorPwr + gridServicesPwr
-            genPwr = solarPwr + batteryPwr + generatorPwr + gridServicesPwr
-
-            ySolarPwr = data[index]['solar_power']*timeFactor
-            yBatteryPwr = data[index]['battery_power']*timeFactor
-            yGridPwr = data[index]['grid_power']*timeFactor
-            yGridServicesPwr = data[index]['grid_services_power']*timeFactor
-            YGeneratorPwr = data[index]['generator_power']*timeFactor
-
-            prevObj = Obj
-            while ((prevObj.day == Obj.day) and  (prevObj.month == Obj.month) and (prevObj.year == Obj.year) and (index >= 1)):
-                lastDuration =  prevObj - Obj
-                timeFactor= lastDuration.total_seconds()/60/60
-                ySolarPwr = ySolarPwr + data[index]['solar_power']*timeFactor
-                yBatteryPwr = yBatteryPwr + data[index]['battery_power']*timeFactor
-                yGridPwr = yGridPwr + data[index]['grid_power']*timeFactor
-                yGridServicesPwr = yGridServicesPwr + data[index]['grid_services_power']*timeFactor
-                YGeneratorPwr = YGeneratorPwr + data[index]['generator_power']*timeFactor
-
-                index = index - 1
-                prevObj = Obj
-                dateStr = data[index]['timestamp']
-                Obj = datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%S%z")
-
-            yLoadPwr = yGridPwr + ySolarPwr + yBatteryPwr + YGeneratorPwr + yGridServicesPwr
-            ygenPwr = ySolarPwr + yBatteryPwr + YGeneratorPwr + yGridServicesPwr
-
-            self.daysConsumption = {'solar_power': solarPwr, 'consumed_power': loadPwr, 'net_power':gridPwr
-                                ,'battery_power': batteryPwr ,'grid_services_power': gridServicesPwr, 'generator_power' : generatorPwr
-                                ,'yesterday_solar_power': ySolarPwr, 'yesterday_consumed_power': yLoadPwr, 'yesterday_net_power':yGridPwr
-                                ,'yesterday_battery_power': yBatteryPwr ,'yesterday_grid_services_power': yGridServicesPwr, 'yesterday_generator_power' : YGeneratorPwr, 
-                                'net_generation': genPwr, 'net_generation': ygenPwr}
-        
-            #print(self.daysConsumption)
-            return(True)
-        except Exception as e:
-            logging.error('Exception teslaCalculateDaysTotal: ' + str(e))
-            logging.error(' Error obtaining time data')
-  
-
-    def teslaExtractDaysSolar(self):
-        return(self.daysConsmuption['solar_power'])
     
-    def teslaExtractDaysConsumption(self):     
-        return(self.daysConsumption['consumed_power'])
 
-    def teslaExtractDaysGeneration(self):         
-        return(self.daysConsumption['net_generation'])
+    '''
+    		*'solar_energy_exported': 22458, 
+			'generator_energy_exported': 0, 
+			*'grid_energy_imported': 23080, 
+			'grid_services_energy_imported': 7.25, 
+			'grid_services_energy_exported': 11.8125, 
+			*'grid_energy_exported_from_solar': 15831, 
+			*'grid_energy_exported_from_generator': 0, 
+			*'grid_energy_exported_from_battery': 77, 
+			
+			'battery_energy_exported': 10638, 
+			'battery_energy_imported_from_grid': 15837,
+			'battery_energy_imported_from_solar': 71, 
+			'battery_energy_imported_from_generator': 0, 
+			energy flow
+			'consumer_energy_imported_from_grid': 7243, 
+			'consumer_energy_imported_from_solar': 6556, 
+			'consumer_energy_imported_from_battery': 10561, 
+			'consumer_energy_imported_from_generator': 0}]}}
+    '''
+    def tesla_grid_energy_import(self, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['grid_energy_imported'])
+        
+    def tesla_grid_energy_export(self, day):    
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_solar'] + self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_generator'] + self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_battery'])
 
-    def teslaExtractDaysBattery(self):         
-        return(self.daysConsumption['battery_power'])
+    def tesla_solar_to_grid_energy(self, day): 
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_solar'])
+
+    def tesla_solar_energy_exported(self, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['solar_energy_exported'])
+
+    def tesla_home_energy_total(self, day):    
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_grid'] + self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_solar'] + self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_battery'] + self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_generator'] )
+
+
+    def  tesla_home_energy_solar(self, day):   
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_solar'])
+        
+    def  tesla_home_energy_battery(self, day):   
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_battery'])   
+        
+    def  tesla_home_energy_grid(self, day):   
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_grid'])          
+
+    def  tesla_home_energy_generator(self, day):   
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_generator'])            
+
+
+    def tesla_battery_energy_import(self, day):        
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['battery_energy_imported_from_grid'] + self.history_data[self.site_id]['energy'][day]['battery_energy_imported_from_solar'] + self.history_data[self.site_id]['energy'][day]['battery_energy_imported_from_generator']  )
+
+    def tesla_battery_energy_export(self, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[self.site_id]['energy'][day]['battery_energy_exported'])
+        
+
+
+    '''
+    def teslaExtractDaysSolar(self):
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsmuption['solar_power'])
+    
+    def teslaExtractDaysConsumption(self):
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsumption['consumed_power'])
+
+    def teslaExtractDaysGeneration(self):
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsumption['net_generation'])
+
+    def teslaExtractDaysBattery(self): 
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsumption['battery_power'])
 
     def teslaExtractDaysGrid(self):         
-        return(self.daysConsumption['net_power'])
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsumption['net_power'])
 
-    def teslaExtractDaysGridServicesUse(self):         
-        return(self.daysConsumption['grid_services_power'])
+    def teslaExtractDaysGridServicesUse(self):
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsumption['grid_services_power'])
 
-    def teslaExtractDaysGeneratorUse(self):         
-        return(self.daysConsumption['generator_power'])  
+    def teslaExtractDaysGeneratorUse(self):
+        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+        #return(self.daysConsumption['generator_power'])  
 
     def teslaExtractYesteraySolar(self):
         return(self.daysConsumption['yesterday_solar_power'])
@@ -1151,7 +1204,7 @@ class teslaAccess(udi_interface.OAuth):
         return(self.site_info['default_real_mode'])
 
 
-    '''
+    
     def teslaExtractConnectedTesla(self):       
         return(True)
 
