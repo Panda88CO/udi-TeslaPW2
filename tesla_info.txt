@@ -1,3 +1,41 @@
+products: 
+{'response':[	
+	{
+	'energy_site_id': 2252180231966670, 
+	'resource_type': 'battery', 
+	'site_name': 'Home Energy Gateway', 
+	'id': 'STE20200117-00014', 
+	'gateway_id': '1118431-00-L--TG11925500082D', 
+	'asset_site_id': '6328e895-ffe4-4ef1-9529-d56d3e4ef84c', 
+	'grid_installation_id': 'a6fa15b1-8830-44e7-be73-28dcbe9ce391', 
+	'warp_site_number': 'STE20200117-00014', 
+	'energy_left': 22532.421052631576, 
+	'total_pack_energy': 26164, 
+	'percentage_charged': 86.11993981284046, 
+	'battery_type': 'ac_powerwall', 
+	'backup_capable': True, 
+	'battery_power': 1160, 
+	'go_off_grid_test_banner_enabled': None, 
+	'storm_mode_enabled': True, 
+	'powerwall_onboarding_settings_set': True, 
+	'powerwall_tesla_electric_interested_in': None, 
+	'vpp_tour_enabled': None, 
+	'sync_grid_alert_enabled': True, 
+	'breaker_alert_enabled': True, 
+	'components': {
+		'battery': True, 
+		'battery_type': 'ac_powerwall', 
+		'solar': True, 
+		'grid': True, 
+		'load_meter': True, 
+		'market_type': 'residential'}, 
+	'features': {'rate_plan_manager_no_pricing_constraint': True}}
+	], 
+	'count': 1} 
+
+
+
+
 live_status: 
 {'response': 
 	{'solar_power': 1147.219970703125, 
