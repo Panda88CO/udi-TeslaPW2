@@ -111,8 +111,8 @@ class TeslaPWController(udi_interface.Node):
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
-        def handleNotices(self):
-            logging.debug('handleNotices')
+    def handleNotices(self):
+        logging.debug('handleNotices')
     '''
     def check_config(self):
         logging.debug('check_config  {} {} {} {}'.format(self.local_email ,self.local_password,self.local_ip , self.Rtoken ))
