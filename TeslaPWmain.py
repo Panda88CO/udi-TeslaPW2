@@ -46,7 +46,7 @@ class TeslaPWController(udi_interface.Node):
         #self.my_Tesla_PW = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
-        self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
+        #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
         #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
@@ -111,8 +111,8 @@ class TeslaPWController(udi_interface.Node):
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
-    def handleNotices(self):
-        logging.debug('handleNotices')
+    #def handleNotices(self):
+    #    logging.debug('handleNotices')
     '''
     def check_config(self):
         logging.debug('check_config  {} {} {} {}'.format(self.local_email ,self.local_password,self.local_ip , self.Rtoken ))
