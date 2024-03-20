@@ -784,56 +784,35 @@ class teslaAccess(udi_interface.OAuth):
     false to indicate that.
 
     Otherwise, return true to indiate that access is good
-
-    def teslaUpdateCloudData(self, mode):
+    '''
+    def teslaUpdateCloudData(self, site_id, mode):
         if mode == 'critical':
-            temp =self.teslaGetSiteInfo('site_live')
+            temp =self.tesla_get_live_status(site_id)
             if temp != None:
                 self.site_live = temp
                 return(True)
+            tesla_get_today_history(SITE_ID, 'TODAY')
         elif mode == 'all':
             access = False
-            temp= self.teslaGetSiteInfo('site_live')
+            temp =self.tesla_get_live_status(site_id)
             if temp != None:
                 self.site_live = temp
                 access = True
                 
-            temp = self.teslaGetSiteInfo('site_info')
+            temp = self.tesla_get_site_info('site_info')
             if temp != None:
                 self.site_info = temp
                 access = True
             logging.debug('self.site_info {}'.format(self.site_info))    
             
-            temp = self.teslaGetSiteInfo('site_history_day')            
-            if temp != None:
-                self.site_history = temp
-                access = True
-            self.teslaCalculateDaysTotals()
+            self.tesla_get_today_history(site_id, 'energy')
+            self.tesla_get_yesterday_history(site_id, 'energy')
+            self.tesla_get_today_history(site_id, 'backup')
+            self.tesla_get_yesterday_history(site_id, 'backup')
+            self.tesla_get_today_history(site_id, 'charge')
+            self.tesla_get_yesterday_history(site_id, 'charge')
             return(access)
-        else:
-            access = False
-            temp= self.teslaGetSiteInfo('site_live')
-            if temp != None:
-                self.site_live = temp
-                access = True
-                
-            temp = self.teslaGetSiteInfo('site_info')            
-            if temp != None:
-                self.site_info = temp
-                access = True
-            logging.debug('self.site_info {}'.format(self.site_info))    
-            temp = self.teslaGetSiteInfo('site_history_day')            
-            if temp != None:
-                self.site_history = temp
-                access = True
 
-
-            temp = self.teslaGetSiteInfo('site_status')
-            if temp != None:
-                self.site_status = temp
-                access = True
-            self.teslaCalculateDaysTotals()
-            return(access)
 
     def supportedOperatingModes(self):
         return( self.OPERATING_MODES )
@@ -844,82 +823,11 @@ class teslaAccess(udi_interface.OAuth):
     def isConnectedToPW(self):
         return( self.authendicated())
 
-    #def getRtoken(self):
-    #    return(self.teslaApi.getRtoken())
-
-
-    def TeslaGet_current_rate_state(self):
-        logging.debug('get_current_state')
-        try:
-            now = datetime.now()
-            tarif_data = self.teslaGet_tariff_rate()
-            seasonFound = False
-            for season in tarif_data['seasons']:
-      
-                monthFrom = tarif_data['seasons'][season]['fromMonth']
-                monthTo = tarif_data['seasons'][season]['toMonth']
-                dayFrom = tarif_data['seasons'][season]['fromDay'] 
-                dayTo = tarif_data['seasons'][season]['toDay'] 
-                #logging.debug('season {} - months {} {} days {}{}'.format(season, monthFrom, monthTo, dayFrom, dayTo ))
-                if  (monthFrom <= monthTo and (int(now.month)  >= monthFrom and now.month <= monthTo)) or ( monthFrom > monthTo and (now.month  >= monthFrom or now.month <= monthTo)): 
-                        if now.month == monthFrom:
-                            seasonFound =  now.day >= dayFrom
-                        elif now.month == monthTo:
-                            seasonFound =   now.day <= dayTo
-                        else:
-                            seasonFound =  True                                                               
-                if seasonFound:
-                    seasonNow = season     
-                    break
-            periodFound = False
-            for period in tarif_data['seasons'][seasonNow]['tou_periods']:   
-                #logging.debug('period {}  season {}'.format(period,seasonNow))
-
-                for timeRange in tarif_data['seasons'][seasonNow]['tou_periods'][period]:
-                    wdayFrom = timeRange['fromDayOfWeek']
-                    wdayTo =timeRange['toDayOfWeek']
-                    hourFrom = timeRange['fromHour']
-                    hourTo = timeRange['toHour']
-                    minFrom = timeRange['fromMinute']
-                    minTo = timeRange['toMinute']    
-             
-                    if wdayFrom <= wdayTo and ( wdayFrom <= now.weekday() and wdayTo >= now.weekday()) or (wdayTo <= wdayFrom and ( wdayFrom >= now.weekday() or wdayTo <= now.weekday())):
-                        if (hourFrom <= hourTo and (now.hour >= hourFrom and now.hour <= hourTo)) or (hourFrom > hourTo and (now.hour >= hourFrom or now.hour <= hourTo)):
-                            if now.hour == hourFrom:
-                                periodFound = now.min > minFrom
-                            elif now.hour == hourTo:
-                                periodFound = now.min < minTo
-                            else:
-                                periodFound = True
-                    if periodFound:
-                        periodNow = period
-                        break
-
-            if seasonNow in tarif_data['energy_charges']:
-                buyRateNow = tarif_data['energy_charges'][seasonNow][periodNow]
-            else:
-                buyRateNow = tarif_data['energy_charges']['ALL']
-
-            return seasonNow, periodNow, buyRateNow
-        except Exception as E:
-            logging.error('TeslaGet_current_state Exception: {}'.format(E))
-            return None, None, 0
-
-    def peak_info(self):
-        logging.debug('peak_info')
-
-    def get_current_buy_price(self):
-        logging.debug('get_current_buy_price')
-
-    def get_current_sell_price(self):
-        logging.debug('get_current_sell_price')
-
-    '''
+ 
    
     def teslaGetSolar(self):
         return(self.site_info['components']['solar'])
 
-  
     def teslaExtractStormMode(self):
         return(self.site_live_info['storm_mode_active'])
 
@@ -933,10 +841,8 @@ class teslaAccess(udi_interface.OAuth):
     def tesla_remaining_battery (self):
         return(self.site_live_info['energy_left'])
     
-    def tesla_live_solar(self):
-        return(self.site_live_info['solar_power'])
-    
 
+    
     def tesla_island_staus(self):
         return(self.site_live_info['island_status'])
     
@@ -946,7 +852,20 @@ class teslaAccess(udi_interface.OAuth):
     def tesla_grid_service_active(self):
         return(self.site_live_info['grid_services_active'])
 
-
+    def tesla_grid_power(self):
+        return(self.site_live_info['grid_power'])
+    
+    def tesla_generator_power(self):
+        return(self.site_live_info['generator_power'])
+    
+    def tesla_load_power(self):
+        return(self.site_live_info['load_power'])
+    
+    def tesla_battery_power(self):
+        return(self.site_live_info['battery_power'])
+    
+    def tesla_solar_power(self):
+        return(self.site_live_info['solar_power'])
 
     '''
     def teslaUpdateTouScheduleList(self, peakMode, weekdayWeekend, startEnd, time_s):
