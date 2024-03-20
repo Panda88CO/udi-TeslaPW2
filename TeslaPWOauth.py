@@ -86,7 +86,14 @@ class teslaAccess(udi_interface.OAuth):
         self.products = {}
         self.site_id = ''
         self.history_data = {}
-
+        self.previous_date_str = '' # no previous data stored
+        self.date_changed = True
+        self.t_now_date = ''
+        self.t_now_time = ''
+        self.tz_offset = ''
+        self.tz_str = ''
+        self.t_yesterday_date = ''
+        self.update_date_time()
 
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customParams to complete - getAccessToken')
@@ -404,6 +411,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('live_status: {} '.format(temp))
         if 'response' in temp:
             self.site_live_info = temp['response']
+            return(self.site_live_info)
 
     def tesla_get_site_info(self, site_id):
         logging.debug('tesla_get_site_info ')
@@ -411,6 +419,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('site_info: {} '.format(temp))   
         if 'response' in temp:
             self.site_info = temp['response']
+            return(self.site_info)
 
     def tesla_set_backup_percent(self, site_id, reserve_pct):
         logging.debug('tesla_set_backup_percent : {}'.format(reserve_pct))
@@ -451,29 +460,47 @@ class teslaAccess(udi_interface.OAuth):
         temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
+    def update_date_time(self):
+        t_now = datetime.now(get_localzone())
+        today_date_str = t_now.strftime('%Y-%m-%d')
+        self.date_changed = (today_date_str != self.previous_date_str)
+        self.previous_date_str = today_date_str
+        self.t_now_date = today_date_str
+        self.t_now_time = t_now.strftime('T%H:%M:%S')
+        tz_offset = t_now.strftime('%z')   
+        self.tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
+        self.tz_str = t_now.tzname()
+        t_yesterday = t_now - timedelta(days = 1)
+        self.t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+
+
+        #t_now = datetime.now(get_localzone())
+        #t_yesterday = t_now - timedelta(days = 1)
+        #self.yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+        #self.today_date = self.t_now.strftime('%Y-%m-%d')
+
 
     def tesla_get_today_history(self, site_id, type):
         logging.debug('tesla_get_today_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
-            t_now = datetime.now(get_localzone())
-
-            t_now_date = t_now.strftime('%Y-%m-%d')
-            t_now_time = t_now.strftime('T%H:%M:%S')
-            tz_offset = t_now.strftime('%z')   
-            tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
-            tz_str = t_now.tzname()
-            t_start_str = t_now_date+'T00:00:00'+tz_offset
-            t_end_str = t_now_date+t_now_time+tz_offset
+            #t_now = datetime.now(get_localzone())
+            #self.t_now_date = t_now.strftime('%Y-%m-%d')
+            #self.t_now_time = t_now.strftime('T%H:%M:%S')
+            #tz_offset = t_now.strftime('%z')   
+            #self.tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
+            #tz_str = t_now.tzname()
+            t_start_str = self.t_now_date+'T00:00:00'+self.tz_offset
+            t_end_str = self.t_now_date+self.t_now_time+self.tz_offset
             params = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
                     'period'        : 'day',
-                    'time_zone'     : tz_str
+                    'time_zone'     : self.tz_str
                     #'time_zone'     : 'America/Los_Angeles'
                     }
             logging.debug('body = {}'.format(params))
-            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result ({}) = {}'.format(type, hist_data))
             self.process_history_data(site_id, type, hist_data)
@@ -482,26 +509,26 @@ class teslaAccess(udi_interface.OAuth):
     def tesla_get_yesterday_history(self, site_id, type):
         logging.debug('tesla_get_yesterday_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
-            t_now = datetime.now(get_localzone())
-            t_yesterday = t_now - timedelta(days = 1)
-
-            t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+            #self.prepare_date_time()
+            #t_now = datetime.now(get_localzone())
+            #t_yesterday = t_now - timedelta(days = 1)
+            #t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
             #t_now_time = t_yesterday.strftime('T%H:%M:%S%z')
-            tz_offset = t_now.strftime('%z')   
-            tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
-            tz_str = t_now.tzname()
-            t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
-            t_end_str = t_yesterday_date+'T23:59:59'+tz_offset
+            #tz_offset = t_now.strftime('%z')   
+            #tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
+            #tz_str = t_now.tzname()
+            t_start_str = self.t_yesterday_date+'T00:00:00'+self.tz_offset
+            t_end_str = self.t_yesterday_date+'T23:59:59'+self.tz_offset
             params = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
                     'period'        : 'day',
-                    'time_zone'     : tz_str
+                    'time_zone'     : self.tz_str
                     #'time_zone'     : 'America/Los_Angeles'
                     }
             logging.debug('body = {}'.format(params))
-            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result ({})= {}'.format(type, hist_data))
             self.process_history_data(site_id, type, hist_data)
@@ -511,26 +538,26 @@ class teslaAccess(udi_interface.OAuth):
     def tesla_get_2day_history(self, site_id, type):
         logging.debug('tesla_get_2day_history : {}'.format(type))
         if type in self.HISTORY_TYPES:
-            t_now = datetime.now(get_localzone())
-            t_yesterday = t_now - timedelta(days = 1)
-            t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
-            t_now_date = t_now.strftime('%Y-%m-%d')
-            t_now_time = t_now.strftime('T%H:%M:%S')
-            tz_offset = t_now.strftime('%z')   
-            tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
-            tz_str = t_now.tzname()
-            t_start_str = t_yesterday_date+'T00:00:00'+tz_offset
-            t_end_str = t_now_date+t_now_time+tz_offset
+            #t_now = datetime.now(get_localzone())
+            #t_yesterday = t_now - timedelta(days = 1)
+            #t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+            #t_now_date = t_now.strftime('%Y-%m-%d')
+            #t_now_time = t_now.strftime('T%H:%M:%S')
+            #tz_offset = t_now.strftime('%z')   
+            #tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
+            #tz_str = t_now.tzname()
+            t_start_str = self.t_yesterday_date+'T00:00:00'+self.tz_offset
+            t_end_str = self.t_now_date+self.t_now_time+self.tz_offset
             params = {
                     'kind'          : type,
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
                     'period'        : 'day',
-                    'time_zone'     : tz_str
+                    'time_zone'     : self.tz_str
                     #'time_zone'     : 'America/Los_Angeles'
                     }
             logging.debug('body = {}'.format(params))
-            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+tz_str  )
+            hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             if 'response' in hist_data:
                 logging.debug('result ({}) = {}'.format(type, hist_data['response']))
@@ -538,11 +565,7 @@ class teslaAccess(udi_interface.OAuth):
             else:
                 logging.info ('No data obtained')
 
-    def update_dates(self):
-        t_now = datetime.now(get_localzone())
-        t_yesterday = t_now - timedelta(days = 1)
-        self.yesterday_date = t_yesterday.strftime('%Y-%m-%d')
-        self.today_date = t_now.strftime('%Y-%m-%d')
+
 
     def process_energy_data(self, side_id, hdata):
         logging.debug('process_energy_data: {}'.format(hdata))
@@ -595,203 +618,14 @@ class teslaAccess(udi_interface.OAuth):
 
 
 
-
-    '''
-    def teslaGet_backup_time_remaining(self):
-       
-        temp = self._callApi('GET','/energy_sites'+self.site_id +'/backup_time_remaining' )
-        self.backup_time_remaining = temp['response']['time_remaining_hours'] 
-        return(self.backup_time_remaining )       
-        
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])   
-                r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/backup_time_remaining', headers=self.Header)          
-                temp = r.json()
-                self.backup_time_remaining = temp['response']['time_remaining_hours'] 
-                return(self.backup_time_remaining )
-            except Exception as e:
-                logging.error('Exception teslaGetSiteInfo: ' + str(e))
-                logging.error('Trying to reconnect')
-                self.teslaApi.tesla_refresh_token( )
-                return(None)                
-    '''
-    '''
-    def teslaGet_tariff_rate(self):
-        tariff_data = self._callApi('GET', '/energy_sites'+self.site_id +'/tariff_rate')
-        if tariff_data['response']:
-            return(tariff_data['response'])
-        else:
-            return(None)
-     
-            S = self.teslaApi.teslaConnect()
-            with requests.Session() as s:
-                try:
-                    s.auth = OAuth2BearerToken(S['access_token'])   
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/tariff_rate', headers=self.Header)          
-                    tariff_data = r.json()
-                    return(tariff_data['response'])
-                except Exception as e:
-                    logging.error('Exception teslaGetSiteInfo: ' + str(e))
-                    logging.error('Trying to reconnect')
-                    self.teslaApi.tesla_refresh_token( )
-                    return(None)    
-            '''
-    '''
-    def teslaGetSiteInfo(self, mode):
-        #if self.connectionEstablished:
-        #S = self.__teslaConnect()
-        if mode == 'site_status':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/site_status' )          
-
-        elif mode == 'site_live':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/live_status' )          
-
-        elif mode == 'site_info':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/site_info' )          
-        
-        elif mode == 'site_history_day':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/history',{'kind':'power', 'period':'day'}) 
-
-        elif mode == 'rate_tariffs':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/rate_tariffs' )          
-
-        elif mode == 'tariff_rate':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/tariff_rate' )          
-
-        elif mode == 'backup_time_remaining':
-            site = self._callApi('GET', '/energy_sites'+self.site_id +'/backup_time_remaining')          
-                                                                                                                            
-        else:
-            #logging.debug('Unknown mode: '+mode)
-            return(None)
-        return(site['response'])
-
-        
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])            
-                if mode == 'site_status':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/site_status', headers=self.Header)          
-                    site = r.json()
-                elif mode == 'site_live':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/live_status', headers=self.Header)          
-                    site = r.json()
-                elif mode == 'site_info':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/site_info', headers=self.Header)          
-                    site = r.json()            
-                elif mode == 'site_history_day':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/history', headers=self.Header, json={'kind':'power', 'period':'day'}) 
-                    site = r.json() 
-                elif mode == 'rate_tariffs':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/rate_tariffs', headers=self.Header)          
-                    site = r.json()
-                elif mode == 'tariff_rate':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/tariff_rate', headers=self.Header)          
-                    site = r.json()
-                elif mode == 'backup_time_remaining':
-                    r = s.get(self.TESLA_URL + self.API+ '/energy_sites'+self.site_id +'/backup_time_remaining', headers=self.Header)          
-                    site = r.json()
-                                                                                                                                  
-                else:
-                    #logging.debug('Unknown mode: '+mode)
-                    return(None)
-                return(site['response'])
-            except Exception as e:
-                logging.error('Exception teslaGetSiteInfo: ' + str(e))
-                logging.error('Error getting data' + str(mode))
-                logging.error('Trying to reconnect')
-                self.teslaApi.tesla_refresh_token( )
-                return(None)
-
-     
-
-
-    def teslaSetTimeOfUse (self):
-        #if self.connectionEstablished:
-        temp = {}
-        temp['tou_settings'] = {}
-        temp['tou_settings']['optimization_strategy'] = self.touMode
-        temp['tou_settings']['schedule'] = self.touScheduleList
-        payload = temp
-        site = self._callApi('POST', '/energy_sites'+self.site_id +'/time_of_use_settings', payload)
-
-        if site['response']['code'] <210:
-            self.site_info['tou_settings']['optimization_strategy'] = self.touMode
-            self.site_info['tou_settings']['schedule']= self.touScheduleList
-            return (True)
-        else:
-            return(False)
-
-        S = self.teslaApi.teslaConnect() 
-        #S = self.__teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])
-
-                payload = temp
-                r = s.post(self.TESLA_URL +  self.API+ '/energy_sites'+self.site_id +'/time_of_use_settings', headers=self.Header, json=payload)
-                site = r.json()
-                if site['response']['code'] <210:
-                    self.site_info['tou_settings']['optimization_strategy'] = self.touMode
-                    self.site_info['tou_settings']['schedule']= self.touScheduleList
-                    return (True)
-                else:
-                    return(False)
-            except Exception as e:
-                logging.error('Exception teslaSetTimeOfUse: ' + str(e))
-                logging.error('Error setting time of use parameters')
-                self.teslaApi.tesla_refresh_token( ) 
-                return(False)
-
-
-    def teslaCloudConnect(self ):
-        logging.debug('teslaCloudConnect')
-        #self.tokeninfo = self.teslaAuth.tesla_refresh_token( )
-        return(self.tokeninfo)
-
-    def teslaRetrieveCloudData(self):
-        if self.teslaCloudInfo(): 
-            self.connectionEstablished = True
-            self.site_status = self.teslaGetSiteInfo('site_status')
-
-            self.cloudAccess = self.teslaUpdateCloudData('all')
-            #self.touSchedule = self.teslaExtractTouScheduleList()
-            #logging.debug('touSchedule: {}'.format(self.touSchedule))
-        else:
-            logging.error('Error getting cloud data')
-            return(None)
-        logging.debug('site info : {}'.format(self.site_info))
-        if 'tou_settings' in self.site_info:
-            if 'optimization_strategy' in self.site_info['tou_settings']:
-                self.touMode = self.site_info['tou_settings']['optimization_strategy']
-            else:
-                self.touMode = None
-            if 'schedule' in self.site_info['tou_settings']:
-                self.touScheduleList =self.site_info['tou_settings']['schedule']
-            else:
-                self.touScheduleList = []
-        else:
-            self.touMode = None
-            self.touScheduleList = []
-            logging.debug('Tou mode not set')
-        logging.debug('self.touScheduleList : {}'.format(self.touScheduleList ) )
-
-    Query the cloud for the different types of data.  If all
-    data access fails (i.e. returns None), then return
-    false to indicate that.
-
-    Otherwise, return true to indiate that access is good
-    '''
     def teslaUpdateCloudData(self, site_id, mode):
+        self.update_date_time()
         if mode == 'critical':
             temp =self.tesla_get_live_status(site_id)
             if temp != None:
                 self.site_live = temp
                 return(True)
-            tesla_get_today_history(SITE_ID, 'TODAY')
+            self.tesla_get_today_history(site_id, 'energy')
         elif mode == 'all':
             access = False
             temp =self.tesla_get_live_status(site_id)
@@ -806,11 +640,15 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug('self.site_info {}'.format(self.site_info))    
             
             self.tesla_get_today_history(site_id, 'energy')
-            self.tesla_get_yesterday_history(site_id, 'energy')
+            #self.tesla_get_yesterday_history(site_id, 'energy')
             self.tesla_get_today_history(site_id, 'backup')
-            self.tesla_get_yesterday_history(site_id, 'backup')
+            #self.tesla_get_yesterday_history(site_id, 'backup')
             self.tesla_get_today_history(site_id, 'charge')
-            self.tesla_get_yesterday_history(site_id, 'charge')
+            #self.tesla_get_yesterday_history(site_id, 'charge')
+            if self.date_changed:
+                self.tesla_get_yesterday_history(site_id, 'energy')
+                self.tesla_get_yesterday_history(site_id, 'backup')
+                self.tesla_get_yesterday_history(site_id, 'charge')                
             return(access)
 
 
@@ -825,8 +663,12 @@ class teslaAccess(udi_interface.OAuth):
 
  
    
-    def teslaGetSolar(self):
+    def teslaSolarInstalled(self):
         return(self.site_info['components']['solar'])
+
+    def tesla_get_pw_name(self):
+        return(self.site_info['site_name'])
+
 
     def teslaExtractStormMode(self):
         return(self.site_live_info['storm_mode_active'])
@@ -867,136 +709,12 @@ class teslaAccess(udi_interface.OAuth):
     def tesla_solar_power(self):
         return(self.site_live_info['solar_power'])
 
-    '''
-    def teslaUpdateTouScheduleList(self, peakMode, weekdayWeekend, startEnd, time_s):
-        indexFound = False
-        try:
-            if weekdayWeekend == 'weekend':
-                days = set([6,0])
-            else:
-                days = set([1,2,3,4,5])
-
-            #if self.touScheduleList == None:
-            self.touScheduleList = self.teslaExtractTouScheduleList()
-
-            for index in range(0,len(self.touScheduleList)):
-                if self.touScheduleList[index]['target']== peakMode and set(self.touScheduleList[index]['week_days']) == days:
-                    indexFound = True
-                    if startEnd == 'start':
-                        self.touScheduleList[index]['start_seconds'] = time_s
-                    else:
-                        self.touScheduleList[index]['end_seconds'] = time_s
-            if not(indexFound):
-                temp = {}
-                temp['target']= peakMode
-                temp['week_days'] = days
-                if startEnd == 'start':
-                    temp['start_seconds'] = time_s
-                else:
-                    temp['end_seconds'] = time_s
-                self.touScheduleList.append(temp)
-                indexFound = True
-            return(indexFound)
-        except  Exception as e:
-                logging.error('Exception teslaUpdateTouScheduleLite: ' + str(e))
-                logging.error('Error updating schedule')
-                #self.teslaApi.tesla_refresh_token( ) 
-                return(False)
-
-    def teslaSetTouSchedule(self, peakMode, weekdayWeekend, startEnd, time_s):
-        if self.teslaUpdateTouScheduleList( peakMode, weekdayWeekend, startEnd, time_s):
-            self.teslaSetTimeOfUse()
-
-    def  teslaExtractTouTime(self, days, peakMode, startEnd ):
-        indexFound = False
-        logging.debug('teslaExtractTouTime - self.touScheduleList {}'.format(self.touScheduleList ))
-        try:
-            if days == 'weekend':
-                days =set([6,0])
-            else:
-                days = set([1,2,3,4,5])
-            value = -1
-            for data in self.touScheduleList:
-                logging.debug('Looping data {}'.format(data))
-                if data['week_days'][0] == 1 and data['week_days'][1] == 0: # all daya
-                    if startEnd == 'start':
-                        value = data['start_seconds']                    
-                    else:
-                        value = data['end_seconds']
-                elif set(days) == set(data['week_days']):
-                    if startEnd == 'start':
-                        value = data['start_seconds']
-                    else:
-                        value = data['end_seconds']
-            return(value)
-            for index in range(0,len(self.touScheduleList)):
-                if self.touScheduleList[index]['target'] == peakMode and (set(self.touScheduleList[index]['week_days']) == days or set(self.touScheduleList[index]['week_days']) ==[1,0]):
-                    if startEnd == 'start':
-                        value = self.touScheduleList[index]['start_seconds']
-                    else:
-                        value = self.touScheduleList[index]['end_seconds']
-                    indexFound = True
-                    logging.debug('Value {}'.format(value))
-                    return(value)
-            if not(indexFound):       
-                self.site_info = self.teslaGetSiteInfo('site_info')
-                self.touScheduleList = self.teslaExtractTouScheduleList()
-                for index in range(0,len(self.touScheduleList)):
-                    if self.touScheduleList[index]['target']== peakMode and (set(self.touScheduleList[index]['week_days']) == days or set(self.touScheduleList[index]['week_days']) ==[1,0]):
-                        if startEnd == 'start':
-                            value = self.touScheduleList[index]['start_seconds']
-                        else:
-                            value = self.touScheduleList[index]['end_seconds']
-                        indexFound = True
-                        return(value)
-            if not(indexFound): 
-                logging.debug('No schedule appears to be set')            
-                return(-1)
-
-
-        except  Exception as e:
-            logging.error('Exception teslaExtractTouTime ' + str(e))
-            logging.error('No schedule idenfied')
-            return(-1)
-
-
-    def teslaSetTimeOfUseMode (self, touMode):
-        self.touMode = touMode
-        self.teslaSetTimeOfUse()
-
-    def teslaSetTimeOfUse (self):
-        #if self.connectionEstablished:
-        temp = {}
-        S = self.teslaApi.teslaConnect() 
-        #S = self.__teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])
-                temp['tou_settings'] = {}
-                temp['tou_settings']['optimization_strategy'] = self.touMode
-                temp['tou_settings']['schedule'] = self.touScheduleList
-                payload = temp
-                r = s.post(self.TESLA_URL +  self.API+ '/energy_sites'+self.site_id +'/time_of_use_settings', headers=self.Header, json=payload)
-                site = r.json()
-                if site['response']['code'] <210:
-                    self.site_info['tou_settings']['optimization_strategy'] = self.touMode
-                    self.site_info['tou_settings']['schedule']= self.touScheduleList
-                    return (True)
-                else:
-                    return(False)
-            except Exception as e:
-                logging.error('Exception teslaSetTimeOfUse: ' + str(e))
-                logging.error('Error setting time of use parameters')
-                self.teslaApi.tesla_refresh_token( ) 
-                return(False)
-    '''
-    '''
     def teslaExtractTouMode(self):
-        return(self.site_info['tou_settings']['optimization_strategy'])
+        return(self.site_info['components']['tou_settings']['optimization_strategy'])
 
     def teslaExtractTouScheduleList(self):
         
-        self.touScheduleList = self.site_info['tou_settings']['schedule']
+        self.touScheduleList = self.site_info['components']['tou_settings']['schedule']
         return( self.touScheduleList )
 
     def teslaExtractChargeLevel(self):
@@ -1025,7 +743,7 @@ class teslaAccess(udi_interface.OAuth):
         return(self.site_live['generator_power'])
     '''
 
-    '''
+    
     		*'solar_energy_exported': 22458, 
 			'generator_energy_exported': 0, 
 			*'grid_energy_imported': 23080, 

@@ -17,11 +17,11 @@ from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 
 
 class tesla_info:
-    def __init__ (self,  my_Tesla):
+    def __init__ (self,  my_Tesla_PW):
         self.TEST = False
 
         logging.debug('class tesla_info - init')
-        self.TPWcloud = my_Tesla
+        self.TPWcloud = my_Tesla_PW
         self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there
         self.solarInstalled = False
         self.ISYCritical = {}
@@ -31,11 +31,11 @@ class tesla_info:
         self.systemReady = False 
         self.firstPollCompleted = False
 
-        self.localEmail = my_Tesla.LOCAL_USER_EMAIL
-        self.localPassword = my_Tesla.LOCAL_USER_PASSWORD
-        self.IPaddress = my_Tesla.LOCAL_IP_ADDRESS
-        self.local_access_enabled = my_Tesla.local_access_enabled
-        self.cloud_access_enabled = my_Tesla.cloud_access_enabled
+        self.localEmail = my_Tesla_PW.LOCAL_USER_EMAIL
+        self.localPassword = my_Tesla_PW.LOCAL_USER_PASSWORD
+        self.IPaddress = my_Tesla_PW.LOCAL_IP_ADDRESS
+        self.local_access_enabled = my_Tesla_PW.local_access_enabled
+        self.cloud_access_enabled = my_Tesla_PW.cloud_access_enabled
 
         if not self.local_access_enabled and not self.cloud_access_enabled:
             logging.debug('No connection specified')

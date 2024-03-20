@@ -9,22 +9,42 @@ try:
 except ImportError:
     import logging
     logging.basicConfig(level=30)
-               
-class teslaPWStatusNode(udi_interface.Node):
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+from TeslaInfo import tesla_info
+from TeslaPWSetupNode import teslaPWSetupNode
+from TeslaPWSolarNode import teslaPWSolarNode
+from TeslaPWGenNode import teslaPWGenNode
+
+
+class teslaPWStatusNode(udi_interface.Node):
+    from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
+
+    def __init__(self, polyglot, primary, address, name, TPW, site_id):
         super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
+        self.poly = polyglot
         self.ISYforced = False
         self.TPW = TPW
+        self.site_id = site_id
+        self.primary = primary
         self.address = address 
-        self.name = name
-        self.hb = 0
-
-        polyglot.subscribe(polyglot.START, self.start, address)
+        self.poly.ready()
+        self.poly.addNode(self, conn_status = None, rename = True)
+        self.wait_for_node_done()
+        self.node = self.poly.getNode(address)
+            
+        #polyglot.subscribe(polyglot.START, self.start, address)
         
-    def start(self):                
+    def start(self):       
         logging.debug('Start Tesla Power Wall Status Node')  
+        logging.info('Adding power wall sub-nodes')
+        sub_adr = self.primary[-8:]
+
+        if self.cloudAccess:
+            teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW, self.site_id)
+            teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW, self.site_id)
+            teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW, self.site_id)
+        
         while not self.TPW.systemReady:
             time.sleep(1)
         self.updateISYdrivers('all')
@@ -32,6 +52,9 @@ class teslaPWStatusNode(udi_interface.Node):
     def stop(self):
         logging.debug('stop - Cleaning up')
     
+
+
+
     def season2ISY(self, season):
         logging.debug('season2ISY {}'.format(season))
         if season.upper() == 'WINTER':
@@ -48,7 +71,7 @@ class teslaPWStatusNode(udi_interface.Node):
         logging.debug('period2ISY {}'.format(period))
         if period.upper() == 'OFF_PEAK':
             return(0)
-        elif period.upper() == 'PERTIAL_PEAK':
+        elif period.upper() == 'PARTIAL_PEAK':
             return(1)
         elif period.upper() == 'PEAK':
             return(2)
@@ -61,42 +84,38 @@ class teslaPWStatusNode(udi_interface.Node):
             logging.debug('StatusNode updateISYdrivers')
             tmp = self.TPW.getTPW_backup_time_remaining()
             logging.debug('GV0: {}'.format(tmp))
-            self.setDriver('GV0', round(tmp,2))
-            logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
-            self.setDriver('GV1', self.TPW.getTPW_chargeLevel())
-            logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
-            self.setDriver('GV2', self.TPW.getTPW_operationMode())
-            logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
-            self.setDriver('GV3', self.TPW.getTPW_gridStatus())
-            logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
-            self.setDriver('GV4', self.TPW.getTPW_onLine())
-            logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
-            self.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
-            logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
-            self.setDriver('GV6', self.TPW.getTPW_gridSupply())
-            logging.debug('GV9: '+ str(self.TPW.getTPW_chargeLevel()))
-            self.setDriver('GV9', self.TPW.getTPW_gridSupply())
-            logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
-            self.setDriver('GV12', self.TPW.getTPW_load())
+            self.node.setDriver('GV0', round(tmp,2))
+            logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel(self.site_id)))
+            self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel(self.site_id))
+            logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode(self.site_id)))
+            self.node.setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
+            logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus(self.site_id)))
+            self.node.setDriver('GV3', self.TPW.getTPW_gridStatus(self.site_id))
+            logging.debug('GV4: '+ str(self.TPW.getTPW_onLine(self.site_id)))
+            self.node.setDriver('GV4', self.TPW.getTPW_onLine(self.site_id))
+            logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive(self.site_id)))
+            self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive(self.site_id))
+            logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel(self.site_id)))
+            self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel(self.site_id))
+            logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply(self.site_id)))
+            self.node.setDriver('GV9', self.TPW.getTPW_gridSupply(self.site_id))
+            logging.debug('GV12: '+ str(self.TPW.getTPW_load(self.site_id)))
+            self.node.setDriver('GV12', self.TPW.getTPW_load(self.site_id))
             
             if level == 'all':
-                self.setDriver('GV7', self.TPW.getTPW_daysBattery())
-                self.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
-                self.setDriver('GV10', self.TPW.getTPW_daysGrid())
-                self.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
-                self.setDriver('GV13', self.TPW.getTPW_daysConsumption())
-                self.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
-                self.setDriver('GV15', self.TPW.getTPW_daysGeneration())
-                self.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
-                self.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
-                self.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
-                self.setDriver('GV17', self.TPW.getTPW_daysSolar())
-                self.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())    
-                season, period, rate = self.TPW.getTPW_tariff_rate_state()
-                logging.debug('GV21 ={} ,GV23= {},GV24={}'.format(rate, period, season) )    
-                self.setDriver('GV21',round(rate,2))
-                self.setDriver('GV23',self.period2ISY(period))
-                self.setDriver('GV24',self.season2ISY(season))
+                self.node.setDriver('GV7', self.TPW.getTPW_daysBattery(self.site_id))
+                self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery(self.site_id))
+                self.node.setDriver('GV10', self.TPW.getTPW_daysGrid(self.site_id))
+                self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid(self.site_id))
+                self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption(self.site_id))
+                self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption(self.site_id))
+                self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration(self.site_id))
+                self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration(self.site_id))
+                self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse(self.site_id))
+                self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse(self.site_id))
+                self.node.setDriver('GV17', self.TPW.getTPW_daysSolar(self.site_id))
+                self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar(self.site_id))
+
         else:
             logging.debug('System not ready yet')
 

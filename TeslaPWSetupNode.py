@@ -12,78 +12,33 @@ except ImportError:
 
                
 class teslaPWSetupNode(udi_interface.Node):
+    from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+    def __init__(self, polyglot, primary, address, name, TPW, site_id):
         super(teslaPWSetupNode, self).__init__(polyglot, primary, address, name)
 
         logging.info('_init_ Tesla Power Wall setup Node')
+        self.poly = polyglot
         self.ISYforced = False
         self.TPW = TPW
         self.address = address 
-        self.id = address
-        self.name = name
-        self.hb = 0
+        self_site_id = site_id
+        self.poly.ready()
+        self.poly.addNode(self, conn_status = None, rename = True)
+        self.wait_for_node_done()
+        self.node = self.poly.getNode(address)
 
-        self.poly.subscribe(self.poly.START, self.start, address)
-        
-
-    def start(self):                
-        logging.debug('Start Tesla Power Wall Setup Node')  
-        while not self.TPW.systemReady:
-            time.sleep(1)
-        self.updateISYdrivers('all')
-
-    def stop(self):
-        logging.debug('stop - Cleaning up')
+    def start(self):
+        logging.info('Starting Setup Node')
 
     def updateISYdrivers(self, level):
         if self.TPW.systemReady:
             logging.debug('Node updateISYdrivers')
-            self.setDriver('GV1', self.TPW.getTPW_backoffLevel())
-            self.setDriver('GV2', self.TPW.getTPW_operationMode())
-            self.setDriver('GV3', self.TPW.getTPW_stormMode())
-            self.setDriver('GV4', self.TPW.getTPW_touMode())
-            if level == 'all':
-                val = self.TPW.getTPW_getTouData('weekend', 'off_peak', 'start')
-                if val != -1:
-                    self.setDriver('GV5', val, True, True, 58)
-                else:
-                    self.setDriver('GV5', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekend', 'off_peak', 'stop')
-                if val != -1:
-                    self.setDriver('GV6', val, True, True, 58)
-                else:
-                    self.setDriver('GV6', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekend', 'peak', 'start')
-                if val != -1:
-                    self.setDriver('GV7', val, True, True, 58)
-                else:
-                    self.setDriver('GV7', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekend', 'peak', 'stop')
-                if val != -1:
-                    self.setDriver('GV8', val, True, True, 58)
-                else:
-                    self.setDriver('GV8', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekday', 'off_peak', 'start')
-                if val != -1:
-                    self.setDriver('GV9', val, True, True, 58)
-                else:
-                    self.setDriver('GV9', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekday', 'off_peak', 'stop')
-                if val != -1:
-                    self.setDriver('GV10', val, True, True, 58)
-                else:
-                    self.setDriver('GV10', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekday', 'peak', 'start')
-                if val != -1:
-                    self.setDriver('GV11', val, True, True, 58)
-                else:
-                    self.setDriver('GV11', 99, True, True, 25)
-                val = self.TPW.getTPW_getTouData('weekday', 'peak', 'stop')
-                if val != -1:
-                    self.setDriver('GV12', val, True, True, 58)
-                else:
-                    self.setDriver('GV12', 99, True, True, 25)
+            self.node.setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
+            self.node.setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
+            self.node.setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
+            self.node.setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
+
 
             logging.debug('updateISYdrivers - setupnode DONE')
         else:
@@ -95,73 +50,73 @@ class teslaPWSetupNode(udi_interface.Node):
         logging.debug('setStormMode')
         value = int(command.get('value'))
         self.TPW.setTPW_stormMode(value)
-        self.setDriver('GV3', value)
+        self.node.setDriver('GV3', value)
         
     def setOperatingMode(self, command):
         logging.debug('setOperatingMode')
         value = int(command.get('value'))
         self.TPW.setTPW_operationMode(value)
-        self.setDriver('GV2', value)
+        self.node.setDriver('GV2', value)
     
     def setBackupPercent(self, command):
         logging.debug('setBackupPercent')
         value = float(command.get('value'))
         self.TPW.setTPW_backoffLevel(value)
-        self.setDriver('GV1', value)
+        self.node.setDriver('GV1', value)
 
     def setTOUmode(self, command):
         logging.debug('setTOUmode')
         value = int(command.get('value'))
         self.TPW.setTPW_touMode(value)
-        self.setDriver('GV4', value)
+        self.node.setDriver('GV4', value)
 
     def setWeekendOffpeakStart(self, command):
         logging.debug('setWeekendOffpeakStart')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('off_peak', 'weekend', 'start', value)
-        self.setDriver('GV5', value)
+        self.node.setDriver('GV5', value)
 
     def setWeekendOffpeakEnd(self, command):
         logging.debug('setWeekendOffpeakEnd')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('off_peak', 'weekend', 'end', value)
-        self.setDriver('GV6', value)
+        self.node.setDriver('GV6', value)
 
     def setWeekendPeakStart(self, command):
         logging.debug('setWeekendPeakStart')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('peak', 'weekend', 'start', value)
-        self.setDriver('GV7', value)
+        self.node.setDriver('GV7', value)
 
     def setWeekendPeakEnd(self, command):
         logging.debug('setWeekendPeakEnd')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('peak', 'weekend', 'end', value)
-        self.setDriver('GV8', value)
+        self.node.setDriver('GV8', value)
 
     def setWeekOffpeakStart(self, command):
         logging.debug('setWeekOffpeakStart')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('off_peak', 'week', 'start', value)
-        self.setDriver('GV9', value)
+        self.node.setDriver('GV9', value)
 
     def setWeekOffpeakEnd(self, command):
         logging.debug('setWeekOffpeakEnd')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('off_peak', 'week', 'end', value)
-        self.setDriver('GV10', value)
+        self.node.setDriver('GV10', value)
 
     def setWeekPeakStart(self, command):
         logging.debug('setWeekPeakStart')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('peak', 'week', 'start', value)
-        self.setDriver('GV11', value)
+        self.node.setDriver('GV11', value)
 
     def setWeekPeakEnd(self, command):
         logging.debug('setWeekPeakEnd')
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('peak', 'week', 'end', value)
-        self.setDriver('GV12', value)
+        self.node.setDriver('GV12', value)
 
 
     def ISYupdate (self, command):
@@ -177,14 +132,14 @@ class teslaPWSetupNode(udi_interface.Node):
                 ,'STORM_MODE' :setStormMode
                 ,'OP_MODE': setOperatingMode
                 ,'TOU_MODE':setTOUmode
-                ,'WE_O_PEAK_START': setWeekendOffpeakStart
-                ,'WE_O_PEAK_END':setWeekendOffpeakEnd
-                ,'WE_PEAK_START':setWeekendPeakStart
-                ,'WE_PEAK_END':setWeekendPeakEnd
-                ,'WK_O_PEAK_START':setWeekOffpeakStart
-                ,'WK_O_PEAK_END':setWeekOffpeakEnd
-                ,'WK_PEAK_START':setWeekPeakStart
-                ,'WK_PEAK_END':setWeekPeakEnd
+                #,'WE_O_PEAK_START': setWeekendOffpeakStart
+                #,'WE_O_PEAK_END':setWeekendOffpeakEnd
+                #,'WE_PEAK_START':setWeekendPeakStart
+                #,'WE_PEAK_END':setWeekendPeakEnd
+                #,'WK_O_PEAK_START':setWeekOffpeakStart
+                #,'WK_O_PEAK_END':setWeekOffpeakEnd
+                #,'WK_PEAK_START':setWeekPeakStart
+                #,'WK_PEAK_END':setWeekPeakEnd
 
                 }
 

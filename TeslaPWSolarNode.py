@@ -10,17 +10,18 @@ except ImportError:
     logging.basicConfig(level=30)
                
 class teslaPWSolarNode(udi_interface.Node):
+    from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+    def __init__(self, polyglot, primary, address, name, TPW, site_id):
         super(teslaPWSolarNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
         self.TPW = TPW
-        self.address = address 
-        self.name = name
-        self.hb = 0
-
-        polyglot.subscribe(polyglot.START, self.start, address)
+        self.poly = polyglot
+        self.poly.ready()
+        self.poly.addNode(self, conn_status = None, rename = True)
+        self.wait_for_node_done()
+        self.node = self.poly.getNode(address)
         
     def start(self):                
         logging.debug('Start Tesla Power Wall Solar Node')  
@@ -34,11 +35,11 @@ class teslaPWSolarNode(udi_interface.Node):
     def updateISYdrivers(self, level):
         if self.TPW.systemReady:
             logging.debug('SolarNode updateISYdrivers')
-            self.setDriver('GV1', self.TPW.getTPW_solarSupply())
+            self.node.setDriver('GV1', self.TPW.getTPW_solarSupply(self.site_id))
 
             if level == 'all':
-                self.setDriver('GV2', self.TPW.getTPW_daysSolar())
-                self.setDriver('GV3', self.TPW.getTPW_yesterdaySolar())
+                self.node.setDriver('GV2', self.TPW.getTPW_daysSolar(self.site_id))
+                self.node.setDriver('GV3', self.TPW.getTPW_yesterdaySolar(self.site_id))
         else:
             logging.debug('System not ready yet')
 

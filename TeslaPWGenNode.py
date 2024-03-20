@@ -10,17 +10,20 @@ except ImportError:
 import time
                
 class teslaPWGenNode(udi_interface.Node):
+    from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+    def __init__(self, polyglot, primary, address, name, TPW, site_id):
         super(teslaPWGenNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Generator Status Node')
         self.ISYforced = False
         self.TPW = TPW
-        self.address = address 
-        self.name = name
-        self.hb = 0
+        self.poly = polyglot
+        self.site_id = site_id
 
-        polyglot.subscribe(polyglot.START, self.start, address)
+        self.poly.ready()
+        self.poly.addNode(self, conn_status = None, rename = True)
+        self.wait_for_node_done()
+        self.node = self.poly.getNode(address)
         
     def start(self):                
         logging.debug('Start Tesla Power Wall Generator Node')  
@@ -34,8 +37,8 @@ class teslaPWGenNode(udi_interface.Node):
     def updateISYdrivers(self, level):
         if self.TPW.systemReady:
             logging.debug('SolarNode updateISYdrivers')
-            self.setDriver('GV1', self.TPW.getTPW_daysGeneratorUse())
-            self.setDriver('GV2', self.TPW.getTPW_yesterdayGeneratorUse())
+            self.node.setDriver('GV1', self.TPW.getTPW_daysGeneratorUse(self.site_id))
+            self.node.setDriver('GV2', self.TPW.getTPW_yesterdayGeneratorUse(self.site_id))
         else:
             logging.debug('System not ready yet')
 
