@@ -126,11 +126,11 @@ class TeslaPWController(udi_interface.Node):
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
-                self.cloudAccessUp = self.my_Tesla_PW.teslaCloudConnect()
+                self.cloudAccessUp = self.my_Tesla_PW.authendicated()
                 while not self.localAccessUp and count < 5:
                     self.poly.Notices['auth'] = 'Please initiate authentication'
                     time.sleep(5)
-                    self.cloudAccessUp = self.my_Tesla_PW.teslaCloudConnect()
+                    self.cloudAccessUp = self.my_Tesla_PW.authendicated()
                     count = count +1
                     logging.info('Waiting for cloud system access to be established')
                     self.poly.Notices['auth'] = 'Please initiate authentication'
