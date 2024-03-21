@@ -504,7 +504,8 @@ class teslaAccess(udi_interface.OAuth):
             hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result ({}) = {}'.format(type, hist_data))
-            self.process_history_data(site_id, type, hist_data)
+            if 'response' in hist_data:
+                self.process_history_data(site_id, type, hist_data['response'])
 
 
     def tesla_get_yesterday_history(self, site_id, type):
@@ -532,7 +533,8 @@ class teslaAccess(udi_interface.OAuth):
             hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
             #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
             logging.debug('result ({})= {}'.format(type, hist_data))
-            self.process_history_data(site_id, type, hist_data)
+            if 'response' in hist_data:
+                self.process_history_data(site_id, type, hist_data['response'])
 
 
 
