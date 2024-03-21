@@ -581,9 +581,9 @@ class teslaAccess(udi_interface.OAuth):
             if date_str == self.t_now_date:
                 date_key = 'today'                
             elif date_str == self.t_yesterday_date:
-                date_key == 'yesterday'
+                date_key = 'yesterday'
             else:
-                date_key == 'unknown'
+                date_key = 'unknown'
             if date_key != 'unknown':
                 self.history_data[site_id]['energy'][date_key] = e_data
 
