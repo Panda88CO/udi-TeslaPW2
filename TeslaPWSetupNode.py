@@ -23,6 +23,7 @@ class teslaPWSetupNode(udi_interface.Node):
         self.TPW = TPW
         self.address = address 
         self_site_id = site_id
+        self.n_queue = []
         self.poly.ready()
         self.poly.addNode(self, conn_status = None, rename = True)
         self.wait_for_node_done()

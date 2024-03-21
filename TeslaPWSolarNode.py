@@ -18,6 +18,7 @@ class teslaPWSolarNode(udi_interface.Node):
         self.ISYforced = False
         self.TPW = TPW
         self.poly = polyglot
+        self.n_queue = []
         self.poly.ready()
         self.poly.addNode(self, conn_status = None, rename = True)
         self.wait_for_node_done()
@@ -45,7 +46,7 @@ class teslaPWSolarNode(udi_interface.Node):
 
     def update_PW_data(self, type):
         pass 
-    
+
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         if self.TPW.pollSystemData('all'):
