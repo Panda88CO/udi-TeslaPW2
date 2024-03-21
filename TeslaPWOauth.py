@@ -403,7 +403,7 @@ class teslaAccess(udi_interface.OAuth):
             for indx in range(0,len(temp['response'])):
                 site = temp['response'][indx]
                 if 'energy_site_id' in site:
-                    power_walls[site['energy_site_id' ]] = site
+                    power_walls[str(site['energy_site_id' ])] = site
         return(power_walls)
     
     def tesla_get_live_status(self, site_id):
