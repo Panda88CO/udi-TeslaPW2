@@ -142,10 +142,16 @@ class TeslaPWController(udi_interface.Node):
                 logging.debug('finished login procedures' )
                 logging.info('Creating Nodes')
                 self.PWs = self.my_Tesla_PW.tesla_get_products()
+                logging.debug('self.PWs {}'.format(self.PWs))
                 for site_id in self.PWs:
-
-                    node_address =  self.poly.getValidAddress(self.PWs[site_id]['energy_site_id'][-14:])
-                    node_name = self.poly.getValidName(self.PWs[site_id]['site_name'])
+                    string = self.PWs[site_id]['energy_site_id'][-14:]
+                    logging.debug(string)
+                    node_address =  self.poly.getValidAddress(string)
+                    logging.debug(string)
+                    string = self.PWs[site_id]['site_name']
+                    logging.debug(string)
+                    node_name = self.poly.getValidName(string)
+                    logging.debug(string)
                     teslaPWStatusNode(self.poly, node_address, node_address,  node_name, self.my_Tesla_PW, site_id)
                     self.wait_for_node_done()
 
