@@ -578,9 +578,9 @@ class teslaAccess(udi_interface.OAuth):
             time_str = e_data['timestamp']
             dt_object = datetime.fromisoformat(time_str)
             date_str = dt_object.strftime('%Y-%m-%d')
-            if date_str == self.today_date:
+            if date_str == self.t_now_date:
                 date_key = 'today'                
-            elif date_str == self.yesterday_date:
+            elif date_str == self.t_yesterday_date:
                 date_key == 'yesterday'
             else:
                 date_key == 'unknown'
