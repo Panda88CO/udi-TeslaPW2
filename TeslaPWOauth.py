@@ -599,7 +599,7 @@ class teslaAccess(udi_interface.OAuth):
 
     def process_history_data(self, site_id, type, hist_data):
         logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
-        self.update_dates()
+        self.update_date_time()
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
         if type not in self.history_data[site_id]:
