@@ -68,7 +68,6 @@ class TeslaPWController(udi_interface.Node):
         self.poly.ready()
         self.poly.addNode(self, conn_status='ST')
         self.wait_for_node_done()
-
         self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
 
@@ -99,7 +98,7 @@ class TeslaPWController(udi_interface.Node):
                 self.poly.Notices['auth'] = 'Please initiate authentication'
    
 
-        self.TPW = tesla_info(self.my_Tesla_PW)
+        #self.TPW = tesla_info(self.my_Tesla_PW)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
         #self.check_config()
@@ -147,7 +146,7 @@ class TeslaPWController(udi_interface.Node):
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
 
-            self.TPW = tesla_info(self.my_Tesla_PW )
+            #self.TPW = tesla_info(self.my_Tesla_PW )
             #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
             #self.localAccess = self.TPW.localAccess()
             #self.cloudAccess = self.TPW.cloudAccess()
@@ -155,7 +154,7 @@ class TeslaPWController(udi_interface.Node):
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
-                self.cloudAccessUp = self.TPW.teslaCloudConnect()
+                self.cloudAccessUp = self.my_Tesla_PW.teslaCloudConnect()
                 while not self.localAccessUp and count < 5:
                     self.poly.Notices['auth'] = 'Please initiate authentication'
                     time.sleep(5)
@@ -166,18 +165,16 @@ class TeslaPWController(udi_interface.Node):
                 if not  self.cloudAccessUp:
                     logging.error('Failed to establish cloud access - ')   
                     return
-                logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
+                #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
-                logging.debug('finiahed login procedures' )
+                logging.debug('finished login procedures' )
                 logging.info('Creating Nodes')
-                self.PWs = self.my_Tesla_PW .tesla_get_products()
+                self.PWs = self.my_Tesla_PW.tesla_get_products()
                 for site_id in self.PWs:
 
                     node_address =  self.poly.getValidAddress(self.PWs[site_id]['energy_site_id'][-14:])
                     node_name = self.poly.getValidName(self.PWs[site_id]['site_name'])
-                    #if not self.poly.getNode('pwstatus'):
-                    node = teslaPWStatusNode(self.poly, node_address, node_address,  node_name, self.TPW, site_id)
-                    self.poly.addNode(node)
+                    teslaPWStatusNode(self.poly, node_address, node_address,  node_name, self.my_Tesla_PW, site_id)
                     self.wait_for_node_done()
 
             else:
@@ -206,7 +203,7 @@ class TeslaPWController(udi_interface.Node):
             '''
                 
  
-            self.TPW.teslaInitializeData()
+            
             '''
             node addresses:
                setup node:            pwsetup 'Control Parameters'

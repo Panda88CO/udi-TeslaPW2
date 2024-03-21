@@ -17,8 +17,9 @@ from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 
 
 class tesla_info:
-    def __init__ (self,  my_Tesla_PW):
+    def __init__ (self,  my_Tesla_PW, site_id):
         self.TEST = False
+        self.site_id = site_id
 
         logging.debug('class tesla_info - init')
         self.TPWcloud = my_Tesla_PW
@@ -39,7 +40,11 @@ class tesla_info:
 
         if not self.local_access_enabled and not self.cloud_access_enabled:
             logging.debug('No connection specified')
-
+        if self.cloud_access_enabled:
+            self.TPWcloud.tesla_get_site_info(self.site_id)
+            self.TPWcloud.tesla_get_live_status(self.site_id)
+            self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
+            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
 
     def loginLocal (self):
         logging.debug('Local Access Supported')
@@ -49,7 +54,7 @@ class tesla_info:
         self.TPWlocal.login(self.localPassword, self.localEmail)
         logging.debug('self.TPWlocal ')
         loginAttempts = 0
-        temp = self.TPWlocal.is_authenticated()
+        #temp = self.TPWlocal.is_authenticated()
         #logging.debug('authendicated = {} '.format(temp))
         while not(self.TPWlocal.is_authenticated()) and loginAttempts < 10:            
             logging.info('Trying to log into Tesla Power Wall') 
@@ -113,29 +118,8 @@ class tesla_info:
             logging.debug('Logged in Cloud - retrieving data')
             self.TPWcloudAccess = True
             self.cloudAccessUp = True
-            tmp = self.TPWcloud.tesla_get_products()
-            logging.debug('tesla_get_products: {}'.format(tmp))
-            for pw in tmp:
-                site_id = str(pw)
-                logging.debug('PW product info {} - {}'.format(site_id, tmp[pw],))
-                self.TPWcloud.tesla_get_live_status(site_id)
-                time.sleep(2)
-                self.TPWcloud.tesla_get_site_info(site_id)
-                time.sleep(2)
-                self.TPWcloud.tesla_get_today_history(site_id, 'backup')
-                time.sleep(2)
-                self.TPWcloud.tesla_get_today_history(site_id, 'charge')
-                time.sleep(2)
-                self.TPWcloud.tesla_get_today_history(site_id, 'energy')
-                time.sleep(2)
-                #self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
-                time.sleep(2)
-                #self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
-                time.sleep(2)
-                self.TPWcloud.tesla_get_yesterday_history(site_id, 'energy')
-                time.sleep(2)
-                self.TPWcloud.tesla_get_2day_history(site_id, 'energy')
-            self.cloudAccessUp = True
+            self.TPWcloud.teslaUpdateCloudData(self.site_id, 'all')
+
         return(self.cloudAccessUp)
 
 
@@ -154,18 +138,18 @@ class tesla_info:
             self.daysTotalGenerator = 0 #needs to be updated - may not ex     
         else:
             self.TPWcloud.teslaUpdateCloudData('all')
-            self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar()
-            self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption()
-            self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration()
-            self.daysTotalBattery = self.TPWcloud.teslaExtractDaysBattery()
-            self.daysTotalGenerator = self.TPWcloud.teslaExtractDaysGeneratorUse()
-            self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse()
-            self.yesterdayTotalSolar = self.TPWcloud.teslaExtractYesteraySolar()
-            self.yesterdayTotalConsumption = self.TPWcloud.teslaExtractYesterdayConsumption()
-            self.yesterdayTotalGeneration  = self.TPWcloud.teslaExtractYesterdayGeneraton()
-            self.yesterdayTotalBattery =  self.TPWcloud.teslaExtractYesterdayBattery() 
-            self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractYesterdayGridServiceUse()
-            self.yesterdayTotalGenerator = self.TPWcloud.teslaExtractYesterdayGeneratorUse()
+            self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar(self.site_id)
+            self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption(self.site_id)
+            self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration(self.site_id)
+            self.daysTotalBattery = self.TPWcloud.teslaExtractDaysBattery(self.site_id)
+            self.daysTotalGenerator = self.TPWcloud.teslaExtractDaysGeneratorUse(self.site_id)
+            self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id)
+            self.yesterdayTotalSolar = self.TPWcloud.teslaExtractYesteraySolar(self.site_id)
+            self.yesterdayTotalConsumption = self.TPWcloud.teslaExtractYesterdayConsumption(self.site_id)
+            self.yesterdayTotalGeneration  = self.TPWcloud.teslaExtractYesterdayGeneraton(self.site_id)
+            self.yesterdayTotalBattery =  self.TPWcloud.teslaExtractYesterdayBattery(self.site_id) 
+            self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractYesterdayGridServiceUse(self.site_id)
+            self.yesterdayTotalGenerator = self.TPWcloud.teslaExtractYesterdayGeneratorUse(self.site_id)
 
         logging.debug('teslaInitializeData - 1 - grid status {} '.format(GridStatus))
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
@@ -194,7 +178,7 @@ class tesla_info:
         self.operationCloudEnum = {}
         logging.debug('teslaInitializeData - 2')
         if self.TPWcloudAccess:
-            ModeList = self.TPWcloud.supportedOperatingModes()
+            ModeList = self.TPWcloud.supportedOperatingModes(self.site_id)
 
             for i in range(0,len(ModeList)):
                 self.operationCloudEnum[i]= ModeList[i] 
@@ -203,7 +187,7 @@ class tesla_info:
             for  key in ModeList:
                 self.operationCloudEnum[ModeList[key]]= key
             
-            ModeList = self.TPWcloud.supportedTouModes()
+            ModeList = self.TPWcloud.supportedTouModes(self.site_id)
             self.touCloudEnum = {}
             self.ISYtouEnum = {}
 
@@ -214,22 +198,6 @@ class tesla_info:
         else:
             ModeList=None
         
-
-    '''
-    def storeDaysData(self, filename, solar, consumption, generation, battery, gridUse, generator, dayInfo ):
-        try:
-            if not(os.path.exists('./dailyData')):
-                os.mkdir('./dailyData')
-                dataFile = open('./dailyData/'+filename, 'w+')
-                dataFile.write('Date, solarKW, ConsumptionKW, GenerationKW, BatteryKW, GridServicesUseKW, GeneratorKW \n')
-                dataFile.close()
-            dataFile = open('./dailyData/'+filename, 'a')
-            dataFile.write(str(dayInfo)+ ','+str(solar)+','+str(consumption)+','+str(generation)+','+str(battery)+','+str(gridUse)+','+str(generator)+'\n')
-            dataFile.close()
-        except Exception as e:
-            logging.error('Exception storeDaysData: '+  str(e))         
-            logging.error ('Failed to add data to '+str(filename))
-    '''    
 
     '''
     Get the most current data. We get data from the cloud first, if cloud
@@ -288,20 +256,20 @@ class tesla_info:
                 logging.debug('pollSystemData - CLOUD')
                 self.cloudAccessUp = self.TPWcloud.teslaUpdateCloudData(level)
                 if level == 'all':
-                    self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar()
-                    self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption()
-                    self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration()
-                    self.daysTotalBattery = self.TPWcloud.teslaExtractDaysBattery()
-                    self.daysTotalGrid = self.TPWcloud.teslaExtractDaysGrid()
-                    self.daysTotalGenerator = self.TPWcloud.teslaExtractDaysGeneratorUse()
-                    self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse()
-                    self.yesterdayTotalSolar = self.TPWcloud.teslaExtractYesteraySolar()
-                    self.yesterdayTotalConsumption = self.TPWcloud.teslaExtractYesterdayConsumption()
-                    self.yesterdayTotalGeneration  = self.TPWcloud.teslaExtractYesterdayGeneraton()
-                    self.yesterdayTotalBattery =  self.TPWcloud.teslaExtractYesterdayBattery() 
-                    self.yesterdayTotalGrid =  self.TPWcloud.teslaExtractYesterdayGrid() 
-                    self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractYesterdayGridServiceUse()
-                    self.yesterdayTotalGenerator = self.TPWcloud.teslaExtractYesterdayGeneratorUse()          
+                    self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar(self.site_id)
+                    self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption(self.site_id)
+                    self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration(self.site_id)
+                    self.daysTotalBattery = self.TPWcloud.teslaExtractDaysBattery(self.site_id)
+                    self.daysTotalGrid = self.TPWcloud.teslaExtractDaysGrid(self.site_id)
+                    self.daysTotalGenerator = self.TPWcloud.teslaExtractDaysGeneratorUse(self.site_id)
+                    self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id)
+                    self.yesterdayTotalSolar = self.TPWcloud.teslaExtractYesteraySolar(self.site_id)
+                    self.yesterdayTotalConsumption = self.TPWcloud.teslaExtractYesterdayConsumption(self.site_id)
+                    self.yesterdayTotalGeneration  = self.TPWcloud.teslaExtractYesterdayGeneraton(self.site_id)
+                    self.yesterdayTotalBattery =  self.TPWcloud.teslaExtractYesterdayBattery(self.site_id) 
+                    self.yesterdayTotalGrid =  self.TPWcloud.teslaExtractYesterdayGrid(self.site_id) 
+                    self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractYesterdayGridServiceUse(self.site_id)
+                    self.yesterdayTotalGenerator = self.TPWcloud.teslaExtractYesterdayGeneratorUse(self.site_id)          
 
             # Get data directly from PW....
             if self.localAccessUp:
@@ -387,7 +355,7 @@ class tesla_info:
             except:
                 return(0)
         else:
-            chargeLevel = self.TPWcloud.teslaExtractChargeLevel()
+            chargeLevel = self.TPWcloud.teslaExtractChargeLevel(self.site_id)
         chargeLevel = round(chargeLevel,2)
         logging.debug('getTPW_chargeLevel' + str(chargeLevel))
         return(chargeLevel)
@@ -400,7 +368,7 @@ class tesla_info:
             except:
                 return(0)
         else:
-            backoffLevel=self.TPWcloud.teslaExtractBackoffLevel()
+            backoffLevel=self.TPWcloud.teslaExtractBackoffLevel(self.site_id)
         logging.debug('getTPW_backoffLevel' + str(backoffLevel))
         return(round(backoffLevel,1))
     '''
@@ -427,7 +395,7 @@ class tesla_info:
                 if self.firstPollCompleted:
                     self.localAccessUp = False
         else:
-            key = self.TPWcloud.teslaExtractGridStatus()
+            key = self.TPWcloud.teslaExtractGridStatus(self.site_id)
 
         if key in self.gridstatus:
             logging.debug('Grid status: {}'.format(key))
@@ -448,7 +416,7 @@ class tesla_info:
                     if self.firstPollCompleted:
                         self.localAccessUp = False
             else:
-                solarPwr = self.TPWcloud.teslaExtractSolarSupply()
+                solarPwr = self.TPWcloud.teslaExtractSolarSupply(self.site_id)
             logging.debug('getTPW_solarSupply - ' + str(solarPwr))
             return(round(solarPwr/1000,2))
             #site_live
@@ -463,7 +431,7 @@ class tesla_info:
                 if self.firstPollCompleted:
                     self.localAccessUp = False
         else:
-            batteryPwr = self.TPWcloud.teslaExtractBatterySupply()
+            batteryPwr = self.TPWcloud.teslaExtractBatterySupply(self.site_id)
         logging.debug('getTPW_batterySupply' + str(batteryPwr))
         return(round(batteryPwr/1000,2))
  
@@ -478,7 +446,7 @@ class tesla_info:
                 if self.firstPollCompleted:
                     self.localAccessUp = False
         else:
-            gridPwr = self.TPWcloud.teslaExtractGridSupply()
+            gridPwr = self.TPWcloud.teslaExtractGridSupply(self.site_id)
         logging.debug('getTPW_gridSupply'+ str(gridPwr))            
         return(round(gridPwr/1000,2))
 
@@ -491,7 +459,7 @@ class tesla_info:
                 if self.firstPollCompleted:
                     self.localAccessUp = False
         else:
-            loadPwr = self.TPWcloud.teslaExtractLoad()
+            loadPwr = self.TPWcloud.teslaExtractLoad(self.site_id)
         logging.debug('getTPW_load ' + str(loadPwr))
         return(round(loadPwr/1000,2))
 
@@ -500,7 +468,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalSolar
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysSolar()
+            Pwr = self.TPWcloud.teslaExtractDaysSolar(self.site_id)
         logging.debug('getTPW_daysSolar ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -509,7 +477,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalConsumption
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysConsumption()
+            Pwr = self.TPWcloud.teslaExtractDaysConsumption(self.site_id)
         logging.debug('getTPW_daysConsumption ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -517,7 +485,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalGeneraton
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysGeneration()
+            Pwr = self.TPWcloud.teslaExtractDaysGeneration(self.site_id)
         logging.debug('getTPW_daysGeneration ' + str(Pwr))        
         return(round(Pwr/1000,2))
 
@@ -525,7 +493,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalBattery
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysBattery()
+            Pwr = self.TPWcloud.teslaExtractDaysBattery(self.site_id)
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -533,7 +501,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalGrid
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysGrid()
+            Pwr = self.TPWcloud.teslaExtractDaysGrid(self.site_id)
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -541,7 +509,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalGridServices
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysGridServicesUse()
+            Pwr = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id)
         logging.debug('getTPW_daysGridServicesUse ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -550,7 +518,7 @@ class tesla_info:
             if self.localAccessUp and self.firstPollCompleted:
                 Pwr = self.daysTotalGenerator
             else:
-                Pwr = self.TPWcloud.teslaExtractDaysGeneratorUse()
+                Pwr = self.TPWcloud.teslaExtractDaysGeneratorUse(self.site_id)
            
         else:
             Pwr = 0    
@@ -561,7 +529,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalSolar
         else:
-            Pwr = self.TPWcloud.teslaExtractYesteraySolar()
+            Pwr = self.TPWcloud.teslaExtractYesteraySolar(self.site_id)
         logging.debug('getTPW_daysSolar ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -569,7 +537,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalConsumption
         else:
-            Pwr = self.TPWcloud.teslaExtractYesterdayConsumption()
+            Pwr = self.TPWcloud.teslaExtractYesterdayConsumption(self.site_id)
         logging.debug('getTPW_daysConsumption ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -577,7 +545,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalGeneration
         else:
-            Pwr = self.TPWcloud.teslaExtractYesterdayGeneraton()
+            Pwr = self.TPWcloud.teslaExtractYesterdayGeneraton(self.site_id)
         logging.debug('getTPW_daysGeneration ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -586,7 +554,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalBattery
         else:
-            Pwr = self.TPWcloud.teslaExtractYesterdayBattery()
+            Pwr = self.TPWcloud.teslaExtractYesterdayBattery(self.site_id)
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -595,7 +563,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalGrid
         else:
-            Pwr = self.TPWcloud.teslaExtractYesterdayGrid()
+            Pwr = self.TPWcloud.teslaExtractYesterdayGrid(self.site_id)
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
@@ -605,7 +573,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalGridServices
         else:
-            Pwr = self.TPWcloud.teslaExtractYesterdayGridServiceUse()
+            Pwr = self.TPWcloud.teslaExtractYesterdayGridServiceUse(self.site_id)
         logging.debug('getTPW_daysGridServicesUse ' + str(Pwr))            
         return(round(Pwr/1000,2))
         #bat_history
@@ -615,7 +583,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalGenerator
         else:
-            Pwr = self.TPWcloud.teslaExtractYesterdayGeneratorUse()
+            Pwr = self.TPWcloud.teslaExtractYesterdayGeneratorUse(self.site_id)
         logging.debug('getTPW_daysGeneratorUse ' + str(Pwr))
         return(round(Pwr/1000,2))
         #bat_history
@@ -626,7 +594,7 @@ class tesla_info:
             operationVal = self.TPWlocal.get_operation_mode()
             key = self.operationLocalEnum[operationVal.value]
         else:
-            key = self.TPWcloud.teslaExtractOperationMode()
+            key = self.TPWcloud.teslaExtractOperationMode(self.site_id)
         logging.debug('getTPW_operationMode ' + str(key)) 
         return( self.ISYoperationModeEnum [key])
     
@@ -674,7 +642,7 @@ class tesla_info:
         if self.localAccessUp and self.firstPollCompleted:
             res = self.TPWlocal.is_grid_services_active()   
         else:
-            res = self.TPWcloud.teslaExtractGridServiceActive()
+            res = self.TPWcloud.teslaExtractGridServiceActive(self.site_id)
         if res:
             return(1)
         else:
@@ -684,7 +652,7 @@ class tesla_info:
     def getTPW_stormMode(self):
         logging.debug('getTPW_stormMode ')  
         if self.TPWcloudAccess:
-            if self.TPWcloud.teslaExtractStormMode():
+            if self.TPWcloud.teslaExtractStormMode(self.site_id):
                 return (1)
             else:
                 return(0)
@@ -696,13 +664,13 @@ class tesla_info:
     def getTPW_touMode(self):
         logging.debug('getTPW_touMode ')  
         if self.TPWcloudAccess:
-            return(self.ISYtouEnum[self.TPWcloud.teslaExtractTouMode()])        
+            return(self.ISYtouEnum[self.TPWcloud.teslaExtractTouMode(self.site_id)])        
 
 
     def getTPW_touSchedule(self):
         logging.debug('getTPW_touSchedule ')  
         if self.TPWcloudAccess:        
-            return(self.TPWcloud.teslaExtractTouScheduleList())
+            return(self.TPWcloud.teslaExtractTouScheduleList(self.site_id))
 
 
     def setTPW_touMode(self, index):
@@ -727,13 +695,13 @@ class tesla_info:
             return(self.TPWcloud.teslaExtractTouTime(days, peakMode, startEnd ))
 
     def getTPW_backup_time_remaining(self):
-        return(self.TPWcloud.teslaGet_backup_time_remaining())
+        return(self.TPWcloud.teslaGet_backup_time_remaining(self.site_id))
 
     def getTPW_tariff_rate(self):
-        return(self.TPWcloud.teslaGet_tariff_rate())
+        return(self.TPWcloud.teslaGet_tariff_rate(self.site_id))
 
     def getTPW_tariff_rate_state(self):
-        return(self.TPWcloud.TeslaGet_current_rate_state())
+        return(self.TPWcloud.TeslaGet_current_rate_state(self.site_id))
 
     def disconnectTPW(self):
         logging.debug('disconnectTPW ')  

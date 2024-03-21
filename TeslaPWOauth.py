@@ -84,7 +84,6 @@ class teslaAccess(udi_interface.OAuth):
         self.connectionEstablished = False
         self.cloudAccess =  self.connectionEstablished
         self.products = {}
-        self.site_id = ''
         self.history_data = {}
         self.previous_date_str = '' # no previous data stored
         self.date_changed = True
@@ -94,6 +93,8 @@ class teslaAccess(udi_interface.OAuth):
         self.tz_str = ''
         self.t_yesterday_date = ''
         self.update_date_time()
+        self.site_info = {}
+        self.site_live_info = {}
 
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customParams to complete - getAccessToken')
@@ -133,7 +134,7 @@ class teslaAccess(udi_interface.OAuth):
                 accessToken = self.getAccessToken()
                 self.authendication_done = True
             except ValueError as err:
-                logging.error(' No access tyoken exist - try again : {}'.format(err))
+                logging.error(' No access token exist - try again : {}'.format(err))
                 time.sleep(1)
                 self.authendication_done = False
 
@@ -410,15 +411,15 @@ class teslaAccess(udi_interface.OAuth):
         temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
         logging.debug('live_status: {} '.format(temp))
         if 'response' in temp:
-            self.site_live_info = temp['response']
-            return(self.site_live_info)
+            self.site_live_info[site_id] = temp['response']
+            return(self.site_live_info[site_id])
 
     def tesla_get_site_info(self, site_id):
         logging.debug('tesla_get_site_info ')
         temp = self._callApi('GET','/energy_sites/'+site_id +'/site_info' )
         logging.debug('site_info: {} '.format(temp))   
         if 'response' in temp:
-            self.site_info = temp['response']
+            self.site_info[site_id] = temp['response']
             return(self.site_info)
 
     def tesla_set_backup_percent(self, site_id, reserve_pct):
@@ -567,7 +568,7 @@ class teslaAccess(udi_interface.OAuth):
 
 
 
-    def process_energy_data(self, side_id, hdata):
+    def process_energy_data(self, site_id, hdata):
         logging.debug('process_energy_data: {}'.format(hdata))
     
         for indx in range(0,len(hdata['timeseries'])):
@@ -582,9 +583,9 @@ class teslaAccess(udi_interface.OAuth):
             else:
                 date_key == 'unknown'
             if date_key != 'unknown':
-                self.history_data[side_id]['energy'][date_key] = e_data
+                self.history_data[site_id]['energy'][date_key] = e_data
 
-    def process_backup_data(self, side_id, hdata):
+    def process_backup_data(self, site_id, hdata):
         logging.debug('process_backup_data: {}'.format(hdata))
         if hdata['events_count'] > 0:
             for indx in range(0,len(hdata['events'])):
@@ -623,14 +624,14 @@ class teslaAccess(udi_interface.OAuth):
         if mode == 'critical':
             temp =self.tesla_get_live_status(site_id)
             if temp != None:
-                self.site_live = temp
+                self.site_live_info[site_id] = temp
                 return(True)
             self.tesla_get_today_history(site_id, 'energy')
         elif mode == 'all':
             access = False
             temp =self.tesla_get_live_status(site_id)
             if temp != None:
-                self.site_live = temp
+                self.site_live_info[site_id]  = temp
                 access = True
                 
             temp = self.tesla_get_site_info('site_info')
@@ -640,11 +641,8 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug('self.site_info {}'.format(self.site_info))    
             
             self.tesla_get_today_history(site_id, 'energy')
-            #self.tesla_get_yesterday_history(site_id, 'energy')
             self.tesla_get_today_history(site_id, 'backup')
-            #self.tesla_get_yesterday_history(site_id, 'backup')
             self.tesla_get_today_history(site_id, 'charge')
-            #self.tesla_get_yesterday_history(site_id, 'charge')
             if self.date_changed:
                 self.tesla_get_yesterday_history(site_id, 'energy')
                 self.tesla_get_yesterday_history(site_id, 'backup')
@@ -654,93 +652,87 @@ class teslaAccess(udi_interface.OAuth):
 
     def supportedOperatingModes(self):
         return( self.OPERATING_MODES )
-
-
-   
+ 
 
     def isConnectedToPW(self):
         return( self.authendicated())
 
  
    
-    def teslaSolarInstalled(self):
-        return(self.site_info['components']['solar'])
+    def teslaSolarInstalled(self, site_id):
+        return(self.site_info[site_id]['components']['solar'])
 
-    def tesla_get_pw_name(self):
-        return(self.site_info['site_name'])
+    def tesla_get_pw_name(self, site_id):
+        return(self.site_info[site_id]['site_name'])
 
+    def teslaExtractStormMode(self, site_id):
+        return(self.site_live_info[site_id]['storm_mode_active'])
 
-    def teslaExtractStormMode(self):
-        return(self.site_live_info['storm_mode_active'])
-
-
-    def teslaExtractBackupPercent(self):
-        return(self.site_info['backup_reserve_percent'])
+    def teslaExtractBackupPercent(self, site_id):
+        return(self.site_info[site_id]['backup_reserve_percent'])
     
-    def tesla_total_battery(self):
-        return(self.site_live_info['total_pack_energy'])
+    def tesla_total_battery(self, site_id):
+        return(self.site_live_info[site_id][site_id]['total_pack_energy'])
         
-    def tesla_remaining_battery (self):
-        return(self.site_live_info['energy_left'])
+    def tesla_remaining_battery (self, site_id):
+        return(self.site_live_info[site_id]['energy_left'])
     
+    def tesla_island_staus(self, site_id):
+        return(self.site_live_info[site_id]['island_status'])
+    
+    def tesla_grid_staus(self, site_id):
+        return(self.site_live_info[site_id]['grid_status'])
+    
+    def tesla_grid_service_active(self, site_id):
+        return(self.site_live_info[site_id]['grid_services_active'])
 
+    def tesla_grid_power(self, site_id):
+        return(self.site_live_info[site_id]['grid_power'])
     
-    def tesla_island_staus(self):
-        return(self.site_live_info['island_status'])
+    def tesla_generator_power(self, site_id):
+        return(self.site_live_info[site_id]['generator_power'])
     
-    def tesla_grid_staus(self):
-        return(self.site_live_info['grid_status'])
+    def tesla_load_power(self, site_id):
+        return(self.site_live_info[site_id]['load_power'])
     
-    def tesla_grid_service_active(self):
-        return(self.site_live_info['grid_services_active'])
+    def tesla_battery_power(self, site_id):
+        return(self.site_live_info[site_id]['battery_power'])
+    
+    def tesla_solar_power(self, site_id):
+        return(self.site_live_info[site_id]['solar_power'])
 
-    def tesla_grid_power(self):
-        return(self.site_live_info['grid_power'])
-    
-    def tesla_generator_power(self):
-        return(self.site_live_info['generator_power'])
-    
-    def tesla_load_power(self):
-        return(self.site_live_info['load_power'])
-    
-    def tesla_battery_power(self):
-        return(self.site_live_info['battery_power'])
-    
-    def tesla_solar_power(self):
-        return(self.site_live_info['solar_power'])
+    def teslaExtractTouMode(self, site_id):
+        return(self.site_info[site_id]['components']['tou_settings']['optimization_strategy'])
 
-    def teslaExtractTouMode(self):
-        return(self.site_info['components']['tou_settings']['optimization_strategy'])
-
-    def teslaExtractTouScheduleList(self):
+    def teslaExtractTouScheduleList(self, site_id):
         
-        self.touScheduleList = self.site_info['components']['tou_settings']['schedule']
+        self.touScheduleList = self.site_live_info[site_id]['components']['tou_settings']['schedule']
         return( self.touScheduleList )
 
-    def teslaExtractChargeLevel(self):
-        return(round(self.site_live['percentage_charged'],2))
+    def teslaExtractChargeLevel(self, site_id):
+        return(round(self.site_live_info[site_id]['percentage_charged'],2))
         
-    def teslaExtractBackoffLevel(self):
-        return(round(self.site_info['backup_reserve_percent'],1))
+    def teslaExtractBackoffLevel(self, site_id):
+        return(round(self.site_live_info[site_id]['backup_reserve_percent'],1))
 
-    def teslaExtractGridStatus(self): 
-        return(self.site_live['island_status'])
+    def teslaExtractGridStatus(self, site_id): 
+        return(self.site_live_info[site_id]['island_status'])
 
 
-    def teslaExtractSolarSupply(self):
-        return(self.site_live['solar_power'])
+    def teslaExtractSolarSupply(self, site_id):
+        return(self.site_live_info[site_id]['solar_power'])
 
-    def teslaExtractBatterySupply(self):     
-        return(self.site_live['battery_power'])
+    def teslaExtractBatterySupply(self, site_id):     
+        return(self.site_live_info[site_id]['battery_power'])
 
-    def teslaExtractGridSupply(self):     
-        return(self.site_live['grid_power'])
+    def teslaExtractGridSupply(self, site_id):     
+        return(self.site_live_info[site_id]['grid_power'])
 
-    def teslaExtractLoad(self): 
-        return(self.site_live['load_power'])
+    def teslaExtractLoad(self, site_id): 
+        return(self.site_live_info[site_id]['load_power'])
 
-    def teslaExtractGeneratorSupply (self):
-        return(self.site_live['generator_power'])
+    def teslaExtractGeneratorSupply (self, site_id):
+        return(self.site_live_info[site_id]['generator_power'])
     '''
 
     
@@ -763,119 +755,119 @@ class teslaAccess(udi_interface.OAuth):
 			'consumer_energy_imported_from_battery': 10561, 
 			'consumer_energy_imported_from_generator': 0}]}}
     '''
-    def tesla_grid_energy_import(self, day):
+    def tesla_grid_energy_import(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['grid_energy_imported'])
+            return(self.history_data[site_id]['energy'][day]['grid_energy_imported'])
         
-    def tesla_grid_energy_export(self, day):    
+    def tesla_grid_energy_export(self, site_id, day):    
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_solar'] + self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_generator'] + self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_battery'])
+            return(self.history_data[site_id]['energy'][day]['grid_energy_exported_from_solar'] + self.history_data[site_id]['energy'][day]['grid_energy_exported_from_generator'] + self.history_data[site_id]['energy'][day]['grid_energy_exported_from_battery'])
 
-    def tesla_solar_to_grid_energy(self, day): 
+    def tesla_solar_to_grid_energy(self, site_id, day): 
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['grid_energy_exported_from_solar'])
+            return(self.history_data[site_id]['energy'][day]['grid_energy_exported_from_solar'])
 
-    def tesla_solar_energy_exported(self, day):
+    def tesla_solar_energy_exported(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['solar_energy_exported'])
+            return(self.history_data[site_id]['energy'][day]['solar_energy_exported'])
 
-    def tesla_home_energy_total(self, day):    
+    def tesla_home_energy_total(self, site_id, day):    
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_grid'] + self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_solar'] + self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_battery'] + self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_generator'] )
+            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_grid'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_solar'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_battery'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_generator'] )
 
 
-    def  tesla_home_energy_solar(self, day):   
+    def  tesla_home_energy_solar(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_solar'])
+            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_solar'])
         
-    def  tesla_home_energy_battery(self, day):   
+    def  tesla_home_energy_battery(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_battery'])   
+            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_battery'])   
         
-    def  tesla_home_energy_grid(self, day):   
+    def  tesla_home_energy_grid(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_grid'])          
+            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_grid'])          
 
-    def  tesla_home_energy_generator(self, day):   
+    def  tesla_home_energy_generator(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['consumer_energy_imported_from_generator'])            
+            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_generator'])            
 
 
-    def tesla_battery_energy_import(self, day):        
+    def tesla_battery_energy_import(self, site_id, day):        
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['battery_energy_imported_from_grid'] + self.history_data[self.site_id]['energy'][day]['battery_energy_imported_from_solar'] + self.history_data[self.site_id]['energy'][day]['battery_energy_imported_from_generator']  )
+            return(self.history_data[site_id]['energy'][day]['battery_energy_imported_from_grid'] + self.history_data[site_id]['energy'][day]['battery_energy_imported_from_solar'] + self.history_data[site_id]['energy'][day]['battery_energy_imported_from_generator']  )
 
-    def tesla_battery_energy_export(self, day):
+    def tesla_battery_energy_export(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[self.site_id]['energy'][day]['battery_energy_exported'])
+            return(self.history_data[site_id]['energy'][day]['battery_energy_exported'])
         
 
 
     '''
-    def teslaExtractDaysSolar(self):
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysSolar(self, site_id):
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsmuption['solar_power'])
     
-    def teslaExtractDaysConsumption(self):
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysConsumption(self, site_id):
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsumption['consumed_power'])
 
-    def teslaExtractDaysGeneration(self):
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysGeneration(self, site_id):
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsumption['net_generation'])
 
-    def teslaExtractDaysBattery(self): 
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysBattery(self, site_id): 
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsumption['battery_power'])
 
-    def teslaExtractDaysGrid(self):         
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysGrid(self, site_id):         
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsumption['net_power'])
 
-    def teslaExtractDaysGridServicesUse(self):
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysGridServicesUse(self, site_id):
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsumption['grid_services_power'])
 
-    def teslaExtractDaysGeneratorUse(self):
-        return(self.history_data[self.site_id]['energy']['today']['solar_energy_exported'])
+    def teslaExtractDaysGeneratorUse(self, site_id):
+        return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
         #return(self.daysConsumption['generator_power'])  
 
-    def teslaExtractYesteraySolar(self):
+    def teslaExtractYesteraySolar(self, site_id):
         return(self.daysConsumption['yesterday_solar_power'])
     
-    def teslaExtractYesterdayConsumption(self):     
+    def teslaExtractYesterdayConsumption(self, site_id):     
         return(self.daysConsumption['yesterday_consumed_power'])
 
-    def teslaExtractYesterdayGeneraton(self):         
+    def teslaExtractYesterdayGeneraton(self, site_id):         
         return(self.daysConsumption['net_generation'])
 
-    def teslaExtractYesterdayBattery(self):         
+    def teslaExtractYesterdayBattery(self, site_id):         
         return(self.daysConsumption['yesterday_battery_power'])
 
-    def teslaExtractYesterdayGrid(self):         
+    def teslaExtractYesterdayGrid(self, site_id):         
         return(self.daysConsumption['yesterday_net_power'])
 
-    def teslaExtractYesterdayGridServiceUse(self):         
+    def teslaExtractYesterdayGridServiceUse(self, site_id):         
         return(self.daysConsumption['yesterday_grid_services_power'])
 
-    def teslaExtractYesterdayGeneratorUse(self):         
+    def teslaExtractYesterdayGeneratorUse(self, site_id):         
         return(self.daysConsumption['yesterday_generator_power'])  
 
-    def teslaExtractOperationMode(self):         
+    def teslaExtractOperationMode(self, site_id):         
         return(self.site_info['default_real_mode'])
 
-    def teslaExtractConnectedTesla(self):       
+    def teslaExtractConnectedTesla(self, site_id):       
         return(True)
 
-    def teslaExtractRunning(self):  
+    def teslaExtractRunning(self, site_id):  
         return(True)
     
     #???
-    def teslaExtractPowerSupplyMode(self):  
+    def teslaExtractPowerSupplyMode(self, site_id):  
         return(True)
 
-    def teslaExtractGridServiceActive(self):
-        if self.site_live['grid_services_active']: 
+    def teslaExtractGridServiceActive(self, site_id):
+        if self.site_live_info[site_id]['grid_services_active']: 
             return(1)
         else:
             return(0)
