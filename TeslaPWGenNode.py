@@ -47,6 +47,8 @@ class teslaPWGenNode(udi_interface.Node):
         if self.TPW.pollSystemData('all'):
             self.updateISYdrivers('all')
  
+    def update_PW_data(self, type):
+        pass 
 
     id = 'pwgenerator'
     commands = { 'UPDATE': ISYupdate, 

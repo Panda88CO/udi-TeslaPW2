@@ -43,7 +43,9 @@ class teslaPWSolarNode(udi_interface.Node):
         else:
             logging.debug('System not ready yet')
 
-
+    def update_PW_data(self, type):
+        pass 
+    
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         if self.TPW.pollSystemData('all'):

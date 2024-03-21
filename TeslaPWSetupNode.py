@@ -44,7 +44,8 @@ class teslaPWSetupNode(udi_interface.Node):
         else:
             logging.debug('System Not ready yet')
 
-
+    def update_PW_data(self, type):
+        pass 
 
     def setStormMode(self, command):
         logging.debug('setStormMode')

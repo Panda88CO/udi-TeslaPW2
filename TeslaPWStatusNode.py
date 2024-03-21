@@ -124,9 +124,13 @@ class teslaPWStatusNode(udi_interface.Node):
             logging.debug('System not ready yet')
 
 
+    def update_PW_data(self, type):
+        self.TPW.pollSystemData(type) 
+
+
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        if self.TPW.pollSystemData('all'):
+        if self.update_PW_data('all'):
             self.updateISYdrivers('all')
 
  

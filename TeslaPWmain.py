@@ -112,34 +112,6 @@ class TeslaPWController(udi_interface.Node):
         
     #def handleNotices(self):
     #    logging.debug('handleNotices')
-    '''
-    def check_config(self):
-        logging.debug('check_config  {} {} {} {}'.format(self.local_email ,self.local_password,self.local_ip , self.Rtoken ))
-        if self.local_email == '':
-            self.Parameters['LOCAL_USER_EMAIL'] = ''
-        else:
-            self.localAccess = True
-        if self.local_password == '':
-            self.Parameters['LOCAL_USER_PASSWORD'] = ''
-        else:
-            self.localAccess = True
-        if self.local_ip == '':
-            self.Parameters['LOCAL_IP_ADDRESS'] = ''
-        else:
-            self.localAccess = True
-
-        #if self.Rtoken == '':
-        #    self.Parameters['REFRESH_TOKEN'] = ''
-        #else:
-        #    self.cloudAccess = True
-         
-    '''
-    '''
-    This may be called multiple times with different settings as the user
-    could be enabling or disabling the various types of access.  So if the
-    user changes something, we want to re-initialize.
-    '''
-
 
     def tesla_initialize(self):
         logging.debug('starting Login process')
@@ -158,7 +130,7 @@ class TeslaPWController(udi_interface.Node):
                 while not self.localAccessUp and count < 5:
                     self.poly.Notices['auth'] = 'Please initiate authentication'
                     time.sleep(5)
-                    self.cloudAccessUp = self.TPW.teslaCloudConnect()
+                    self.cloudAccessUp = self.my_Tesla_PW.teslaCloudConnect()
                     count = count +1
                     logging.info('Waiting for cloud system access to be established')
                     self.poly.Notices['auth'] = 'Please initiate authentication'
@@ -255,7 +227,7 @@ class TeslaPWController(udi_interface.Node):
             logging.error('Exception Controller start: '+ str(e))
             logging.info('Did not connect to power wall')
 
-        self.TPW.systemReady = True
+        #self.TPW.systemReady = True
         logging.debug ('Controller - initialization done')
 
     def handleLevelChange(self, level):
@@ -265,8 +237,8 @@ class TeslaPWController(udi_interface.Node):
     def stop(self):
         #self.removeNoticesAll()
         self.poly.Notices.clear()
-        if self.TPW:
-            self.TPW.disconnectTPW()
+        #if self.TPW:
+            #self.TPW.disconnectTPW()
         self.node.setDriver('ST', 0 )
         self.poly.stop()
         logging.debug('stop - Cleaning up')
@@ -295,35 +267,33 @@ class TeslaPWController(udi_interface.Node):
     def shortPoll(self):
         logging.info('Tesla Power Wall Controller shortPoll')
         self.heartbeat()    
-        if self.TPW.pollSystemData('critical'):
-            for node in self.poly.nodes():
-                node.updateISYdrivers('critical')
-        else:
+        #if self.TPW.pollSystemData('critical'):
+
+        for node in self.poly.nodes():
+            node.update_PW_data('critical')
+            node.updateISYdrivers('critical')
+        #else:
             logging.info('Problem polling data from Tesla system') 
 
     def longPoll(self):
         logging.info('Tesla Power Wall  Controller longPoll')
-
-        if self.TPW.pollSystemData('all'):
-            for node in self.poly.nodes():
-                node.updateISYdrivers('all')
-            #if self.cloudAccess:
-            #    self.Rtoken  = self.TPW.getRtoken()
-            #    if self.Rtoken  != self.Parameters['REFRESH_TOKEN']:
-            #        self.Parameters['REFRESH_TOKEN'] = self.Rtoken
+       
+        for node in self.poly.nodes():
+            node.update_PW_data('all')
+            node.updateISYdrivers('all')
         else:
             logging.error ('Problem polling data from Tesla system')
 
     def updateISYdrivers(self, level):
         logging.debug('System updateISYdrivers - ' + str(level))       
         if level == 'all':
-            value = self.TPW.isNodeServerUp()
-            if value == 0:
-               self.longPollCountMissed = self.longPollCountMissed + 1
-            else:
-               self.longPollCountMissed = 0
-            self.node.setDriver('GV2', value)
-            self.node.setDriver('GV3', self.longPollCountMissed)     
+            #value = self.my_Tesla_PW.authendicated()
+            #if value == 0:
+            #   self.longPollCountMissed = self.longPollCountMissed + 1
+            #else:
+            #   self.longPollCountMissed = 0
+            #self.node.setDriver('GV2', value)
+            #self.node.setDriver('GV3', self.longPollCountMissed)     
             if self.cloudAccess == False and self.localAccess == False:
                 self.node.setDriver('GV4', 0)
             elif self.cloudAccess == True and self.localAccess == False:
@@ -333,17 +303,18 @@ class TeslaPWController(udi_interface.Node):
             elif self.cloudAccess == True and self.localAccess == True:
                 self.node.setDriver('GV4', 3)
 
-            logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
-            logging.debug('CTRL Update ISY drivers : GV3  value:' + str(self.longPollCountMissed) )
+            #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
+            #logging.debug('CTRL Update ISY drivers : GV3  value:' + str(self.longPollCountMissed) )
 
-        elif level == 'critical':
-            value = self.TPW.isNodeServerUp()
-            self.node.setDriver('GV2', value)
-            logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
+        #elif level == 'critical':
+            #value = self.TPW.isNodeServerUp()
+            #self.node.setDriver('GV2', value)
+            #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
         else:
             logging.error('Wrong parameter passed: ' + str(level))
 
-
+    def update_PW_data(self, type):
+        pass   
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
