@@ -144,7 +144,9 @@ class TeslaPWController(udi_interface.Node):
                 self.PWs = self.my_Tesla_PW.tesla_get_products()
                 logging.debug('self.PWs {}'.format(self.PWs))
                 for site_id in self.PWs:
-                    string = self.PWs[site_id]['energy_site_id'][-14:]
+                    string = str(self.PWs[site_id]['energy_site_id'])
+                    logging.debug(string)
+                    string = string[-14:]
                     logging.debug(string)
                     node_address =  self.poly.getValidAddress(string)
                     logging.debug(string)
