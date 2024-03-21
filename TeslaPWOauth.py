@@ -571,8 +571,8 @@ class teslaAccess(udi_interface.OAuth):
     def process_energy_data(self, site_id, hdata):
         logging.debug('process_energy_data: {}'.format(hdata))
     
-        for indx in range(0,len(hdata['timeseries'])):
-            e_data = hdata['timeseries'][indx]
+        for indx in range(0,len(hdata['time_series'])):
+            e_data = hdata['time_series'][indx]
             time_str = e_data['timestamp']
             dt_object = datetime.fromisoformat(time_str)
             date_str = dt_object.strftime('%Y-%m-%d')
