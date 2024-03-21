@@ -20,6 +20,7 @@ class teslaPWSolarNode(udi_interface.Node):
         self.poly = polyglot
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.ready()
         self.poly.addNode(self, conn_status = None, rename = True)
         self.wait_for_node_done()
