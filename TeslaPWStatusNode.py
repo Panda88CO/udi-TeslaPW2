@@ -47,9 +47,9 @@ class teslaPWStatusNode(udi_interface.Node):
 
         sub_adr = self.primary[-8:]
         if self.TPW.cloud_access_enabled:
-            teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW, self.site_id)
-            teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW, self.site_id)
-            teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW, self.site_id)
+            teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
+            teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
+            teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
         
         while not self.TPW.systemReady:
             time.sleep(1)

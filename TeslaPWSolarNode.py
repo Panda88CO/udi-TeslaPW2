@@ -12,7 +12,7 @@ except ImportError:
 class teslaPWSolarNode(udi_interface.Node):
     from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, TPW, site_id):
+    def __init__(self, polyglot, primary, address, name, TPW):
         super(teslaPWSolarNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
@@ -37,9 +37,9 @@ class teslaPWSolarNode(udi_interface.Node):
     
     def updateISYdrivers(self):
         logging.debug('SolarNode updateISYdrivers')
-        self.node.setDriver('GV1', self.TPW.getTPW_solarSupply(self.site_id))
-        self.node.setDriver('GV2', self.TPW.getTPW_daysSolar(self.site_id))
-        self.node.setDriver('GV3', self.TPW.getTPW_yesterdaySolar(self.site_id))
+        self.node.setDriver('GV1', self.TPW.getTPW_solarSupply())
+        self.node.setDriver('GV2', self.TPW.getTPW_daysSolar())
+        self.node.setDriver('GV3', self.TPW.getTPW_yesterdaySolar())
 
 
     def update_PW_data(self):

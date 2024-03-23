@@ -14,7 +14,7 @@ except ImportError:
 class teslaPWSetupNode(udi_interface.Node):
     from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, TPW, site_id):
+    def __init__(self, polyglot, primary, address, name, TPW):
         super(teslaPWSetupNode, self).__init__(polyglot, primary, address, name)
 
         logging.info('_init_ Tesla Power Wall setup Node')
@@ -22,7 +22,7 @@ class teslaPWSetupNode(udi_interface.Node):
         self.ISYforced = False
         self.TPW = TPW
         self.address = address 
-        self_site_id = site_id
+        #self_site_id = site_id
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -37,10 +37,10 @@ class teslaPWSetupNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('Node updateISYdrivers')
-        self.node.setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
-        self.node.setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
-        self.node.setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
-        self.node.setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
+        self.node.setDriver('GV1', self.TPW.getTPW_backoffLevel())
+        self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
+        self.node.setDriver('GV3', self.TPW.getTPW_stormMode())
+        self.node.setDriver('GV4', self.TPW.getTPW_touMode())
 
     def update_PW_data(self):
         pass 

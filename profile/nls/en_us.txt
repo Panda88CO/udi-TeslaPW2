@@ -40,9 +40,9 @@ ST-nlspwstatus-GV17-NAME = Grid Service Power Today
 ST-nlspwstatus-GV18-NAME = Grid Service Power Yesterday
 ST-nlspwstatus-GV19-NAME = Solar Power Today
 ST-nlspwstatus-GV20-NAME = Solar Power Yesterday
-ST-nlspwstatus-GV21-NAME = Utility Electricy cost (/kWh)
-ST-nlspwstatus-GV23-NAME = Utility Period
-ST-nlspwstatus-GV24-NAME = Utility Season
+#ST-nlspwstatus-GV21-NAME = Utility Electricy cost (/kWh)
+#ST-nlspwstatus-GV23-NAME = Utility Period
+#ST-nlspwstatus-GV24-NAME = Utility Season
 
 SEASON-0 = Winter
 SEASON-1 = SUMMER
@@ -86,14 +86,14 @@ ST-nlspwsetup-GV1-NAME = Backup Reserve (%)
 ST-nlspwsetup-GV2-NAME =  Operating Mode
 ST-nlspwsetup-GV3-NAME =  Storm Mode
 ST-nlspwsetup-GV4-NAME = Time of Use Mode
-ST-nlspwsetup-GV5-NAME = Weekend Off-peak Start Time (sec)
-ST-nlspwsetup-GV6-NAME = Weekend Off-peak End Time (sec)
-ST-nlspwsetup-GV7-NAME = Weekend Peak Start Time (sec)
-ST-nlspwsetup-GV8-NAME = Weekend Peak Start End (sec)
-ST-nlspwsetup-GV9-NAME = Weekday Off-peak Start Time (sec)
-ST-nlspwsetup-GV10-NAME = Weekday Off-peak End Time (sec)
-ST-nlspwsetup-GV11-NAME = Weekday Peak Start Time (sec)
-ST-nlspwsetup-GV12-NAME = Weekday Peak End Time (sec)
+#ST-nlspwsetup-GV5-NAME = Weekend Off-peak Start Time (sec)
+#ST-nlspwsetup-GV6-NAME = Weekend Off-peak End Time (sec)
+#ST-nlspwsetup-GV7-NAME = Weekend Peak Start Time (sec)
+#ST-nlspwsetup-GV8-NAME = Weekend Peak Start End (sec)
+#ST-nlspwsetup-GV9-NAME = Weekday Off-peak Start Time (sec)
+#ST-nlspwsetup-GV10-NAME = Weekday Off-peak End Time (sec)
+#ST-nlspwsetup-GV11-NAME = Weekday Peak Start Time (sec)
+#ST-nlspwsetup-GV12-NAME = Weekday Peak End Time (sec)
 
 TOUTIME-99 = Not Set
 
