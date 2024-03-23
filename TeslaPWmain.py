@@ -278,8 +278,8 @@ class TeslaPWController(udi_interface.Node):
         #if self.TPW.pollSystemData('critical'):
 
         for node in self.poly.nodes():
-            node.update_PW_data('critical')
-            node.updateISYdrivers('critical')
+            node.update_PW_data()
+            node.updateISYdrivers()
         #else:
             logging.info('Problem polling data from Tesla system') 
 
@@ -287,41 +287,38 @@ class TeslaPWController(udi_interface.Node):
         logging.info('Tesla Power Wall  Controller longPoll')
        
         for node in self.poly.nodes():
-            node.update_PW_data('all')
-            node.updateISYdrivers('all')
+            node.update_PW_data()
+            node.updateISYdrivers()
         else:
             logging.error ('Problem polling data from Tesla system')
 
-    def updateISYdrivers(self, level):
-        logging.debug('System updateISYdrivers - ' + str(level))       
-        if level == 'all':
-            #value = self.my_Tesla_PW.authendicated()
-            #if value == 0:
-            #   self.longPollCountMissed = self.longPollCountMissed + 1
-            #else:
-            #   self.longPollCountMissed = 0
-            #self.node.setDriver('GV2', value)
-            #self.node.setDriver('GV3', self.longPollCountMissed)     
-            if self.cloudAccess == False and self.localAccess == False:
-                self.node.setDriver('GV4', 0)
-            elif self.cloudAccess == True and self.localAccess == False:
-                self.node.setDriver('GV4', 1)
-            elif self.cloudAccess == False and self.localAccess == True:
-                self.node.setDriver('GV4', 2)
-            elif self.cloudAccess == True and self.localAccess == True:
-                self.node.setDriver('GV4', 3)
+    def updateISYdrivers(self):
+        logging.debug('System updateISYdrivers - ')       
+        #value = self.my_Tesla_PW.authendicated()
+        #if value == 0:
+        #   self.longPollCountMissed = self.longPollCountMissed + 1
+        #else:
+        #   self.longPollCountMissed = 0
+        #self.node.setDriver('GV2', value)
+        #self.node.setDriver('GV3', self.longPollCountMissed)     
+        if self.cloudAccess == False and self.localAccess == False:
+            self.node.setDriver('GV4', 0)
+        elif self.cloudAccess == True and self.localAccess == False:
+            self.node.setDriver('GV4', 1)
+        elif self.cloudAccess == False and self.localAccess == True:
+            self.node.setDriver('GV4', 2)
+        elif self.cloudAccess == True and self.localAccess == True:
+            self.node.setDriver('GV4', 3)
 
-            #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
-            #logging.debug('CTRL Update ISY drivers : GV3  value:' + str(self.longPollCountMissed) )
+        #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
+        #logging.debug('CTRL Update ISY drivers : GV3  value:' + str(self.longPollCountMissed) )
 
-        #elif level == 'critical':
-            #value = self.TPW.isNodeServerUp()
-            #self.node.setDriver('GV2', value)
-            #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
-        else:
-            logging.error('Wrong parameter passed: ' + str(level))
+        #value = self.TPW.isNodeServerUp()
+        #self.node.setDriver('GV2', value)
+        #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
 
-    def update_PW_data(self, type):
+
+    def update_PW_data(self):
         pass   
 
     def ISYupdate (self, command):
