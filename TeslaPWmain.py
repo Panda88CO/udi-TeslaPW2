@@ -18,7 +18,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 class TeslaPWController(udi_interface.Node):
     from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
 
