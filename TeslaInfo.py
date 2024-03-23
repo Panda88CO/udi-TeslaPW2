@@ -206,7 +206,7 @@ class tesla_info:
 
     When this finishes, we should have current PW data data.
     '''
-    def pollSystemData(self, level):
+    def pollSystemData(self, level='all'):
         logging.debug('PollSystemData - ' + str(level))
 
         try:

@@ -86,55 +86,52 @@ class teslaPWStatusNode(udi_interface.Node):
             return (99) 
 
     def updateISYdrivers(self):
-        if self.TPW.systemReady:
 
-            logging.debug('StatusNode updateISYdrivers')
-            tmp = self.TPW.getTPW_backup_time_remaining()
-            logging.debug('GV0: {}'.format(tmp))
-            self.node.setDriver('GV0', round(tmp,2))
-            logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
-            self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
-            logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
-            self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
-            logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
-            self.node.setDriver('GV3', self.TPW.getTPW_gridStatus())
-            logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
-            self.node.setDriver('GV4', self.TPW.getTPW_onLine())
-            logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
-            self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
-            logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
-            self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel())
-            logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply()))
-            self.node.setDriver('GV9', self.TPW.getTPW_gridSupply())
-            logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
-            self.node.setDriver('GV12', self.TPW.getTPW_load())
-            
 
-            self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
-            self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
-            self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
-            self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
-            self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption())
-            self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
-            self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration())
-            self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
-            self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
-            self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
-            self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
-            self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
+        logging.debug('StatusNode updateISYdrivers')
+        tmp = self.TPW.getTPW_backup_time_remaining()
+        logging.debug('GV0: {}'.format(tmp))
+        self.node.setDriver('GV0', round(tmp,2))
+        logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
+        self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
+        logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
+        self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
+        logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
+        self.node.setDriver('GV3', self.TPW.getTPW_gridStatus())
+        logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
+        self.node.setDriver('GV4', self.TPW.getTPW_onLine())
+        logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
+        self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
+        logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
+        self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel())
+        logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply()))
+        self.node.setDriver('GV9', self.TPW.getTPW_gridSupply())
+        logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
+        self.node.setDriver('GV12', self.TPW.getTPW_load())
+        
+        self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
+        self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
+        self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
+        self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
+        self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption())
+        self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
+        self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration())
+        self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
+        self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
+        self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
+        self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
+        self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
 
-        else:
-            logging.debug('System not ready yet')
 
 
     def update_PW_data(self):
-        self.TPW.pollSystemData(type) 
+        self.TPW.pollSystemData() 
 
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        if self.update_PW_data():
-            self.updateISYdrivers()
+        self.update_PW_data()
+        self.updateISYdrivers()
 
  
 

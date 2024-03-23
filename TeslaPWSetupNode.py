@@ -36,17 +36,11 @@ class teslaPWSetupNode(udi_interface.Node):
         self.updateISYdrivers()
 
     def updateISYdrivers(self):
-        if self.TPW.systemReady:
-            logging.debug('Node updateISYdrivers')
-            self.node.setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
-            self.node.setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
-            self.node.setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
-            self.node.setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
-
-
-            logging.debug('updateISYdrivers - setupnode DONE')
-        else:
-            logging.debug('System Not ready yet')
+        logging.debug('Node updateISYdrivers')
+        self.node.setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
+        self.node.setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
+        self.node.setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
+        self.node.setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
 
     def update_PW_data(self):
         pass 

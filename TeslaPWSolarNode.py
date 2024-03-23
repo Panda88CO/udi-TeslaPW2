@@ -36,13 +36,11 @@ class teslaPWSolarNode(udi_interface.Node):
         logging.debug('stop - Cleaning up')
     
     def updateISYdrivers(self):
-        if self.TPW.systemReady:
-            logging.debug('SolarNode updateISYdrivers')
-            self.node.setDriver('GV1', self.TPW.getTPW_solarSupply(self.site_id))
-            self.node.setDriver('GV2', self.TPW.getTPW_daysSolar(self.site_id))
-            self.node.setDriver('GV3', self.TPW.getTPW_yesterdaySolar(self.site_id))
-        else:
-            logging.debug('System not ready yet')
+        logging.debug('SolarNode updateISYdrivers')
+        self.node.setDriver('GV1', self.TPW.getTPW_solarSupply(self.site_id))
+        self.node.setDriver('GV2', self.TPW.getTPW_daysSolar(self.site_id))
+        self.node.setDriver('GV3', self.TPW.getTPW_yesterdaySolar(self.site_id))
+
 
     def update_PW_data(self):
         pass 
