@@ -211,7 +211,7 @@ class tesla_info:
 
         try:
             self.nowDay = date.today() 
-            if (self.lastDay.day != self.nowDay.day):
+            if (self.lastDay.day != self.nowDay.day) or self.TEST: # we passed midnight
                 self.yesterdayTotalSolar = self.daysTotalSolar
                 self.yesterdayTotalConsumption = self.daysTotalConsumption
                 self.yesterdayTotalGeneration  = self.daysTotalGeneraton
@@ -256,20 +256,22 @@ class tesla_info:
                 logging.debug('pollSystemData - CLOUD')
                 self.cloudAccessUp = self.TPWcloud.teslaUpdateCloudData(level)
                 if level == 'all':
-                    self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar(self.site_id)
-                    self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption(self.site_id)
-                    self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration(self.site_id)
-                    self.daysTotalBattery = self.TPWcloud.teslaExtractDaysBattery(self.site_id)
-                    self.daysTotalGrid = self.TPWcloud.teslaExtractDaysGrid(self.site_id)
-                    self.daysTotalGenerator = self.TPWcloud.teslaExtractDaysGeneratorUse(self.site_id)
-                    self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id)
-                    self.yesterdayTotalSolar = self.TPWcloud.teslaExtractYesteraySolar(self.site_id)
-                    self.yesterdayTotalConsumption = self.TPWcloud.teslaExtractYesterdayConsumption(self.site_id)
-                    self.yesterdayTotalGeneration  = self.TPWcloud.teslaExtractYesterdayGeneraton(self.site_id)
-                    self.yesterdayTotalBattery =  self.TPWcloud.teslaExtractYesterdayBattery(self.site_id) 
-                    self.yesterdayTotalGrid =  self.TPWcloud.teslaExtractYesterdayGrid(self.site_id) 
-                    self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractYesterdayGridServiceUse(self.site_id)
-                    self.yesterdayTotalGenerator = self.TPWcloud.teslaExtractYesterdayGeneratorUse(self.site_id)          
+                    self.daysTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'today')
+                    self.daysTotalConsumption = self.TPWcloud.tesla_home_energy_total(self.site_id, 'today' )
+                    self.daysTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'today')
+                    self.daysTotalBattery = self.TPWcloud.tesla_home_energy_battery(self.site_id, 'today')
+                    self.daysTotalGrid = self.TPWcloud.tesla_home_energy_grid(self.site_id, 'today')
+                    self.daysTotalGenerator = self.TPWcloud.tesla_home_energy_generator(self.site_id, 'today')
+                    self.daysTotalSolar = self.tesla_home_energy_solar(self.site_id, 'today')                                                     
+                    #self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id, 'today')#
+                    self.yesterdayTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'yesterday')
+                    self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(self.site_id, 'yesterday' )
+                    self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'yesterday')
+                    self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(self.site_id, 'yesterday')
+                    self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(self.site_id, 'yesterday')
+                    self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(self.site_id, 'yesterday')
+                    self.yesterdaTotalSolar = self.tesla_home_energy_solar(self.site_id, 'yesterday')         
+                    #self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id, 'yesterday')#
 
             # Get data directly from PW....
             if self.localAccessUp:
