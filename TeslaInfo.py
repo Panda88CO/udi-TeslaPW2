@@ -18,7 +18,7 @@ from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 
 class tesla_info:
     def __init__ (self,  my_Tesla_PW, site_id):
-        self.TEST = False
+
         self.site_id = site_id
 
         logging.debug('class tesla_info - init')
@@ -27,8 +27,8 @@ class tesla_info:
         self.solarInstalled = False
         self.ISYCritical = {}
         self.lastDay = date.today()  
-        #self.localAccessUp = 
-        #self.TPWcloudAccess = cloud
+        self.localAccessUp = False
+        self.TPWcloudAccess = False
         self.systemReady = False 
         self.firstPollCompleted = False
 
@@ -211,7 +211,7 @@ class tesla_info:
 
         try:
             self.nowDay = date.today() 
-            if (self.lastDay.day != self.nowDay.day) or self.TEST: # we passed midnight
+            if (self.lastDay.day != self.nowDay.day):
                 self.yesterdayTotalSolar = self.daysTotalSolar
                 self.yesterdayTotalConsumption = self.daysTotalConsumption
                 self.yesterdayTotalGeneration  = self.daysTotalGeneraton
