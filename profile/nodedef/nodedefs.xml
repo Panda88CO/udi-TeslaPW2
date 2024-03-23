@@ -42,9 +42,9 @@
          <st id="GV18" editor="KWH" />
          <st id="GV19" editor="KWH" />
          <st id="GV20" editor="KWH" />
-         <st id="GV21" editor="DOLLAR" />
+         <!-->st id="GV21" editor="DOLLAR" />
          <st id="GV23" editor="PERIOD" />
-         <st id="GV24" editor="SEASON" />
+         <st id="GV24" editor="SEASON" />-->
 
       </sts>
       <cmds>
@@ -93,7 +93,7 @@
          <st id="GV1" editor="PERCENT" />
          <st id="GV2" editor="OP_MODE" />
          <st id="GV3" editor="TOGGLE" />
-         <st id="GV4" editor="TOU_MODE" />
+         <!--<st id="GV4" editor="TOU_MODE" />
          <st id="GV5" editor="TIME" />
          <st id="GV6" editor="TIME" />
          <st id="GV7" editor="TIME" />
@@ -101,7 +101,7 @@
          <st id="GV9" editor="TIME" />
          <st id="GV10" editor="TIME" />
          <st id="GV11" editor="TIME" />
-         <st id="GV12" editor="TIME" />
+         <st id="GV12" editor="TIME" /> -->
       </sts>
       <cmds>
          <sends>
@@ -119,7 +119,7 @@
             <cmd id="TOU_MODE" > 
                <p id="" editor="TOU_MODE" init="GV4" /> 
             </cmd> 
-            <cmd id="WE_O_PEAK_START" > 
+            <!--<cmd id="WE_O_PEAK_START" > 
                <p id="" editor="TIMESET" init="GV5" /> 
             </cmd> 
             <cmd id="WE_O_PEAK_END" > 
@@ -142,7 +142,7 @@
             </cmd> 
             <cmd id="WK_PEAK_END" > 
                <p id="" editor="TIMESET" init="GV12" /> 
-            </cmd> 
+            </cmd>--> 
             <cmd id="UPDATE" /> 
          </accepts>
       </cmds>

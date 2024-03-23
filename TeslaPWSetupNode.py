@@ -33,6 +33,7 @@ class teslaPWSetupNode(udi_interface.Node):
 
     def start(self):
         logging.info('Starting Setup Node')
+        self.updateISYdrivers('all')
 
     def updateISYdrivers(self, level):
         if self.TPW.systemReady:
@@ -73,7 +74,7 @@ class teslaPWSetupNode(udi_interface.Node):
         value = int(command.get('value'))
         self.TPW.setTPW_touMode(value)
         self.node.setDriver('GV4', value)
-
+    '''
     def setWeekendOffpeakStart(self, command):
         logging.debug('setWeekendOffpeakStart')
         value = int(command.get('value'))
@@ -121,7 +122,7 @@ class teslaPWSetupNode(udi_interface.Node):
         value = int(command.get('value'))
         self.TPW.setTPW_updateTouSchedule('peak', 'week', 'end', value)
         self.node.setDriver('GV12', value)
-
+    '''
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called  Setup Node')
@@ -151,15 +152,15 @@ class teslaPWSetupNode(udi_interface.Node):
             {'driver': 'GV1', 'value': 0, 'uom': 51},  #backup reserve
             {'driver': 'GV2', 'value': 0, 'uom': 25},  #operating mode
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #storm mode
-            {'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
-            {'driver': 'GV5', 'value': 0, 'uom': 58},  #weekend off start
-            {'driver': 'GV6', 'value': 0, 'uom': 58},  #weekend off end
-            {'driver': 'GV7', 'value': 0, 'uom': 58},  #weekend on start
-            {'driver': 'GV8', 'value': 0, 'uom': 58},  #weekend on end
-            {'driver': 'GV9', 'value': 0, 'uom': 58},  #weekday off start
-            {'driver': 'GV10', 'value': 0, 'uom': 58}, #weekday off end
-            {'driver': 'GV11', 'value': 0, 'uom': 58}, #weekday on start
-            {'driver': 'GV12', 'value': 0, 'uom': 58}, #weekday on end
+            #{'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
+            #{'driver': 'GV5', 'value': 0, 'uom': 58},  #weekend off start
+            #{'driver': 'GV6', 'value': 0, 'uom': 58},  #weekend off end
+            #{'driver': 'GV7', 'value': 0, 'uom': 58},  #weekend on start
+            #{'driver': 'GV8', 'value': 0, 'uom': 58},  #weekend on end
+            #{'driver': 'GV9', 'value': 0, 'uom': 58},  #weekday off start
+            #{'driver': 'GV10', 'value': 0, 'uom': 58}, #weekday off end
+            #{'driver': 'GV11', 'value': 0, 'uom': 58}, #weekday on start
+            #{'driver': 'GV12', 'value': 0, 'uom': 58}, #weekday on end
             ]
 
         

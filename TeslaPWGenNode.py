@@ -29,8 +29,8 @@ class teslaPWGenNode(udi_interface.Node):
         
     def start(self):                
         logging.debug('Start Tesla Power Wall Generator Node')  
-        while not self.TPW.systemReady:
-            time.sleep(1)
+        #while not self.TPW.systemReady:
+        #    time.sleep(1)
         self.updateISYdrivers('all')
 
     def stop(self):

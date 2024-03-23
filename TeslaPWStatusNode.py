@@ -166,10 +166,10 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV19', 'value': 0, 'uom': 33}, #Solar today
             {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
             {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            {'driver': 'GV21', 'value': 0, 'uom': 103}, #Current buy rate
+            #{'driver': 'GV21', 'value': 0, 'uom': 103}, #Current buy rate
             #{'driver': 'GV22', 'value': 0, 'uom': 103}, #Current sell rate
-            {'driver': 'GV23', 'value': 99, 'uom': 25}, #Peak/Partial/offpeak
-            {'driver': 'GV24', 'value': 99, 'uom': 25}, #Summer/Winter
+            #{'driver': 'GV23', 'value': 99, 'uom': 25}, #Peak/Partial/offpeak
+            #{'driver': 'GV24', 'value': 99, 'uom': 25}, #Summer/Winter
            
            
             ]
