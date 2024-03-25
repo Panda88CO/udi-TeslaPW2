@@ -262,16 +262,16 @@ class tesla_info:
                     self.daysTotalBattery = self.TPWcloud.tesla_home_energy_battery(self.site_id, 'today')
                     self.daysTotalGrid = self.TPWcloud.tesla_home_energy_grid(self.site_id, 'today')
                     self.daysTotalGenerator = self.TPWcloud.tesla_home_energy_generator(self.site_id, 'today')
-                    self.daysTotalSolar = self.tesla_home_energy_solar(self.site_id, 'today')                                                     
-                    self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id, 'today')#
+                    self.daysTotalSolar = self.TPWcloud.tesla_home_energy_solar(self.site_id, 'today')                                                     
+                    self.daysTotalGridServices = self.TPWcloud.tesla_grid_service_export(self.site_id, 'today') - self.TPWcloud.tesla_grid_service_import(self.site_id, 'today') #
                     self.yesterdayTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'yesterday')
                     self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(self.site_id, 'yesterday' )
                     self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'yesterday')
                     self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(self.site_id, 'yesterday')
                     self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(self.site_id, 'yesterday')
                     self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(self.site_id, 'yesterday')
-                    self.yesterdaTotalSolar = self.tesla_home_energy_solar(self.site_id, 'yesterday')         
-                    self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id, 'yesterday')#
+                    self.yesterdaTotalSolar = self.TPWcloud.tesla_home_energy_solar(self.site_id, 'yesterday')         
+                    self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(self.site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(self.site_id, 'yesterday')#
 
             # Get data directly from PW....
             if self.localAccessUp:
