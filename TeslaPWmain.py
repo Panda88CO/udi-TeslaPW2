@@ -92,11 +92,13 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 
         if self.cloudAccess:
+            no_message = True
             while not self.my_Tesla_PW.authendicated():
                 time.sleep(5)
                 logging.info('Waiting for authendication - press autendicate button')
-                self.poly.Notices['auth'] = 'Please initiate authentication'
-   
+                if no_message:
+                    self.poly.Notices['auth'] = 'Please initiate authentication'
+                    no_message = False
 
         #self.TPW = tesla_info(self.my_Tesla_PW)
         #self.poly.setCustomParamsDoc()

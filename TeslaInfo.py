@@ -37,6 +37,13 @@ class tesla_info:
         self.IPaddress = my_Tesla_PW.LOCAL_IP_ADDRESS
         self.local_access_enabled = my_Tesla_PW.local_access_enabled
         self.cloud_access_enabled = my_Tesla_PW.cloud_access_enabled
+        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
+        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
+        self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
+        self.ISYoperationModeEnum = {}
+        logging.debug( ' self.ISYoperationModeEnum, operationModeEnum: {} {}'.format(self.ISYoperationModeEnum, self.operationModeEnum))
+        for key in self.operationModeEnum:
+            self.ISYoperationModeEnum[self.operationModeEnum[key]] = key
 
         if not self.local_access_enabled and not self.cloud_access_enabled:
             logging.debug('No connection specified')
@@ -170,6 +177,7 @@ class tesla_info:
         self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
         self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
         self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
+        self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         self.ISYoperationModeEnum = {}
         logging.debug( ' self.ISYoperationModeEnum, operationModeEnum: {} {}'.format(self.ISYoperationModeEnum, self.operationModeEnum))
         for key in self.operationModeEnum:
@@ -593,17 +601,18 @@ class tesla_info:
 
 
     def getTPW_operationMode(self):
+
         if self.localAccessUp and self.firstPollCompleted:
             operationVal = self.TPWlocal.get_operation_mode()
             key = self.operationLocalEnum[operationVal.value]
         else:
             key = self.TPWcloud.teslaExtractOperationMode(self.site_id)
         logging.debug('getTPW_operationMode ' + str(key)) 
-        return( self.ISYoperationModeEnum [key])
+        return( self.operationModeEnumList.index(key))
     
     def setTPW_operationMode(self, index):
         logging.debug('setTPW_operationMode ')  
-        return(self.TPWcloud.teslaSetOperationMode(self.operationModeEnum[index]))
+        return(self.TPWcloud.teslaSetOperationMode(self.operationModeEnumList[index]))
 
     ''' 
     def getTPW_running(self):
