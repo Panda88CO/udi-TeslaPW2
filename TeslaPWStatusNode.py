@@ -90,9 +90,11 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
         logging.debug('StatusNode updateISYdrivers')
-        tmp = self.TPW.getTPW_backup_time_remaining()
-        logging.debug('GV0: {}'.format(tmp))
-        self.node.setDriver('GV0', round(tmp,2))
+        #tmp = self.TPW.getTPW_backup_time_remaining()
+        #logging.debug('GV0: {}'.format(tmp))
+        #self.node.setDriver('GV0', round(tmp,2))
+        logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
+        self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
         logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
         self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
         logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
@@ -142,7 +144,7 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
     drivers = [
-            {'driver': 'GV0', 'value': 0, 'uom': 20},  #battery level
+            {'driver': 'GV0', 'value': -1, 'uom': 33},  #battery level
             {'driver': 'GV1', 'value': 0, 'uom': 51},  #battery level
             {'driver': 'GV2', 'value': 0, 'uom': 25},  #mode
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #grid status

@@ -721,7 +721,9 @@ class teslaAccess(udi_interface.OAuth):
 
     def teslaExtractGridStatus(self, site_id): 
         return(self.site_live_info[site_id]['island_status'])
-
+    
+    def teslaExtractLoad(self, site_id): 
+        return(self.site_live_info[site_id]['load_power'])
 
     def teslaExtractSolarSupply(self, site_id):
         return(self.site_live_info[site_id]['solar_power'])
@@ -732,8 +734,8 @@ class teslaAccess(udi_interface.OAuth):
     def teslaExtractGridSupply(self, site_id):     
         return(self.site_live_info[site_id]['grid_power'])
 
-    def teslaExtractLoad(self, site_id): 
-        return(self.site_live_info[site_id]['load_power'])
+    def teslaExtractEnergyRemaining(self, site_id): 
+        return(self.site_live_info[site_id]['energy_left'])
 
     def teslaExtractGeneratorSupply (self, site_id):
         return(self.site_live_info[site_id]['generator_power'])

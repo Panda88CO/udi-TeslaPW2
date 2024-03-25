@@ -359,6 +359,14 @@ class tesla_info:
         self.pollSystemData('all')
         return(None)
 
+
+    def getTPW_energy_remaining(self):
+        if not self.cloudAccessUp:
+            energy_remain = self.TPWlocal.get_energy()
+        else:
+            energy_remain = self.TPWcloud.teslaExtractEnergyRemaining(self.site_id)
+        return(energy_remain)
+
     def getTPW_chargeLevel(self):
  
         if self.localAccessUp and self.firstPollCompleted:
