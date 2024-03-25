@@ -40,11 +40,9 @@ class tesla_info:
         self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
         self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
         self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
-        self.ISYoperationModeEnum = {}
-        logging.debug( ' self.ISYoperationModeEnum, operationModeEnum: {} {}'.format(self.ISYoperationModeEnum, self.operationModeEnum))
-        for key in self.operationModeEnum:
-            self.ISYoperationModeEnum[self.operationModeEnum[key]] = key
-
+        self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
+        #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
+        #self.TOU_MODES = ["economics", "balanced"]
         if not self.local_access_enabled and not self.cloud_access_enabled:
             logging.debug('No connection specified')
         if self.cloud_access_enabled:
@@ -174,10 +172,11 @@ class tesla_info:
         #logging.debug('teslaInitializeData - 1.1 -  self.ISYgridEnum{} '.format( OperationMode.SELF_CONSUMPTION.value))
         #logging.debug('teslaInitializeData - 1.1 -  self.ISYgridEnum{} '.format( GridStatus.ISLANDED.value))
 
-        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
-        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
-        self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
-        self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
+        #self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
+        #self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
+        #self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
+        #self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
+        '''
         self.ISYoperationModeEnum = {}
         logging.debug( ' self.ISYoperationModeEnum, operationModeEnum: {} {}'.format(self.ISYoperationModeEnum, self.operationModeEnum))
         for key in self.operationModeEnum:
@@ -205,7 +204,7 @@ class tesla_info:
                 self.ISYtouEnum[ModeList[i]] = i
         else:
             ModeList=None
-        
+        '''
 
     '''
     Get the most current data. We get data from the cloud first, if cloud
@@ -676,7 +675,7 @@ class tesla_info:
     def getTPW_touMode(self):
         logging.debug('getTPW_touMode ')  
         if self.TPWcloudAccess:
-            return(self.ISYtouEnum[self.TPWcloud.teslaExtractTouMode(self.site_id)])        
+            return(self.TOU_MODES.index([self.TPWcloud.teslaExtractTouMode(self.site_id)]))
 
 
     def getTPW_touSchedule(self):

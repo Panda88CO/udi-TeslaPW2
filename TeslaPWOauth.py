@@ -15,7 +15,7 @@ MIT License
 import json
 import requests
 import time
-import urllib
+#import urllib
 from datetime import timedelta, datetime
 from tzlocal import get_localzone
 #from udi_interface import logging, Custom
