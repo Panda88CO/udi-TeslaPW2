@@ -667,6 +667,9 @@ class teslaAccess(udi_interface.OAuth):
     def tesla_get_pw_name(self, site_id):
         return(self.site_info[site_id]['site_name'])
 
+    def teslaExtractOperationMode(self, site_id):
+        return(self.site_info[site_id]['default_real_mode'])
+
     def teslaExtractStormMode(self, site_id):
         return(self.site_live_info[site_id]['storm_mode_active'])
 
@@ -706,8 +709,7 @@ class teslaAccess(udi_interface.OAuth):
     def teslaExtractTouMode(self, site_id):
         return(self.site_info[site_id]['components']['tou_settings']['optimization_strategy'])
 
-    def teslaExtractTouScheduleList(self, site_id):
-        
+    def teslaExtractTouScheduleList(self, site_id):        
         self.touScheduleList = self.site_live_info[site_id]['components']['tou_settings']['schedule']
         return( self.touScheduleList )
 
@@ -735,6 +737,9 @@ class teslaAccess(udi_interface.OAuth):
 
     def teslaExtractGeneratorSupply (self, site_id):
         return(self.site_live_info[site_id]['generator_power'])
+
+
+
     '''
 
     
