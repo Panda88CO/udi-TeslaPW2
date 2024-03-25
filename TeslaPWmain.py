@@ -100,7 +100,7 @@ class TeslaPWController(udi_interface.Node):
                     self.poly.Notices['auth'] = 'Please initiate authentication'
                     no_message = False
                 time.sleep(5)
-
+            self.poly.Notices.clear()
         #self.TPW = tesla_info(self.my_Tesla_PW)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
