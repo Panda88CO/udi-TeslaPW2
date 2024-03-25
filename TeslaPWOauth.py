@@ -738,7 +738,11 @@ class teslaAccess(udi_interface.OAuth):
     def teslaExtractGeneratorSupply (self, site_id):
         return(self.site_live_info[site_id]['generator_power'])
 
-
+    def teslaExtractGridServiceActive(self, site_id):
+        if self.site_live_info[site_id]['grid_services_active']:
+            return(1)
+        else:
+            return(0)
 
     '''
 

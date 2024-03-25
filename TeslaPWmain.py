@@ -94,11 +94,12 @@ class TeslaPWController(udi_interface.Node):
         if self.cloudAccess:
             no_message = True
             while not self.my_Tesla_PW.authendicated():
-                time.sleep(5)
-                logging.info('Waiting for authendication - press autendicate button')
+                
+                logging.info('Waiting for authendication')
                 if no_message:
                     self.poly.Notices['auth'] = 'Please initiate authentication'
                     no_message = False
+                time.sleep(5)
 
         #self.TPW = tesla_info(self.my_Tesla_PW)
         #self.poly.setCustomParamsDoc()
@@ -156,7 +157,7 @@ class TeslaPWController(udi_interface.Node):
                     logging.debug(string)
                     node_name = self.poly.getValidName(string)
                     logging.debug(string)
-                    teslaPWStatusNode(self.poly, node_address, node_address,  node_name, self.my_Tesla_PW, site_id)
+                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.my_Tesla_PW, site_id)
                     self.wait_for_node_done()
 
             else:
@@ -286,7 +287,7 @@ class TeslaPWController(udi_interface.Node):
             logging.info('Problem polling data from Tesla system') 
 
     def longPoll(self):
-        logging.info('Tesla Power Wall  Controller longPoll')
+        logging.info('Tesla Power Wall Controller longPoll')
        
         for node in self.poly.nodes():
             node.update_PW_data()

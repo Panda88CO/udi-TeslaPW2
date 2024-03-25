@@ -35,6 +35,7 @@ class teslaPWStatusNode(udi_interface.Node):
         self.poly.addNode(self, conn_status = None, rename = True)
         self.wait_for_node_done()
         self.node = self.poly.getNode(address)
+        self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         #self.TPW.tesla_get_site_info(self.site_id)
         #self.TPW.tesla_get_live_status(self.site_id)
         
@@ -42,7 +43,7 @@ class teslaPWStatusNode(udi_interface.Node):
         
     def start(self):   
         logging.debug('Start Tesla Power Wall Status Node')
-        self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
+        #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         logging.info('Adding power wall sub-nodes')
 
         sub_adr = self.primary[-8:]
