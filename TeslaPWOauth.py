@@ -715,7 +715,7 @@ class teslaAccess(udi_interface.OAuth):
         return(round(self.site_live_info[site_id]['percentage_charged'],2))
         
     def teslaExtractBackoffLevel(self, site_id):
-        return(round(self.site_live_info[site_id]['backup_reserve_percent'],1))
+        return(round(self.site_info[site_id]['backup_reserve_percent'],1))
 
     def teslaExtractGridStatus(self, site_id): 
         return(self.site_live_info[site_id]['island_status'])
@@ -803,8 +803,13 @@ class teslaAccess(udi_interface.OAuth):
         if day in self.DAY_HISTORY:
             return(self.history_data[site_id]['energy'][day]['battery_energy_exported'])
         
+    def tesla_grid_service_export(self, site_id, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[site_id]['energy'][day]['grid_services_energy_exported'])   
 
-
+    def tesla_grid_service_import(self, site_id, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])   
     '''
     def teslaExtractDaysSolar(self, site_id):
         return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
