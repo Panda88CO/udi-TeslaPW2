@@ -7,10 +7,10 @@ try:
 except ImportError:
     import logging
     logging.basicConfig(level=30)
-import time
+#import time
                
 class teslaPWGenNode(udi_interface.Node):
-    from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
+    from  udiLib import node_queue, wait_for_node_done, mask2key
 
     def __init__(self, polyglot, primary, address, name, TPW):
         super(teslaPWGenNode, self).__init__(polyglot, primary, address, name)

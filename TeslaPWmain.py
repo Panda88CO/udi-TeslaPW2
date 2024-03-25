@@ -20,7 +20,7 @@ except ImportError:
 
 VERSION = '0.1.2'
 class TeslaPWController(udi_interface.Node):
-    from  udiYolinkLib import node_queue, wait_for_node_done, mask2key
+    from  udiLib import node_queue, wait_for_node_done, mask2key
 
     def __init__(self, polyglot, primary, address, name):
         super(TeslaPWController, self).__init__(polyglot, primary, address, name)

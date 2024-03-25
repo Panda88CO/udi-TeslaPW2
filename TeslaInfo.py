@@ -35,26 +35,29 @@ class tesla_info:
         self.localEmail = my_Tesla_PW.LOCAL_USER_EMAIL
         self.localPassword = my_Tesla_PW.LOCAL_USER_PASSWORD
         self.IPaddress = my_Tesla_PW.LOCAL_IP_ADDRESS
-        self.local_access_enabled = my_Tesla_PW.local_access_enabled
-        self.cloud_access_enabled = my_Tesla_PW.cloud_access_enabled
-        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
-        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
+        self.local_access_enabled = my_Tesla_PW.local_access()
+        self.cloud_access_enabled = my_Tesla_PW.cloud_access()
         self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         #self.TOU_MODES = ["economics", "balanced"]
         if not self.local_access_enabled and not self.cloud_access_enabled:
             logging.debug('No connection specified')
+        logging.debug('Tesla_info before retrieving clould data')
         if self.cloud_access_enabled:
             self.TPWcloud.tesla_get_site_info(self.site_id)
             self.TPWcloud.tesla_get_live_status(self.site_id)
             self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
             self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
+            logging.debug('Clould data retrieved tesla_info')
 
     def loginLocal (self):
         logging.debug('Local Access Supported')
 
         self.TPWlocal = Powerwall(self.IPaddress)
+        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
+        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
+
         #logging.debug('self.TPWlocal - {}'.format(self.TPWlocal))
         self.TPWlocal.login(self.localPassword, self.localEmail)
         logging.debug('self.TPWlocal ')
