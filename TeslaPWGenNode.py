@@ -18,6 +18,8 @@ class teslaPWGenNode(udi_interface.Node):
         self.ISYforced = False
         self.TPW = TPW
         self.poly = polyglot
+        self.name = name
+        self.node_ok = False
         #self.site_id = site_id
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
@@ -32,6 +34,10 @@ class teslaPWGenNode(udi_interface.Node):
         #while not self.TPW.systemReady:
         #    time.sleep(1)
         self.updateISYdrivers()
+        self.node_ok = True
+
+    def node_ready(self):
+        return(self.node_ok)
 
     def stop(self):
         logging.debug('stop - Cleaning up')

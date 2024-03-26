@@ -21,6 +21,7 @@ class teslaPWSetupNode(udi_interface.Node):
         self.poly = polyglot
         self.ISYforced = False
         self.TPW = TPW
+        self.node_ok = False
         self.address = address 
         #self_site_id = site_id
         self.n_queue = []
@@ -34,6 +35,7 @@ class teslaPWSetupNode(udi_interface.Node):
     def start(self):
         logging.info('Starting Setup Node')
         self.updateISYdrivers()
+        self.node_ok = True
 
     def updateISYdrivers(self):
         logging.debug('Node updateISYdrivers')
@@ -41,6 +43,9 @@ class teslaPWSetupNode(udi_interface.Node):
         self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
         self.node.setDriver('GV3', self.TPW.getTPW_stormMode())
         self.node.setDriver('GV4', self.TPW.getTPW_touMode())
+
+    def node_ready(self):
+        return(self.node_ok)
 
     def update_PW_data(self):
         pass 

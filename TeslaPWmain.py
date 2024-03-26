@@ -31,6 +31,7 @@ class TeslaPWController(udi_interface.Node):
         self.name = 'Tesla PowerWall Info'
         self.primary = primary
         self.address = address
+        self.name = name
         self.cloudAccess = False
         self.localAccess = False
         self.initialized = False
@@ -281,19 +282,25 @@ class TeslaPWController(udi_interface.Node):
         #if self.TPW.pollSystemData('critical'):
 
         for node in self.poly.nodes():
-            node.update_PW_data()
-            node.updateISYdrivers()
-        #else:
-            logging.info('Problem polling data from Tesla system') 
+            if node.node_ready():
+                node.update_PW_data()
+                node.updateISYdrivers()
+            else:
+                logging.info('Problem polling data from Tesla system - {}} may not be ready yet '.format(node.name)) 
 
     def longPoll(self):
         logging.info('Tesla Power Wall Controller longPoll')
        
         for node in self.poly.nodes():
-            node.update_PW_data()
-            node.updateISYdrivers()
-        else:
-            logging.error ('Problem polling data from Tesla system')
+            if node.node_ready():
+                node.update_PW_data()
+                node.updateISYdrivers()
+            else:
+                logging.info ('Problem polling data from Tesla system - {}} may not be ready yet '.format(node.name)) 
+    
+    def node_ready(self):
+        return(self.initialized)
+    
 
     def updateISYdrivers(self):
         logging.debug('System updateISYdrivers - ')       

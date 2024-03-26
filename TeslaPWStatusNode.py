@@ -25,8 +25,10 @@ class teslaPWStatusNode(udi_interface.Node):
         self.poly = polyglot
         self.ISYforced = False
         self.my_TeslaPW = my_TeslaPW
+        self.node_ok = False
         self.site_id = site_id
         self.primary = primary
+        self.name = name
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -47,20 +49,22 @@ class teslaPWStatusNode(udi_interface.Node):
         logging.info('Adding power wall sub-nodes')
 
         sub_adr = self.primary[-8:]
-        if self.TPW.cloud_access_enabled():
-            teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
-            teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
-            teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
+        #if self.TPW.cloud_access_enabled():
+        teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
+        teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
+        teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
         
         while not self.TPW.systemReady:
             time.sleep(1)
         self.TPW.teslaInitializeData()
         self.updateISYdrivers()
+        self.node_ok = True
 
     def stop(self):
         logging.debug('stop - Cleaning up')
     
-
+    def node_ready(self):
+        return(self.node_ok)
 
 
     def season2ISY(self, season):
