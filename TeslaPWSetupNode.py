@@ -47,7 +47,7 @@ class teslaPWSetupNode(udi_interface.Node):
     def node_ready(self):
         return(self.node_ok)
 
-    def update_PW_data(self):
+    def update_PW_data(self, level):
         pass 
 
     def setStormMode(self, command):

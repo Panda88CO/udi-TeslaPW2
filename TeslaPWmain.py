@@ -92,6 +92,7 @@ class TeslaPWController(udi_interface.Node):
         self.cloudAccess = self.my_Tesla_PW.cloud_access()
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 
+        '''
         if self.cloudAccess:
             no_message = True
             while not self.my_Tesla_PW.authendicated():
@@ -108,7 +109,7 @@ class TeslaPWController(udi_interface.Node):
         #self.check_config()
         #while not self.initialized:
         #    time.sleep(1)
-       
+        '''
         if self.cloudAccess or self.localAccess:
             self.tesla_initialize()
         else:
@@ -130,17 +131,19 @@ class TeslaPWController(udi_interface.Node):
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
-                self.cloudAccessUp = self.my_Tesla_PW.authendicated()
-                while not self.localAccessUp and count < 5:
-                    self.poly.Notices['auth'] = 'Please initiate authentication'
+                if self.my_Tesla_PW.getAccessToken():
+                    self.cloudAccessUp = True
+                while not self.cloudAccessUp and count < 5:
+                    self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
                     time.sleep(5)
-                    self.cloudAccessUp = self.my_Tesla_PW.authendicated()
+                    if self.my_Tesla_PW.getAccessToken():
+                        self.cloudAccessUp = True
                     count = count +1
                     logging.info('Waiting for cloud system access to be established')
-                    self.poly.Notices['auth'] = 'Please initiate authentication'
                 if not  self.cloudAccessUp:
                     logging.error('Failed to establish cloud access - ')   
-                    return
+                    if not self.localAccess:
+                        return
                 #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
                 logging.debug('finished login procedures' )
@@ -280,10 +283,11 @@ class TeslaPWController(udi_interface.Node):
         logging.info('Tesla Power Wall Controller shortPoll')
         self.heartbeat()    
         #if self.TPW.pollSystemData('critical'):
-
+        #should make short loop local long pool cloud 
         for node in self.poly.nodes():
             if node.node_ready():
-                node.update_PW_data()
+                logging.debug('short poll node loop {} - {}'.format(node.name, node.node_ready()))
+                node.update_PW_data('critical')
                 node.updateISYdrivers()
             else:
                 logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
@@ -292,8 +296,9 @@ class TeslaPWController(udi_interface.Node):
         logging.info('Tesla Power Wall Controller longPoll')
        
         for node in self.poly.nodes():
+            logging.debug('long poll node loop {} - {}'.format(node.name, node.node_ready()))
             if node.node_ready():
-                node.update_PW_data()
+                node.update_PW_data('all')
                 node.updateISYdrivers()
             else:
                 logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
@@ -328,7 +333,7 @@ class TeslaPWController(udi_interface.Node):
         #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
 
 
-    def update_PW_data(self):
+    def update_PW_data(self, level):
         pass   
 
     def ISYupdate (self, command):

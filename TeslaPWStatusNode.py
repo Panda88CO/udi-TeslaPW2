@@ -131,8 +131,8 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
 
-    def update_PW_data(self):
-        self.TPW.pollSystemData() 
+    def update_PW_data(self, level):
+        self.TPW.pollSystemData(level) 
 
 
     def ISYupdate (self, command):

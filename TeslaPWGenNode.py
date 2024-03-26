@@ -52,7 +52,7 @@ class teslaPWGenNode(udi_interface.Node):
         logging.debug('ISY-update called')
         self.updateISYdrivers()
  
-    def update_PW_data(self):
+    def update_PW_data(self, level):
         pass 
 
     id = 'pwgenerator'
