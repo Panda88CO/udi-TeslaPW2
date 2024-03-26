@@ -286,7 +286,7 @@ class TeslaPWController(udi_interface.Node):
                 node.update_PW_data()
                 node.updateISYdrivers()
             else:
-                logging.info('Problem polling data from Tesla system - {}} may not be ready yet '.format(node.name)) 
+                logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
 
     def longPoll(self):
         logging.info('Tesla Power Wall Controller longPoll')
@@ -296,7 +296,7 @@ class TeslaPWController(udi_interface.Node):
                 node.update_PW_data()
                 node.updateISYdrivers()
             else:
-                logging.info ('Problem polling data from Tesla system - {}} may not be ready yet '.format(node.name)) 
+                logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
     
     def node_ready(self):
         return(self.initialized)
