@@ -622,24 +622,26 @@ class teslaAccess(udi_interface.OAuth):
 
 
     def teslaUpdateCloudData(self, site_id, mode):
+        logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
         self.update_date_time()
         if mode == 'critical':
             temp =self.tesla_get_live_status(site_id)
+            self.tesla_get_today_history(site_id, 'energy')
             if temp != None:
                 self.site_live_info[site_id] = temp
                 return(True)
-            self.tesla_get_today_history(site_id, 'energy')
         elif mode == 'all':
             access = False
             temp =self.tesla_get_live_status(site_id)
             if temp != None:
                 self.site_live_info[site_id]  = temp
                 access = True
-                
+            logging.debug('sitelive : {}'.format(self.site_live_info[site_id] ))    
             temp = self.tesla_get_site_info('site_info')
             if temp != None:
                 self.site_info = temp
                 access = True
+            logging.debug('site info: {}'.format(self.site_info ))        
             logging.debug('self.site_info {}'.format(self.site_info))    
             
             self.tesla_get_today_history(site_id, 'energy')
