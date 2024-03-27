@@ -129,14 +129,14 @@ class teslaAccess(udi_interface.OAuth):
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
-        while not self.authendication_done :
-            try:
-                accessToken = self.getAccessToken()
-                self.authendication_done = True
-            except ValueError as err:
-                logging.error(' No access token exist - try again : {}'.format(err))
-                time.sleep(1)
-                self.authendication_done = False
+        #while not self.authendication_done :
+        try:
+            accessToken = self.getAccessToken()
+            #self.authendication_done = True
+        except ValueError as err:
+            logging.error(' No access token exist - try again : {}'.format(err))
+            time.sleep(1)
+            self.authendication_done = False
 
         logging.debug('oauthHandler Finished')
 
@@ -328,6 +328,7 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug(f"Token refresh result [{ type(token) }]: { token }")
             self._setExpiry(token)
             self._oauthTokens.load(token)
+            self.authendication_done = True
             self.poly.Notices.clear()
 
         except requests.exceptions.HTTPError as error:
