@@ -54,8 +54,6 @@ class teslaPWStatusNode(udi_interface.Node):
         teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
         teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
         
-        while not self.TPW.systemReady:
-            time.sleep(1)
         self.TPW.teslaInitializeData()
         self.updateISYdrivers()
         self.node_ok = True
