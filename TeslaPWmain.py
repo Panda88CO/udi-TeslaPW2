@@ -162,7 +162,7 @@ class TeslaPWController(udi_interface.Node):
                     node_name = self.poly.getValidName(string)
                     logging.debug(string)
                     teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.my_Tesla_PW, site_id)
-                    self.wait_for_node_done()
+                    #self.wait_for_node_done()
 
             else:
                 logging.info('Cloud Acces not enabled')
@@ -234,9 +234,10 @@ class TeslaPWController(udi_interface.Node):
                 self.poly.delNode('pwsetup')
             '''
             logging.debug('Node installation complete')
+            self.initialized = True
             self.longPoll()
             self.nodeDefineDone = True
-            self.initialized = True
+            
             
         except Exception as e:
             logging.error('Exception Controller start: '+ str(e))
@@ -304,6 +305,7 @@ class TeslaPWController(udi_interface.Node):
                 logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
     
     def node_ready(self):
+        logging.debug(' main node ready {} '.format(self.initialized ))
         return(self.initialized)
     
 

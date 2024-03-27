@@ -33,17 +33,18 @@ class teslaPWGenNode(udi_interface.Node):
         logging.debug('Start Tesla Power Wall Generator Node')  
         #while not self.TPW.systemReady:
         #    time.sleep(1)
-        self.updateISYdrivers()
         self.node_ok = True
-
+        self.updateISYdrivers()
+        
     def node_ready(self):
+
         return(self.node_ok)
 
     def stop(self):
         logging.debug('stop - Cleaning up')
     
     def updateISYdrivers(self):
-        logging.debug('SolarNode updateISYdrivers')
+        logging.debug('Generator Node updateISYdrivers')
         self.node.setDriver('GV1', self.TPW.getTPW_daysGeneratorUse())
         self.node.setDriver('GV2', self.TPW.getTPW_yesterdayGeneratorUse())
 
