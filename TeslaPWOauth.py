@@ -328,6 +328,7 @@ class teslaAccess(udi_interface.OAuth):
             logging.debug(f"Token refresh result [{ type(token) }]: { token }")
             self._setExpiry(token)
             self._oauthTokens.load(token)
+            self.poly.Notices.clear()
 
         except requests.exceptions.HTTPError as error:
             logging.error(f"Failed to refresh oAuth token: { error }")
