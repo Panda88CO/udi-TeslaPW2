@@ -132,7 +132,8 @@ class teslaAccess(udi_interface.OAuth):
         #while not self.authendication_done :
         try:
             accessToken = self.getAccessToken()
-            #self.authendication_done = True
+            logging.debug('oauthHandler {} '.format(accessToken))
+            self.authendication_done = True
         except ValueError as err:
             logging.error(' No access token exist - try again : {}'.format(err))
             time.sleep(1)
