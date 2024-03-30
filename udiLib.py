@@ -145,3 +145,6 @@ def heartbeat(self):
     else:
         self.reportCmd('DOF',2)
         self.hb = 0
+
+def handleLevelChange(self, level):
+    logging.info('New log level: {}'.format(level))        
