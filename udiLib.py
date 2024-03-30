@@ -133,3 +133,15 @@ def send_temp_to_isy (self, temperature, stateVar):
             self.node.setDriver(stateVar, round((temperature+273.15,1), True, True, 4))
         else:
             self.node.setDriver(stateVar, round((temperature+273.15-32)*9/5,1), True, True, 17)
+
+
+
+def heartbeat(self):
+    logging.debug('heartbeat: ' + str(self.hb))
+    
+    if self.hb == 0:
+        self.reportCmd('DON',2)
+        self.hb = 1
+    else:
+        self.reportCmd('DOF',2)
+        self.hb = 0

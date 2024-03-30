@@ -20,7 +20,7 @@ except ImportError:
 
 VERSION = '0.1.3'
 class TeslaPWController(udi_interface.Node):
-    from  udiLib import node_queue, wait_for_node_done, mask2key
+    from  udiLib import node_queue, wait_for_node_done, mask2key, heart_beat
 
     def __init__(self, polyglot, primary, address, name):
         super(TeslaPWController, self).__init__(polyglot, primary, address, name)
@@ -59,7 +59,7 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
-        self.poly.updateProfile()
+  
         self.poly.Notices.clear()
         self.nodeDefineDone = False
         self.longPollCountMissed = 0
@@ -81,7 +81,7 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         logging.debug('start')
         self.poly.updateProfile()
-        self.poly.Notices.clear()
+   
 
         while not self.my_Tesla_PW.customParamsDone() or not self.my_Tesla_PW.customNsDone() : 
             logging.info('Waiting for node to initialize')
@@ -260,15 +260,6 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('stop - Cleaning up')
     
 
-    def heartbeat(self):
-        logging.debug('heartbeat: ' + str(self.hb))
-        
-        if self.hb == 0:
-            self.reportCmd('DON',2)
-            self.hb = 1
-        else:
-            self.reportCmd('DOF',2)
-            self.hb = 0
         
     def systemPoll(self, pollList):
         logging.info('systemPoll {}'.format(pollList))
