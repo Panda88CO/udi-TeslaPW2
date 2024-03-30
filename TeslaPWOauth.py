@@ -262,7 +262,7 @@ class teslaAccess(udi_interface.OAuth):
         #oauthSettingsUpdate['token_parameters']['addRedirect'] = True
         self.updateOauthSettings(oauthSettingsUpdate)
         time.sleep(0.1)
-        temp = self.getOauthSettings()
+        logging.debug('getOauthSettings: {}'.format(self.getOauthSettings()))
         #logging.debug('Updated oAuth config 2: {}'.format(temp))
         
         self.handleCustomParamsDone = True
@@ -282,12 +282,12 @@ class teslaAccess(udi_interface.OAuth):
 
     def getAccessToken(self):
         # Make sure we have received tokens before attempting to renew
-
+        logging.debug('self.getAccessToken: {}'.format(self._oauthTokens))
         if self._oauthTokens is not None and self._oauthTokens.get('refresh_token'):
             expiry = self._oauthTokens.get('expiry')
 
             # If expired or expiring in less than 60 seconds, refresh
-            if ((expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now()) and self.authendication_done):
+            if ((expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now())):
 
                 logging.info(f"Access tokens: Token is expired since { expiry }. Initiating refresh.")
                 self._oAuthTokensRefresh()
