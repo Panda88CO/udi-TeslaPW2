@@ -3,10 +3,10 @@
 import sys
 import time 
 from TeslaInfo import tesla_info
-from TeslaPWSetupNode import teslaPWSetupNode
+#from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPWStatusNode import teslaPWStatusNode
-from TeslaPWSolarNode import teslaPWSolarNode
-from TeslaPWGenNode import teslaPWGenNode
+#from TeslaPWSolarNode import teslaPWSolarNode
+#from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWOauth import teslaAccess
 try:
     import udi_interface
@@ -146,10 +146,13 @@ class TeslaPWController(udi_interface.Node):
                         return
                 #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
+
                 logging.debug('finished login procedures' )
                 logging.info('Creating Nodes')
+            
                 self.PWs = self.my_Tesla_PW.tesla_get_products()
                 logging.debug('self.PWs {}'.format(self.PWs))
+
                 for site_id in self.PWs:
                     string = str(self.PWs[site_id]['energy_site_id'])
                     logging.debug(string)
@@ -161,7 +164,8 @@ class TeslaPWController(udi_interface.Node):
                     logging.debug(string)
                     node_name = self.poly.getValidName(string)
                     logging.debug(string)
-                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.my_Tesla_PW, site_id)
+                    self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
+                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
                     #self.wait_for_node_done()
 
             else:

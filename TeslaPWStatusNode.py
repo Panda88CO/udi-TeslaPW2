@@ -19,12 +19,12 @@ from TeslaPWGenNode import teslaPWGenNode
 class teslaPWStatusNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, my_TeslaPW, site_id):
-        super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, TPW, site_id):
+        #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.poly = polyglot
         self.ISYforced = False
-        self.my_TeslaPW = my_TeslaPW
+        self.TPW = TPW
         self.node_ok = False
         self.site_id = site_id
         self.primary = primary
@@ -45,7 +45,7 @@ class teslaPWStatusNode(udi_interface.Node):
         
     def start(self):   
         logging.debug('Start Tesla Power Wall Status Node')
-        self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
+        #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         logging.info('Adding power wall sub-nodes')
 
         sub_adr = self.primary[-8:]

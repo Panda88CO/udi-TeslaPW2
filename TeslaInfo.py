@@ -18,7 +18,6 @@ from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 
 class tesla_info:
     def __init__ (self,  my_Tesla_PW, site_id):
-
         self.site_id = site_id
 
         logging.debug('class tesla_info - init')
@@ -41,9 +40,10 @@ class tesla_info:
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         #self.TOU_MODES = ["economics", "balanced"]
-        if not self.local_access_enabled and not self.cloud_access_enabled:
+        if not self.local_access_enabled() and not self.cloud_access_enabled():
             logging.debug('No connection specified')
         logging.debug('Tesla_info before retrieving clould data')
+        logging.debug('oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
         if self.cloud_access_enabled():
             self.TPWcloud.tesla_get_site_info(self.site_id)
             self.TPWcloud.tesla_get_live_status(self.site_id)
