@@ -112,7 +112,6 @@ class tesla_local:
 
 
     def get_GWserial_number(self):
-        logging.debug('Batteries: {}'.format(self.TPWlocal.get_batteries()))
         logging.debug('Gateway: {}'.format(self.TPWlocal.get_gateway_din()))
         return(self.TPWlocal.get_gateway_din())
 

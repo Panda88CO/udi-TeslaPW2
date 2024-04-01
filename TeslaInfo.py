@@ -38,20 +38,20 @@ class tesla_info(object):
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         #self.TOU_MODES = ["economics", "balanced"]
-        if not self.local_access_enabled() and not self.cloud_access_enabled():
-            logging.debug('No connection specified')
-        logging.debug('Tesla_info before retrieving clould data')
-        logging.debug('oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
-        if self.cloud_access_enabled():
-            self.TPWcloud.tesla_get_site_info(self.site_id)
-            self.TPWcloud.tesla_get_live_status(self.site_id)
-            self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
-            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
-            logging.debug('Clould data retrieved tesla_info')
+        #\if not self.local_access_enabled() and not self.cloud_access_enabled():
+        #    logging.debug('No connection specified')
+        #logging.debug('Tesla_info before retrieving clould data')
+        #logging.debug('oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
+        #if self.cloud_access_enabled():
+        #    self.TPWcloud.tesla_get_site_info(self.site_id)
+        #    self.TPWcloud.tesla_get_live_status(self.site_id)
+        #    self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
+        #    self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
+        #    logging.debug('Clould data retrieved tesla_info')
 
 
     def local_access_enabled(self):
-        return(self.TPWcloud.local_access())
+        return(self.TPWlocal.local_access())
     
     def cloud_access_enabled(self):
         return(self.TPWcloud.cloud_access())

@@ -150,9 +150,7 @@ class teslaAccess(udi_interface.OAuth):
     # Your service may need to access custom params as well...
 
 
-    def local_access(self):
-        return(self.local_access_enabled)
-    
+   
     def cloud_access(self):
         return(self.cloud_access_enabled)
     
