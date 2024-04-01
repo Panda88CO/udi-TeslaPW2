@@ -3,6 +3,8 @@
 import sys
 import time 
 from TeslaInfo import tesla_info
+from TeslaLocal import tesla_local
+
 #from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPWStatusNode import teslaPWStatusNode
 #from TeslaPWSolarNode import teslaPWSolarNode
@@ -40,6 +42,7 @@ class TeslaPWController(udi_interface.Node):
         #self.Rtoken = None
         self.n_queue = []
         self.TPW = None
+        self.GW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
         self.my_Tesla_PW = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
@@ -158,8 +161,16 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(' 1 2 : {} {} '.format(self.my_Tesla_PW.customParamsDone() ,self.my_Tesla_PW.customNsDone()))
             time.sleep(2)
 
-        #self.localAccess = self.my_Tesla_PW.local_access()
-        self.cloudAccess = self.my_Tesla_PW.cloud_access()
+        if self.local_access_enabled: 
+            self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
+            self.GW = self, self.TPW_local.get_GWserial_number()
+        
+        if self.cloud_access_enabled:
+            if self.GW:
+                
+            
+            
+            self.cloudAccess = self.my_Tesla_PW.cloud_access()
 
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 

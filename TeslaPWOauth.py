@@ -53,9 +53,6 @@ class teslaAccess(udi_interface.OAuth):
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
         self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
         self.api  = '/api/1'
-        self.LOCAL_USER_EMAIL = ''
-        self.LOCAL_USER_PASSWORD = ''
-        self.LOCAL_IP_ADDRESS = ''
         self.local_access_enabled = False
         self.cloud_access_enabled = False
         #self.state = secrets.token_hex(16)
