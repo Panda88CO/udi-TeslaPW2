@@ -47,13 +47,15 @@ class teslaPWStatusNode(udi_interface.Node):
         logging.debug('Start Tesla Power Wall Status Node')
         #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         logging.info('Adding power wall sub-nodes')
-
+        logging.debug('status start 1 : {}'.format(self.TPW._oauthTokens))
         sub_adr = self.primary[-8:]
         #if self.TPW.cloud_access_enabled():
         teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
+        logging.debug('status start 2: {}'.format(self.TPW._oauthTokens))
         teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
+        logging.debug('status start 3: {}'.format(self.TPW._oauthTokens))
         teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
-        
+        logging.debug('status start 4 : {}'.format(self.TPW._oauthTokens))
         self.TPW.teslaInitializeData()
         self.updateISYdrivers()
         self.node_ok = True
