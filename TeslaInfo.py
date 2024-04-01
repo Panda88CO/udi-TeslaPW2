@@ -55,7 +55,15 @@ class tesla_info(object):
     
     def cloud_access_enabled(self):
         return(self.TPWcloud.cloud_access())
+    
 
+    def init_cloud(self):
+        if self.cloud_access_enabled():
+            self.TPWcloud.tesla_get_site_info(self.site_id)
+            self.TPWcloud.tesla_get_live_status(self.site_id)
+            self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
+            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
+            logging.debug('Clould data retrieved tesla_info')
 
     def loginLocal (self):
         logging.debug('Local Access Supported')
