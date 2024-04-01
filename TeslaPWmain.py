@@ -183,21 +183,22 @@ class TeslaPWController(udi_interface.Node):
                 self.cloudAccessUp =  self.TPW_cloud.try_authendication()
 
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
-            self.poly.Notices.clear()                
-            PWs = self.TPW_cloud.tesla_get_products()
-            logging.debug('self.PWs {}'.format(self.PWs))
+            self.poly.Notices.clear()     
+            self.TPW_cloud.cloud_initialilze(self.region)      
+            PWs= self.TPW_cloud.tesla_get_products()
+            logging.debug('PWs{}'.format(PWs))
             if self.GW:
-                for site in self.PWs:
-                    if self.GW == string(self.PWs[site]['gateway_id']):
-                        site_string = str(self.PWs[site]['energy_site_id'])
-                        site_name = str(self.PWs[site]['site_name'])
+                for site in PWs:
+                    if self.GW == string(PWs[site]['gateway_id']):
+                        site_string = str(PWs[site]['energy_site_id'])
+                        site_name = str(PWs[site]['site_name'])
                         self.site_id = site
             
             else: # No local access -                      
-                for site in self.PWs:
+                for site in PWs:
                     if 'energy_site_id' in site:
-                        site_string = str(self.PWs[site]['energy_site_id'])
-                        site_name = str(self.PWs[site]['site_name'])
+                        site_string = str(PWs[site]['energy_site_id'])
+                        site_name = str(PWs[site]['site_name'])
                         self.site_id = site
                         return() # Only handle first found for now
 
@@ -206,7 +207,7 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(site_string)
             node_address =  self.poly.getValidAddress(site_string)
             logging.debug(string)
-            string = self.PWs[site]['site_name']
+            string = PWs[site]['site_name']
             logging.debug(string)
             node_name = self.poly.getValidName(site_name)
             logging.debug(node_name)
@@ -266,8 +267,8 @@ class TeslaPWController(udi_interface.Node):
                 logging.debug('finished login procedures' )
                 logging.info('Creating Nodes')
             
-                self.PWs = self.TPW_cloud.tesla_get_products()
-                logging.debug('self.PWs {}'.format(self.PWs))
+                PWs= self.TPW_cloud.tesla_get_products()
+                logging.debug('PWs{}'.format(self.PWs))
 
                 for site_id in self.PWs:
                     string = str(self.PWs[site_id]['energy_site_id'])
