@@ -169,13 +169,14 @@ class TeslaPWController(udi_interface.Node):
    
 
         logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
-        while not self.customParam_done or not self.TPW_cloud.customNsDone() : 
+        while not self.customParam_done or not self.TPW_cloud.customNsDone():
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
             time.sleep(2)
 
         if self.local_access_enabled: 
             self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
+            self.TPW_local.loginLocal()
             self.GW = self, self.TPW_local.get_GWserial_number()
             logging.debug('local GW {}'.format(self.GW))
             site_string = self.poly.getValidAddress(str(self.GW))
