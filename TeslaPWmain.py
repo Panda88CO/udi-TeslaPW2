@@ -41,6 +41,7 @@ class TeslaPWController(udi_interface.Node):
         self.n_queue = []
         self.TPW = None
         self.GW = None
+        self.site_id = None
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(polyglot, 'notices')
@@ -146,7 +147,7 @@ class TeslaPWController(udi_interface.Node):
             logging.warning('No LOCAL_IP_ADDRESS found')
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
-      
+        logging.debug('customParamsHandler fnish ')
         self.customParam_done = True
 
     '''
@@ -173,11 +174,11 @@ class TeslaPWController(udi_interface.Node):
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
             time.sleep(2)
-
+        logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         if self.local_access_enabled: 
             self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
             self.TPW_local.loginLocal()
-            self.GW = self, self.TPW_local.get_GWserial_number()
+            self.GW = self.TPW_local.get_GWserial_number()
             logging.debug('local GW {}'.format(self.GW))
             site_string = self.poly.getValidAddress(str(self.GW))
             site_name = self.TPW_local.get_site_name()
@@ -201,7 +202,7 @@ class TeslaPWController(udi_interface.Node):
             self.poly.Notices.clear()     
             self.TPW_cloud.cloud_initialilze(self.region)      
             PWs = self.TPW_cloud.tesla_get_products()
-            logging.debug('PWs{}'.format(PWs))
+            logging.debug('PWs: {}'.format(PWs))
             if self.GW:
                 for site in PWs:
                     logging.debug('Site Loop {}  {}'.format(site, PWs[site]))
