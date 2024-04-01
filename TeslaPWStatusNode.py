@@ -26,7 +26,7 @@ class teslaPWStatusNode(udi_interface.Node):
         self.ISYforced = False
         self.TPW = TPW
         self.node_ok = False
-
+        self.address = address
         self.primary = primary
         self.name = name
         self.n_queue = []
@@ -34,7 +34,7 @@ class teslaPWStatusNode(udi_interface.Node):
         self.poly.subscribe(self.poly.START, self.start, address)
 
         self.poly.ready()
-        self.poly.addNode(self, conn_status = None, rename = True)
+        self.poly.addNode(self)
         self.wait_for_node_done()
         self.node = self.poly.getNode(address)
         #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)

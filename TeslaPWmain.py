@@ -231,7 +231,7 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(self.TPW_local)
             logging.debug(self.TPW_cloud)
             logging.debug(self.site_id )
-            self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id )
+            self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
 
 
