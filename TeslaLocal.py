@@ -106,9 +106,16 @@ class tesla_local:
         return(self.localAccessUp)
 
 
+
+    def is_authendicated(self):
+        return(self.TPWlocal.is_authenticated())
+
+
     def get_GWserial_number(self):
         return(self.TPWlocal.get_gateway_din())
 
 
 
-    
+    def get_site_name(self):
+        info = self.TPWlocal.get_site_info()
+        return(str(info.site_name))

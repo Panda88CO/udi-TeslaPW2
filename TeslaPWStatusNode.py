@@ -19,14 +19,14 @@ from TeslaPWGenNode import teslaPWGenNode
 class teslaPWStatusNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key
 
-    def __init__(self, polyglot, primary, address, name, TPW, site_id):
+    def __init__(self, polyglot, primary, address, name, TPW):
         #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.poly = polyglot
         self.ISYforced = False
         self.TPW = TPW
         self.node_ok = False
-        self.site_id = site_id
+
         self.primary = primary
         self.name = name
         self.n_queue = []

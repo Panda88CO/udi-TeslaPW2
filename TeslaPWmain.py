@@ -4,12 +4,9 @@ import sys
 import time 
 from TeslaInfo import tesla_info
 from TeslaLocal import tesla_local
-
-#from TeslaPWSetupNode import teslaPWSetupNode
-from TeslaPWStatusNode import teslaPWStatusNode
-#from TeslaPWSolarNode import teslaPWSolarNode
-#from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWOauth import teslaAccess
+from TeslaPWStatusNode import teslaPWStatusNode
+
 try:
     import udi_interface
     logging = udi_interface.LOGGER
@@ -45,9 +42,9 @@ class TeslaPWController(udi_interface.Node):
         self.GW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
-        self.my_Tesla_PW = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
-        #self.my_Tesla_PW = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
-        #self.my_Tesla_PW = TeslaCloud(self.poly, 'vehicle_device_data')
+        self.TPW_cloud = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        #self.TPW_cloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        #self.TPW_cloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
@@ -57,8 +54,8 @@ class TeslaPWController(udi_interface.Node):
         #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
-        self.poly.subscribe(self.poly.CUSTOMNS, self.my_Tesla_PW.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.my_Tesla_PW.oauthHandler)
+        self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
+        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
@@ -83,7 +80,7 @@ class TeslaPWController(udi_interface.Node):
 
 
     def customParamsHandler(self, userParams):
-        logging.debug('customParamsHandler 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
+        logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
 
@@ -151,33 +148,76 @@ class TeslaPWController(udi_interface.Node):
       
     def start(self):
         logging.debug('start')
-        logging.debug('start 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
+        logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.poly.updateProfile()
    
 
-        logging.debug('start 2 : {}'.format(self.my_Tesla_PW._oauthTokens))
-        while not self.my_Tesla_PW.customParamsDone() or not self.my_Tesla_PW.customNsDone() : 
+        logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
+        while not self.TPW_cloud.customParamsDone() or not self.TPW_cloud.customNsDone() : 
             logging.info('Waiting for node to initialize')
-            logging.debug(' 1 2 : {} {} '.format(self.my_Tesla_PW.customParamsDone() ,self.my_Tesla_PW.customNsDone()))
+            logging.debug(' 1 2 : {} {} '.format(self.TPW_cloud.customParamsDone() ,self.TPW_cloud.customNsDone()))
             time.sleep(2)
 
         if self.local_access_enabled: 
             self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
             self.GW = self, self.TPW_local.get_GWserial_number()
-        
-        if self.cloud_access_enabled:
+            logging.debug('local GW {}'.format(self.GW))
+            site_string = self.poly.getValidAddress(str(self.GW))
+            site_name = self.TPW_local.get_site_name()
+   
+            logging.debug('local GW {}'.format(self.GW))
+
+        if self.cloud_access_enabled:     
+            logging.debug('Attempting to log in via cloud auth')
+
+            if self.TPW_cloud.authendicated():
+                self.cloudAccessUp = True
+            else:
+                self.cloudAccessUp =  self.TPW_cloud.try_authendication()
+
+            while  not  self.cloudAccessUp:
+                time.sleep(5)
+                logging.info('Waiting to authenticate to complete - press authenticate button')   
+                self.cloudAccessUp =  self.TPW_cloud.try_authendication()
+
+            #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
+            self.poly.Notices.clear()                
+            PWs = self.TPW_cloud.tesla_get_products()
+            logging.debug('self.PWs {}'.format(self.PWs))
             if self.GW:
-                
+                for site in self.PWs:
+                    if self.GW == string(self.PWs[site]['gateway_id']):
+                        site_string = str(self.PWs[site]['energy_site_id'])
+                        site_name = str(self.PWs[site]['site_name'])
+                        self.site_id = site
             
-            
-            self.cloudAccess = self.my_Tesla_PW.cloud_access()
+            else: # No local access -                      
+                for site in self.PWs:
+                    if 'energy_site_id' in site:
+                        site_string = str(self.PWs[site]['energy_site_id'])
+                        site_name = str(self.PWs[site]['site_name'])
+                        self.site_id = site
+                        return() # Only handle first found for now
+
+            logging.debug(site_string)
+            site_string = site_string[-14:]
+            logging.debug(site_string)
+            node_address =  self.poly.getValidAddress(site_string)
+            logging.debug(string)
+            string = self.PWs[site]['site_name']
+            logging.debug(string)
+            node_name = self.poly.getValidName(site_name)
+            logging.debug(node_name)
+            self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id )
+            teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
+
 
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 
         '''
         if self.cloudAccess:
             no_message = True
-            while not self.my_Tesla_PW.authendicated():
+            while not self.TPW_cloud.authendicated():
                 
                 logging.info('Waiting for authendication')
                 if no_message:
@@ -185,7 +225,7 @@ class TeslaPWController(udi_interface.Node):
                     no_message = False
                 time.sleep(5)
             self.poly.Notices.clear()
-        #self.TPW = tesla_info(self.my_Tesla_PW)
+        #self.TPW = tesla_info(self.TPW_cloud)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
         #self.check_config()
@@ -194,7 +234,7 @@ class TeslaPWController(udi_interface.Node):
         '''
         if self.cloudAccess or self.localAccess:
             
-            logging.debug('start 3: {}'.format(self.my_Tesla_PW._oauthTokens))
+            logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
             self.tesla_initialize()
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
@@ -207,36 +247,24 @@ class TeslaPWController(udi_interface.Node):
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
             
-            logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
-            #self.TPW = tesla_info(self.my_Tesla_PW )
+            logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))
+            #self.TPW = tesla_info(self.TPW_cloud )
             #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
             #self.localAccess = self.TPW.localAccess()
             #self.cloudAccess = self.TPW.cloudAccess()
-
+            '''
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
-                logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
-                if self.my_Tesla_PW.authendicated():
-                    self.cloudAccessUp = True
-                while not self.cloudAccessUp and count < 5:
-                    self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
-                    time.sleep(5)
-                    if self.my_Tesla_PW.authendicated():
-                        self.cloudAccessUp = True
-                    count = count +1
-                    logging.info('Waiting for cloud system access to be established')
-                if not  self.cloudAccessUp:
-                    logging.error('Failed to establish cloud access - ')   
-                    if not self.localAccess:
-                        return
+                logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))
+
                 #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
-                logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
+                logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))
                 logging.debug('finished login procedures' )
                 logging.info('Creating Nodes')
             
-                self.PWs = self.my_Tesla_PW.tesla_get_products()
+                self.PWs = self.TPW_cloud.tesla_get_products()
                 logging.debug('self.PWs {}'.format(self.PWs))
 
                 for site_id in self.PWs:
@@ -250,13 +278,13 @@ class TeslaPWController(udi_interface.Node):
                     logging.debug(string)
                     node_name = self.poly.getValidName(string)
                     logging.debug(string)
-                    self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
-                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
+                    #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
+                    #teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
                     #self.wait_for_node_done()
 
             else:
                 logging.info('Cloud Acces not enabled')
-            '''
+            
             if self.localAccess:
                 logging.debug('Attempting to log in via local auth')
                 try:
@@ -392,7 +420,7 @@ class TeslaPWController(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('System updateISYdrivers - ')       
-        #value = self.my_Tesla_PW.authendicated()
+        #value = self.TPW_cloud.authendicated()
         #if value == 0:
         #   self.longPollCountMissed = self.longPollCountMissed + 1
         #else:
