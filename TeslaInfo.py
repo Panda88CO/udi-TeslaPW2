@@ -16,11 +16,10 @@ from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 
 
 
-class tesla_info:
+class tesla_info(object):
     def __init__ (self,  PWlocal, PWcloud, site_id):
-        self.site_id = site_id
-
         logging.debug('class tesla_info - init')
+        self.site_id = site_id
         self.TPWlocal = PWlocal
         self.TPWcloud = PWcloud
         self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there

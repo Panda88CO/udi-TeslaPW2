@@ -225,7 +225,10 @@ class TeslaPWController(udi_interface.Node):
             site_name = PWs[site]['site_name']
             logging.debug(site_name)
             node_name = self.poly.getValidName(site_name)
-            logging.debug(node_name)
+            logging.debug('node_address and name: {} {}'.format(node_address, node_name))
+            logging.debug(self.TPW_local)
+            logging.debug(self.TPW_cloud)
+            logging.debug(self.site_id )
             self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id )
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
 
