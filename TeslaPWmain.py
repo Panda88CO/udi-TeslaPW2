@@ -200,10 +200,11 @@ class TeslaPWController(udi_interface.Node):
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
             self.poly.Notices.clear()     
             self.TPW_cloud.cloud_initialilze(self.region)      
-            PWs= self.TPW_cloud.tesla_get_products()
+            PWs = self.TPW_cloud.tesla_get_products()
             logging.debug('PWs{}'.format(PWs))
             if self.GW:
                 for site in PWs:
+                    logging.debug('Site Loop {}  {}'.format(site, PWs[site]))
                     if self.GW == str(PWs[site]['gateway_id']):
                         site_string = str(PWs[site]['energy_site_id'])
                         site_name = str(PWs[site]['site_name'])
@@ -211,7 +212,7 @@ class TeslaPWController(udi_interface.Node):
             
             else: # No local access -                      
                 for site in PWs:
-                    if 'energy_site_id' in PWs:
+                    if 'energy_site_id' in PWs[site]:
                         site_string = str(PWs[site]['energy_site_id'])
                         site_name = str(PWs[site]['site_name'])
                         self.site_id = site
