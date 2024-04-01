@@ -8,6 +8,7 @@ from TeslaPWStatusNode import teslaPWStatusNode
 #from TeslaPWSolarNode import teslaPWSolarNode
 #from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWOauth import teslaAccess
+
 try:
     import udi_interface
     logging = udi_interface.LOGGER
@@ -71,10 +72,8 @@ class TeslaPWController(udi_interface.Node):
         self.wait_for_node_done()
         self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
-
-
-
         self.node.setDriver('ST', 1, True, True)
+  
         logging.debug('finish Init ')
 
 
@@ -91,24 +90,16 @@ class TeslaPWController(udi_interface.Node):
         self.cloudAccess = self.my_Tesla_PW.cloud_access()
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 
-        '''
         if self.cloudAccess:
-            no_message = True
-            while not self.my_Tesla_PW.authendicated():
-                
-                logging.info('Waiting for authendication')
-                if no_message:
-                    self.poly.Notices['auth'] = 'Please initiate authentication'
-                    no_message = False
-                time.sleep(5)
-            self.poly.Notices.clear()
+            self.my_Tesla_PW.start_authentication()
+
         #self.TPW = tesla_info(self.my_Tesla_PW)
         #self.poly.setCustomParamsDoc()
         # Wait for things to initialize....
         #self.check_config()
         #while not self.initialized:
         #    time.sleep(1)
-        '''
+        
         if self.cloudAccess or self.localAccess:
             self.tesla_initialize()
         else:
@@ -129,20 +120,16 @@ class TeslaPWController(udi_interface.Node):
             logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
-                count = 1
+
                 if self.my_Tesla_PW.authendicated():
                     self.cloudAccessUp = True
-                while not self.cloudAccessUp and count < 5:
-                    self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+                else:
+                    self.cloudAccessUp =  self.my_Tesla_PW.try_authendication()
+
+                while  not  self.cloudAccessUp:
                     time.sleep(5)
-                    if self.my_Tesla_PW.authendicated():
-                        self.cloudAccessUp = True
-                    count = count +1
-                    logging.info('Waiting for cloud system access to be established')
-                if not  self.cloudAccessUp:
-                    logging.error('Failed to establish cloud access - ')   
-                    if not self.localAccess:
-                        return
+                    logging.info('Waiting to authenticate to complete - press authenticate button')   
+    
                 #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
 

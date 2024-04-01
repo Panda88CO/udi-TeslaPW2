@@ -339,7 +339,22 @@ class teslaAccess(udi_interface.OAuth):
 
             # NOTE: If refresh tokens fails, we keep the existing tokens available.
                 
-    
+    def try_authendication(self):
+        if (self._oauthTokens):  # has been authenticated before 
+            try:
+                accessToken = self.getAccessToken()
+                self.poly.Notices.clear()
+                return(True)
+            except ValueError as err:
+                logging.warning('Access token is not yet available. Please authenticate.')
+                self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
+                logging.debug('try_authendication oauth error: {}'.format(err))
+                return (False)
+        else:
+            self.poly.Notices['auth'] = 'Please initiate authentication - press authenticate'
+            return (False)
+        
+
     def authendicated(self):
         return(self._oauthTokens.get('expiry') != None)
  
