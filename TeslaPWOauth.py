@@ -341,7 +341,7 @@ class teslaAccess(udi_interface.OAuth):
                 
     
     def authendicated(self):
-        return(self.getAccessToken() != None)
+        return(self._oauthTokens.get('expiry') != None)
  
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=''):
