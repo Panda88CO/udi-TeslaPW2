@@ -40,20 +40,20 @@ class tesla_info:
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         #self.TOU_MODES = ["economics", "balanced"]
-        if not self.local_access_enabled() and not self.cloud_access_enabled():
-            logging.debug('No connection specified')
-        logging.debug('Tesla_info before retrieving clould data')
-        logging.debug('tesla_info - oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
+        #if not self.local_access_enabled() and not self.cloud_access_enabled():
+        #    logging.debug('No connection specified')
+        #logging.debug('Tesla_info before retrieving clould data')
+        #logging.debug('tesla_info - oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
 
 
 
     def local_access_enabled(self):
-        return(self.TPWcloud.local_access())
+        return(self.TPWlocal.local_access())
     
     def cloud_access_enabled(self):
         return(self.TPWcloud.cloud_access())
 
-    def init_cloud(self, site_id, TPWcloud):
+    def init_cloud(self):
         self.site_id = site_id
         
         if self.cloud_access_enabled():
