@@ -129,6 +129,7 @@ class TeslaPWController(udi_interface.Node):
                 while  not  self.cloudAccessUp:
                     time.sleep(5)
                     logging.info('Waiting to authenticate to complete - press authenticate button')   
+                    self.cloudAccessUp =  self.my_Tesla_PW.try_authendication()
     
                 #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
