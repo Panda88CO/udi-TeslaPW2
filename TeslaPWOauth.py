@@ -144,8 +144,6 @@ class teslaAccess(udi_interface.OAuth):
     def customDateDone(self):
         return(self.customDataHandlerDone )
 
-    def customParamsDone(self):
-        return(self.handleCustomParamsDone)
 
     #def customOauthDone(self):
     #    return(self.customOauthHandlerDone )
