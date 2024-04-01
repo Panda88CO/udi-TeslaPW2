@@ -23,20 +23,22 @@ class teslaPWStatusNode(udi_interface.Node):
         #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.poly = polyglot
+        self.address = address
         self.ISYforced = False
         self.TPWcloud = TPWcloud
         self.node_ok = False
         self.site_id = site_id
         self.primary = primary
+        self.address = address
         self.name = name
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.poly.subscribe(self.poly.START, self.start, address)
+        self.poly.subscribe(self.poly.START, self.start, self.address)
 
         self.poly.ready()
         self.poly.addNode(self, conn_status = None, rename = True)
         self.wait_for_node_done()
-        self.node = self.poly.getNode(address)
+        self.node = self.poly.getNode(self.address)
         #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         #self.TPW.tesla_get_site_info(self.site_id)
         #self.TPW.tesla_get_live_status(self.site_id)
@@ -51,11 +53,11 @@ class teslaPWStatusNode(udi_interface.Node):
         sub_adr = self.primary[-8:]
         #if self.TPW.cloud_access_enabled():
         teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
-        logging.debug('status start 2: {}'.format(self.TPW._oauthTokens))
+        logging.debug('status start 2: {}'.format(self.TPW.TPWcloud._oauthTokens))
         teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
-        logging.debug('status start 3: {}'.format(self.TPW._oauthTokens))
+        logging.debug('status start 3: {}'.format(self.TPW.TPWcloud._oauthTokens))
         teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
-        logging.debug('status start 4 : {}'.format(self.TPW._oauthTokens))
+        logging.debug('status start 4 : {}'.format(self.TPW.TPWcloud._oauthTokens))
         self.TPW.teslaInitializeData()
         self.updateISYdrivers()
         self.node_ok = True
