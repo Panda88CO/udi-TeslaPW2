@@ -43,7 +43,7 @@ class tesla_info:
         if not self.local_access_enabled() and not self.cloud_access_enabled():
             logging.debug('No connection specified')
         logging.debug('Tesla_info before retrieving clould data')
-        logging.debug('oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
+        logging.debug('tesla_info - oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
         if self.cloud_access_enabled():
             self.TPWcloud.tesla_get_site_info(self.site_id)
             self.TPWcloud.tesla_get_live_status(self.site_id)
