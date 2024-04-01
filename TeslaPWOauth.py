@@ -120,7 +120,7 @@ class teslaAccess(udi_interface.OAuth):
 
     def oauthHandler(self, token):
         logging.debug('oauthHandler called')
-        while not (self.customParamsDone() and self.customNsDone()):
+        while not self.customNsDone():
             logging.debug('Waiting for initilization to complete before oAuth')
             time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
@@ -158,14 +158,7 @@ class teslaAccess(udi_interface.OAuth):
     
     
     
-    def main_module_enabled(self, node_name):
-        logging.debug('main_module_enabled called {}'.format(node_name))
-        if node_name in self.customParameters :           
-            return(int(self.customParameters[node_name]) == 1)
-        else:
-            self.customParameters[node_name] = 1 #add and enable by default
-            self.poly.Notices['home_id'] = 'Check config to select which home/modules should be used (1 - used, 0 - not used) - then restart'
-            return(True)
+
 
                 
     def cloud_initialilze(self, region):
@@ -205,20 +198,21 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('getOauthSettings: {}'.format(self.getOauthSettings()))
         #logging.debug('Updated oAuth config 2: {}'.format(temp))
         
-        self.handleCustomParamsDone = True
-        self.poly.Notices.clear()
+        #self.handleCustomParamsDone = True
+        #self.poly.Notices.clear()
     
-
+        '''
     def add_to_parameters(self,  key, value):
-        '''add_to_parameters'''
+        #add_to_parameters
         self.customParameters[key] = value
 
     def check_parameters(self, key, value):
-        '''check_parameters'''
+        #check_parameters
         if key in self.customParameters:
             return(self.customParameters[key]  == value)
         else:
             return(False)
+        '''
 
     def getAccessToken(self):
         # Make sure we have received tokens before attempting to renew
