@@ -19,7 +19,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat
 
@@ -90,8 +90,8 @@ class TeslaPWController(udi_interface.Node):
         self.cloudAccess = self.my_Tesla_PW.cloud_access()
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 
-        if self.cloudAccess:
-            self.my_Tesla_PW.start_authentication()
+        #if self.cloudAccess:
+        #    self.my_Tesla_PW.start_authentication()
 
         #self.TPW = tesla_info(self.my_Tesla_PW)
         #self.poly.setCustomParamsDoc()
