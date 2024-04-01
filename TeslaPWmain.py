@@ -81,8 +81,7 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         logging.debug('start')
         self.poly.updateProfile()
-   
-
+        logging.debug('start1 : {}'.format(self.my_Tesla_PW._oauthTokens))
         while not self.my_Tesla_PW.customParamsDone() or not self.my_Tesla_PW.customNsDone() : 
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 : {} {} '.format(self.my_Tesla_PW.customParamsDone() ,self.my_Tesla_PW.customNsDone()))
@@ -127,7 +126,7 @@ class TeslaPWController(udi_interface.Node):
             #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
             #self.localAccess = self.TPW.localAccess()
             #self.cloudAccess = self.TPW.cloudAccess()
-
+            logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
@@ -152,7 +151,7 @@ class TeslaPWController(udi_interface.Node):
             
                 self.PWs = self.my_Tesla_PW.tesla_get_products()
                 logging.debug('self.PWs {}'.format(self.PWs))
-
+                logging.debug('tesla_initialize 2 : {}'.format(self.my_Tesla_PW._oauthTokens))
                 for site_id in self.PWs:
                     string = str(self.PWs[site_id]['energy_site_id'])
                     logging.debug(string)
@@ -165,7 +164,9 @@ class TeslaPWController(udi_interface.Node):
                     node_name = self.poly.getValidName(string)
                     logging.debug(string)
                     self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
+                    logging.debug('tesla_initialize 3 : {}'.format(self.my_Tesla_PW._oauthTokens))
                     teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
+                    logging.debug('tesla_initialize 4 : {}'.format(self.my_Tesla_PW._oauthTokens))
                     #self.wait_for_node_done()
 
             else:
