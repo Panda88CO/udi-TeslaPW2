@@ -42,7 +42,7 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Parameters = Custom(polyglot, 'customParams')
         self.Notices = Custom(polyglot, 'notices')
-        self.my_Tesla_PW = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access ')
+        self.my_Tesla_PW = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.my_Tesla_PW = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.my_Tesla_PW = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -52,7 +52,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.my_Tesla_PW.customParamsHandler)
+        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
         self.poly.subscribe(self.poly.CUSTOMNS, self.my_Tesla_PW.customNsHandler)
         self.poly.subscribe(self.poly.OAUTH, self.my_Tesla_PW.oauthHandler)
@@ -78,11 +78,81 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('finish Init ')
 
 
+
+    def customParamsHandler(self, userParams):
+        logging.debug('customParamsHandler 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
+        self.customParameters.load(userParams)
+        logging.debug('customParamsHandler called {}'.format(userParams))
+
+        oauthSettingsUpdate = {}
+        #oauthSettingsUpdate['parameters'] = {}
+        oauthSettingsUpdate['token_parameters'] = {}
+        # Example for a boolean field
+
+        if 'region' in userParams:
+            if self.customParameters['region'] != 'enter region (NA, EU, CN)':
+                self.region = str(self.customParameters['region'])
+                if self.region.upper() not in ['NA', 'EU', 'CN']:
+                    logging.error('Unsupported region {}'.format(self.region))
+                    self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+                #else:
+
+        else:
+            logging.warning('No region found')
+            self.customParameters['region'] = 'enter region (NA, EU, CN)'
+            self.region = None
+            self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
+   
+        if 'local_access_en' in self.customParameters:
+            if self.customParameters['local_access_en'] != '':
+                self.local_access_enabled = self.customParameters['local_access_en'].upper() == 'TRUE'
+        else:
+            logging.warning('No local_access_enabled found')
+            self.customParameters['local_access_en'] = 'True/False'
+
+        if 'cloud_access_en' in self.customParameters:      
+            if self.customParameters['cloud_access_en'] != '':
+                self.cloud_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
+        else:
+            logging.warning('No cloud_access_en found')
+            self.customParameters['cloud_access_en'] = 'True/False'
+
+        if 'LOCAL_USER_EMAIL' in self.customParameters:
+            if self.customParameters['LOCAL_USER_EMAIL'] != '':
+                self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
+        else:
+            logging.warning('No LOCAL_USER_EMAIL found')
+            self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
+            self.LOCAL_USER_EMAIL = None
+
+        if 'LOCAL_USER_PASSWORD' in self.customParameters:
+            if self.customParameters['LOCAL_USER_PASSWORD'] != '':
+                self.LOCAL_USER_PASSWORD= str(self.customParameters['LOCAL_USER_PASSWORD'] )
+                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+                #secret_ok = True
+        else:
+            logging.warning('No LOCAL_USER_PASSWORD found')
+            self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
+            self.LOCAL_USER_PASSWORD = None
+
+        if 'LOCAL_IP_ADDRESS' in self.customParameters:
+            if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
+                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] )
+                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
+                #secret_ok = True
+        else:
+            logging.warning('No LOCAL_IP_ADDRESS found')
+            self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
+            self.LOCAL_IP_ADDRESS = None
+      
+      
     def start(self):
         logging.debug('start')
+        logging.debug('start 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
         self.poly.updateProfile()
    
 
+        logging.debug('start 2 : {}'.format(self.my_Tesla_PW._oauthTokens))
         while not self.my_Tesla_PW.customParamsDone() or not self.my_Tesla_PW.customNsDone() : 
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 : {} {} '.format(self.my_Tesla_PW.customParamsDone() ,self.my_Tesla_PW.customNsDone()))
@@ -90,6 +160,7 @@ class TeslaPWController(udi_interface.Node):
 
         #self.localAccess = self.my_Tesla_PW.local_access()
         self.cloudAccess = self.my_Tesla_PW.cloud_access()
+
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
 
         '''
@@ -111,6 +182,8 @@ class TeslaPWController(udi_interface.Node):
         #    time.sleep(1)
         '''
         if self.cloudAccess or self.localAccess:
+            
+            logging.debug('start 3: {}'.format(self.my_Tesla_PW._oauthTokens))
             self.tesla_initialize()
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
@@ -122,7 +195,8 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('starting Login process')
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
-
+            
+            logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
             #self.TPW = tesla_info(self.my_Tesla_PW )
             #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
             #self.localAccess = self.TPW.localAccess()
@@ -131,6 +205,7 @@ class TeslaPWController(udi_interface.Node):
             if self.cloudAccess:
                 logging.debug('Attempting to log in via cloud auth')
                 count = 1
+                logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
                 if self.my_Tesla_PW.authendicated():
                     self.cloudAccessUp = True
                 while not self.cloudAccessUp and count < 5:
@@ -146,7 +221,7 @@ class TeslaPWController(udi_interface.Node):
                         return
                 #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
                 self.poly.Notices.clear()
-
+                logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
                 logging.debug('finished login procedures' )
                 logging.info('Creating Nodes')
             

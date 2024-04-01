@@ -173,7 +173,7 @@ class teslaAccess(udi_interface.OAuth):
             return(True)
 
                 
-    def customParamsHandler(self, userParams):
+    def cloud_initialilze(self, region):
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
 
@@ -182,61 +182,6 @@ class teslaAccess(udi_interface.OAuth):
         oauthSettingsUpdate['token_parameters'] = {}
         # Example for a boolean field
 
-        if 'region' in userParams:
-            if self.customParameters['region'] != 'enter region (NA, EU, CN)':
-                self.region = str(self.customParameters['region'])
-                if self.region.upper() not in ['NA', 'EU', 'CN']:
-                    logging.error('Unsupported region {}'.format(self.region))
-                    self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-                #else:
-
-        else:
-            logging.warning('No region found')
-            self.customParameters['region'] = 'enter region (NA, EU, CN)'
-            self.region = None
-            self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-   
-        if 'local_access_en' in self.customParameters:
-            if self.customParameters['local_access_en'] != '':
-                self.local_access_enabled = self.customParameters['local_access_en'].upper() == 'TRUE'
-        else:
-            logging.warning('No local_access_enabled found')
-            self.customParameters['local_access_en'] = 'True/False'
-
-        if 'cloud_access_en' in self.customParameters:      
-            if self.customParameters['cloud_access_en'] != '':
-                self.cloud_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
-        else:
-            logging.warning('No cloud_access_en found')
-            self.customParameters['cloud_access_en'] = 'True/False'
-
-        if 'LOCAL_USER_EMAIL' in self.customParameters:
-            if self.customParameters['LOCAL_USER_EMAIL'] != '':
-                self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
-        else:
-            logging.warning('No LOCAL_USER_EMAIL found')
-            self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
-            self.LOCAL_USER_EMAIL = None
-
-        if 'LOCAL_USER_PASSWORD' in self.customParameters:
-            if self.customParameters['LOCAL_USER_PASSWORD'] != '':
-                self.LOCAL_USER_PASSWORD= str(self.customParameters['LOCAL_USER_PASSWORD'] )
-                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                #secret_ok = True
-        else:
-            logging.warning('No LOCAL_USER_PASSWORD found')
-            self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
-            self.LOCAL_USER_PASSWORD = None
-
-        if 'LOCAL_IP_ADDRESS' in self.customParameters:
-            if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
-                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] )
-                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                #secret_ok = True
-        else:
-            logging.warning('No LOCAL_IP_ADDRESS found')
-            self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
-            self.LOCAL_IP_ADDRESS = None
         logging.debug('region {}'.format(self.region))
         oauthSettingsUpdate['scope'] = self.scope 
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
@@ -245,18 +190,18 @@ class teslaAccess(udi_interface.OAuth):
         #oauthSettingsUpdate['cloudlink'] = True
         oauthSettingsUpdate['addRedirect'] = True
         #oauthSettingsUpdate['state'] = self.state
-        if self.region.upper() == 'NA':
-            self.Endpoint = self.EndpointNA
-        elif self.region.upper() == 'EU':
-            self.Endpoint = self.EndpointEU
-        elif self.region.upper() == 'CN':
-            self.Endpoint = self.EndpointCN
+        if region.upper() == 'NA':
+            endpoint = self.EndpointNA
+        elif region.upper() == 'EU':
+            endpoint = self.EndpointEU
+        elif region.upper() == 'CN':
+            endpoint = self.EndpointCN
         else:
             logging.error('Unknow region specified {}'.format(self.region))
             return
            
-        self.yourApiEndpoint = self.Endpoint+self.api 
-        oauthSettingsUpdate['token_parameters']['audience'] = self.Endpoint
+        self.yourApiEndpoint = endpoint+self.api 
+        oauthSettingsUpdate['token_parameters']['audience'] = endpoint
         #oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
         #oauthSettingsUpdate['token_parameters']['client_secret'] = 'ta-secret.S@z5uUjp*sxoS2rS'
         #oauthSettingsUpdate['token_parameters']['addRedirect'] = True
