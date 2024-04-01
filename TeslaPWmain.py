@@ -161,6 +161,8 @@ class TeslaPWController(udi_interface.Node):
     '''
 
     def start(self):
+        site_string = ''
+
         logging.debug('start')
         logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.poly.updateProfile()
@@ -201,14 +203,14 @@ class TeslaPWController(udi_interface.Node):
             logging.debug('PWs{}'.format(PWs))
             if self.GW:
                 for site in PWs:
-                    if self.GW == string(PWs[site]['gateway_id']):
+                    if self.GW == str(PWs[site]['gateway_id']):
                         site_string = str(PWs[site]['energy_site_id'])
                         site_name = str(PWs[site]['site_name'])
                         self.site_id = site
             
             else: # No local access -                      
                 for site in PWs:
-                    if 'energy_site_id' in site:
+                    if 'energy_site_id' in PWs:
                         site_string = str(PWs[site]['energy_site_id'])
                         site_name = str(PWs[site]['site_name'])
                         self.site_id = site
@@ -218,9 +220,9 @@ class TeslaPWController(udi_interface.Node):
             site_string = site_string[-14:]
             logging.debug(site_string)
             node_address =  self.poly.getValidAddress(site_string)
-            logging.debug(string)
-            string = PWs[site]['site_name']
-            logging.debug(string)
+
+            site_name = PWs[site]['site_name']
+            logging.debug(site_name)
             node_name = self.poly.getValidName(site_name)
             logging.debug(node_name)
             self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id )
