@@ -45,7 +45,7 @@ class teslaPWStatusNode(udi_interface.Node):
         
     def start(self):   
         logging.debug('Start Tesla Power Wall Status Node')
-        #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
+        self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         logging.info('Adding power wall sub-nodes')
         logging.debug('status start 1 : {}'.format(self.TPW._oauthTokens))
         sub_adr = self.primary[-8:]

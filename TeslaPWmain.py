@@ -154,16 +154,15 @@ class TeslaPWController(udi_interface.Node):
                 logging.debug('tesla_initialize 2 : {}'.format(self.my_Tesla_PW._oauthTokens))
                 for site_id in self.PWs:
                     string = str(self.PWs[site_id]['energy_site_id'])
-                    logging.debug(string)
+                    #logging.debug(string)
                     string = string[-14:]
-                    logging.debug(string)
+                    #logging.debug(string)
                     node_address =  self.poly.getValidAddress(string)
-                    logging.debug(string)
+                    #logging.debug(string)
                     string = self.PWs[site_id]['site_name']
-                    logging.debug(string)
+                    #logging.debug(string)
                     node_name = self.poly.getValidName(string)
-                    logging.debug(string)
-                    self.TPW = tesla_info(self.my_Tesla_PW, self.site_id)
+                    #logging.debug(string)
                     logging.debug('tesla_initialize 3 : {}'.format(self.my_Tesla_PW._oauthTokens))
                     teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
                     logging.debug('tesla_initialize 4 : {}'.format(self.my_Tesla_PW._oauthTokens))
