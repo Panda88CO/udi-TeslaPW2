@@ -16,8 +16,8 @@ from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 
 
 
-class tesla_info:
-    def __init__ (self,  PWcloud, PWlocal, site_id):
+class tesla_local:
+    def __init__ (self, ):
         self.site_id = site_id
 
         logging.debug('class tesla_info - init')
