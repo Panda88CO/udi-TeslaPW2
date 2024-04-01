@@ -27,6 +27,7 @@ class tesla_info(object):
         self.ISYCritical = {}
         self.lastDay = date.today()  
         self.localAccessUp = False
+        self.cloudAccessUp = False
         self.TPWcloudAccess = False
         self.systemReady = False 
         self.firstPollCompleted = False
@@ -59,6 +60,7 @@ class tesla_info(object):
 
     def init_cloud(self):
         if self.cloud_access_enabled():
+            self.cloudAccessUp = True
             self.TPWcloud.tesla_get_site_info(self.site_id)
             self.TPWcloud.tesla_get_live_status(self.site_id)
             self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
