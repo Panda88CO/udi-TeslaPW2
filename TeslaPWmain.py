@@ -53,7 +53,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.my_Tesla_PW.customParamsHandler)
+        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
         self.poly.subscribe(self.poly.CUSTOMNS, self.my_Tesla_PW.customNsHandler)
         self.poly.subscribe(self.poly.OAUTH, self.my_Tesla_PW.oauthHandler)
@@ -75,6 +75,10 @@ class TeslaPWController(udi_interface.Node):
         self.node.setDriver('ST', 1, True, True)
   
         logging.debug('finish Init ')
+
+
+
+
 
 
     def start(self):

@@ -31,9 +31,9 @@ class tesla_info:
         self.systemReady = False 
         self.firstPollCompleted = False
 
-        self.localEmail = my_Tesla_PW.LOCAL_USER_EMAIL
-        self.localPassword = my_Tesla_PW.LOCAL_USER_PASSWORD
-        self.IPaddress = my_Tesla_PW.LOCAL_IP_ADDRESS
+        #self.localEmail = my_Tesla_PW.LOCAL_USER_EMAIL
+        #self.localPassword = my_Tesla_PW.LOCAL_USER_PASSWORD
+        #self.IPaddress = my_Tesla_PW.LOCAL_IP_ADDRESS
         #self.local_access_enabled = my_Tesla_PW.local_access()
         #self.cloud_access_enabled = my_Tesla_PW.cloud_access()
         self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
@@ -44,12 +44,7 @@ class tesla_info:
             logging.debug('No connection specified')
         logging.debug('Tesla_info before retrieving clould data')
         logging.debug('tesla_info - oauthTokens: {}'.format(self.TPWcloud._oauthTokens))
-        if self.cloud_access_enabled():
-            self.TPWcloud.tesla_get_site_info(self.site_id)
-            self.TPWcloud.tesla_get_live_status(self.site_id)
-            self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
-            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
-            logging.debug('Clould data retrieved tesla_info')
+
 
 
     def local_access_enabled(self):
@@ -58,11 +53,23 @@ class tesla_info:
     def cloud_access_enabled(self):
         return(self.TPWcloud.cloud_access())
 
+    def init_cloud(self, site_id, TPWcloud):
+        self.site_id = site_id
+        
+        if self.cloud_access_enabled():
+            self.TPWcloud.tesla_get_site_info(self.site_id)
+            self.TPWcloud.tesla_get_live_status(self.site_id)
+            self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
+            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
+            logging.debug('Clould data retrieved tesla_info')
 
-    def loginLocal (self):
+
+
+    def init_local (self, email, password, IPaddress):
         logging.debug('Local Access Supported')
-
-        self.TPWlocal = Powerwall(self.IPaddress)
+        self.localEmail = email
+        self.localPassword = password
+        self.TPWlocal = Powerwall(IPaddress)
         self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
         self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
 
