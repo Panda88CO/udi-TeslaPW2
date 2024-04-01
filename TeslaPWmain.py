@@ -36,12 +36,13 @@ class TeslaPWController(udi_interface.Node):
         self.initialized = False
         self.localAccessUp = False
         self.cloudAccessUp = False
-        self.customeParam_done = False
+        self.customParam_done = False
         #self.Rtoken = None
         self.n_queue = []
         self.TPW = None
         self.GW = None
-        self.Parameters = Custom(polyglot, 'customParams')
+        #self.Parameters = Custom(polyglot, 'customParams')
+        self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(polyglot, 'notices')
         self.TPW_cloud = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
@@ -146,7 +147,7 @@ class TeslaPWController(udi_interface.Node):
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
       
-        self.customeParam_done = True
+        self.customParam_done = True
     def start(self):
         logging.debug('start')
         logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
@@ -156,7 +157,7 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         while not self.customeParam_done or not self.TPW_cloud.customNsDone() : 
             logging.info('Waiting for node to initialize')
-            logging.debug(' 1 2 : {} {} '.format(self.customeParam_done ,self.TPW_cloud.customNsDone()))
+            logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
             time.sleep(2)
 
         if self.local_access_enabled: 

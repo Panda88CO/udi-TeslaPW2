@@ -47,17 +47,17 @@ class teslaAccess(udi_interface.OAuth):
         logging.info('OAuth initializing')
         self.poly = polyglot
         self.scope = scope
-        self.customParameters = Custom(self.poly, 'customparams')
+        #self.customParameters = Custom(self.poly, 'customparams')
         #self.scope_str = None
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
         self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
         self.api  = '/api/1'
-        self.local_access_enabled = False
+        #self.local_access_enabled = False
         self.cloud_access_enabled = False
         #self.state = secrets.token_hex(16)
         self.region = ''
-        self.handleCustomParamsDone = False
+        #self.handleCustomParamsDone = False
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
         self.customOauthHandlerDone = False
