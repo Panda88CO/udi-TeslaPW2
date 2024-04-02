@@ -4,7 +4,7 @@ import sys
 import time 
 from TeslaInfo import tesla_info
 from TeslaLocal import tesla_local
-from TeslaPWOauth import teslaAccess
+from TeslaPWOauth import teslaPWAccess
 from TeslaPWStatusNode import teslaPWStatusNode
 
 try:
@@ -45,7 +45,7 @@ class TeslaPWController(udi_interface.Node):
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(polyglot, 'notices')
-        self.TPW_cloud = teslaAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
