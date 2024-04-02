@@ -80,7 +80,8 @@ class tesla_local:
         logging.debug('Gateway: {}'.format(self.TPWlocal.get_gateway_din()))
         return(self.TPWlocal.get_gateway_din())
 
-
+    def get_meters(self):
+        return(self.TPWlocal.get_meters())
 
     def get_site_name(self):
         info = self.TPWlocal.get_site_info()

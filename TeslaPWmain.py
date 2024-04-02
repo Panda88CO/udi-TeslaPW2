@@ -182,8 +182,6 @@ class TeslaPWController(udi_interface.Node):
             logging.debug('local GW {}'.format(self.GW))
             site_string = self.poly.getValidAddress(str(self.GW))
             site_name = self.TPW_local.get_site_name()
-   
-            logging.debug('local GW {}'.format(self.GW))
 
         if self.cloud_access_enabled:
             logging.debug('Attempting to log in via cloud auth')
@@ -219,22 +217,22 @@ class TeslaPWController(udi_interface.Node):
                         self.site_id = site
                         return() # Only handle first found for now
 
-            logging.debug(site_string)
-            site_string = site_string[-14:]
-            logging.debug(site_string)
-            node_address =  self.poly.getValidAddress(site_string)
+        logging.debug(site_string)
+        site_string = site_string[-14:]
+        logging.debug(site_string)
+        node_address =  self.poly.getValidAddress(site_string)
 
-            site_name = PWs[site]['site_name']
-            logging.debug(site_name)
-            node_name = self.poly.getValidName(site_name)
-            logging.debug('node_address and name: {} {}'.format(node_address, node_name))
-            logging.debug(self.TPW_local)
-            logging.debug(self.TPW_cloud)
-            logging.debug(self.site_id )
-            self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
-            self.TPW.init_local()
-            self.TPW.init_cloud()
-            teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
+        site_name = PWs[site]['site_name']
+        logging.debug(site_name)
+        node_name = self.poly.getValidName(site_name)
+        logging.debug('node_address and name: {} {}'.format(node_address, node_name))
+        logging.debug(self.TPW_local)
+        logging.debug(self.TPW_cloud)
+        logging.debug(self.site_id )
+        self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
+        self.TPW.init_local()
+        self.TPW.init_cloud()
+        teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
 
 
         logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))

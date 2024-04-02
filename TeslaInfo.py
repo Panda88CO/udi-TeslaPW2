@@ -11,7 +11,7 @@ except ImportError:
 from datetime import date
 import time
 import os
-from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
+from tesla_powerwall import GridStatus, OperationMode, MeterType
 #from OLD.TeslaPWApi import TeslaPWApi
 
 
@@ -28,7 +28,8 @@ class tesla_info(object):
         self.lastDay = date.today()  
         self.localAccessUp = False
         self.cloudAccessUp = False
-        self.TPWcloudAccess = False
+        self.TPWcloudAccess = PWcloud != None
+        self.TPWlocalAccess = PWlocal != None
         self.systemReady = False 
         self.firstPollCompleted = False
 
@@ -75,7 +76,7 @@ class tesla_info(object):
         self.generatorInstalled = False
         try:
             meters = self.TPWlocal.get_meters()
-            
+            logging.debug(meters)
             installed_dev = meters.meters
             logging.debug('installed dev {}'.format(installed_dev))
             for tmp_meter in installed_dev:
@@ -112,7 +113,7 @@ class tesla_info(object):
         else:
             self.solarInstalled = False
         '''
-        self.metersDayStart = self.TPWlocal.get_meters()
+        self.metersDayStart = meters
         if self.solarInstalled:
             self.DSsolarMeter = self.metersDayStart.get_meter(MeterType.SOLAR)
         self.DSbatteryMeter = self.metersDayStart.get_meter(MeterType.BATTERY)
@@ -660,10 +661,10 @@ class tesla_info(object):
         logging.debug('getTPW_stormMode ')  
         return(self.TPWcloud.teslaSetStormMode(mode==1))
 
-    def getTPW_touMode(self):
-        logging.debug('getTPW_touMode ')  
-        if self.TPWcloudAccess:
-            return(self.TOU_MODES.index([self.TPWcloud.teslaExtractTouMode(self.site_id)]))
+    #def getTPW_touMode(self):
+    #    logging.debug('getTPW_touMode ')  
+    #    if self.TPWcloudAccess:
+    #        return(self.TOU_MODES.index([self.TPWcloud.teslaExtractTouMode(self.site_id)]))
 
 
     def getTPW_touSchedule(self):
@@ -672,10 +673,10 @@ class tesla_info(object):
             return(self.TPWcloud.teslaExtractTouScheduleList(self.site_id))
 
 
-    def setTPW_touMode(self, index):
-        logging.debug('setTPW_touMode ')  
-        if self.TPWcloudAccess:        
-            return(self.TPWcloud.teslaSetTimeOfUseMode(self.touCloudEnum[index]))
+    #def setTPW_touMode(self, index):
+    #    logging.debug('setTPW_touMode ')  
+    #    if self.TPWcloudAccess:        
+    #        return(self.TPWcloud.teslaSetTimeOfUseMode(self.touCloudEnum[index]))
 
 
     def setTPW_touSchedule(self, peakOffpeak, weekWeekend, startEnd, time_s):
