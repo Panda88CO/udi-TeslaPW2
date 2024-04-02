@@ -523,7 +523,7 @@ class teslaPWAccess(teslaAccess):
             else:
                 date_key = 'unknown'
             if date_key != 'unknown':
-                self.hist_data[site_id]['energy'][date_key] = energy_data
+                self.history_data[site_id]['energy'][date_key] = energy_data
 
     def process_backup_data(self, site_id, hist_data):
         logging.debug('process_backup_data: {}'.format(hist_data))
