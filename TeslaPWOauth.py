@@ -188,9 +188,6 @@ class teslaAccess(udi_interface.OAuth):
            
         self.yourApiEndpoint = endpoint+self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = endpoint
-        #oauthSettingsUpdate['token_parameters']['client_id'] = '6e635ec38dc4-4d2a-a35e-f164b51f3d96'
-        #oauthSettingsUpdate['token_parameters']['client_secret'] = 'ta-secret.S@z5uUjp*sxoS2rS'
-        #oauthSettingsUpdate['token_parameters']['addRedirect'] = True
         self.updateOauthSettings(oauthSettingsUpdate)
         time.sleep(0.1)
         logging.debug('getOauthSettings: {}'.format(self.getOauthSettings()))
@@ -631,6 +628,7 @@ class teslaAccess(udi_interface.OAuth):
         return(self.site_live_info[site_id]['storm_mode_active'])
 
     def teslaExtractBackupPercent(self, site_id):
+        logging.debug('teslaExtractBackupPercent : {} {}'.format(site_id, self.site_info))
         return(self.site_info[site_id]['backup_reserve_percent'])
     
     def tesla_total_battery(self, site_id):
@@ -673,8 +671,8 @@ class teslaAccess(udi_interface.OAuth):
     def teslaExtractChargeLevel(self, site_id):
         return(round(self.site_live_info[site_id]['percentage_charged'],2))
         
-    def teslaExtractBackoffLevel(self, site_id):
-        return(round(self.site_info[site_id]['backup_reserve_percent'],1))
+    #def teslaExtractBackoffLevel(self, site_id):
+    #    return(round(self.site_info[site_id]['backup_reserve_percent'],1))
 
     def teslaExtractGridStatus(self, site_id): 
         return(self.site_live_info[site_id]['island_status'])

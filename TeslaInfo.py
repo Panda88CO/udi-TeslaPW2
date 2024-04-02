@@ -67,22 +67,13 @@ class tesla_info(object):
             self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
             logging.debug('Clould data retrieved tesla_info')
 
-    def loginLocal (self):
-        logging.debug('Local Access Supported')
-
-        #self.TPWlocal = Powerwall(self.IPaddress)
+    def init_local(self):
+        logging.debug('init_local')
         self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
         self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
 
-        #logging.debug('self.TPWlocal - {}'.format(self.TPWlocal))
-        logging.debug('self.TPWlocal ')
-        loginAttempts = 0
-        #temp = self.TPWlocal.is_authenticated()
-        #logging.debug('authendicated = {} '.format(temp))
-
-
-        
         try:
+            #self.gateway_id = self.TWPlocal.get_gateway_din()
             generator  = self.TPWlocal._api.get('generators')
             logging.debug('generator {}'.format(generator))
             if 'generators' in generator:
@@ -105,7 +96,6 @@ class tesla_info(object):
             logging.debug('Solar installed ' + str(solar))
         else:
             self.solarInstalled = False
-        
         self.metersDayStart = self.TPWlocal.get_meters()
         if self.solarInstalled:
             self.DSsolarMeter = self.metersDayStart.get_meter(MeterType.SOLAR)
@@ -114,11 +104,9 @@ class tesla_info(object):
         self.DSsiteMeter = self.metersDayStart.get_meter(MeterType.SITE)
         if self.generatorInstalled:
             self.DSgeneratorMeter = self.metersDayStart.get_meter(MeterType.GENERATOR)
+
+
     
-        return(self.localAccessUp)
-
-
-
 
     def teslaCloudConnect(self ):
         logging.debug('teslaCloudConnect {}'.format(self.TPWcloud))
@@ -361,7 +349,7 @@ class tesla_info(object):
             except:
                 return(0)
         else:
-            backoffLevel=self.TPWcloud.teslaExtractBackoffLevel(self.site_id)
+            backoffLevel=self.TPWcloud.teslaExtractBackupPercent(self.site_id)
         logging.debug('getTPW_backoffLevel' + str(backoffLevel))
         return(round(backoffLevel,1))
     '''

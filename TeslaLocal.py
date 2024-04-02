@@ -48,8 +48,6 @@ class tesla_local:
         logging.debug('Local Access Supported')
 
         self.TPWlocal = Powerwall(self.IPaddress)
-        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
-        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
 
         #logging.debug('self.TPWlocal - {}'.format(self.TPWlocal))
         self.TPWlocal.login(self.localPassword, self.localEmail)
@@ -70,39 +68,6 @@ class tesla_local:
                 break
         
         self.localAccessUp = True
-        try:
-            #self.gateway_id = self.TWPlocal.get_gateway_din()
-            generator  = self.TPWlocal._api.get('generators')
-            logging.debug('generator {}'.format(generator))
-            if 'generators' in generator:
-                if not(generator['generators']):
-                    self.generatorInstalled = False
-                else:
-                    self.generatorInstalled = True
-            else:
-                self.generatorInstalled = False
-        except Exception as e:
-            self.generatorInstalled = False
-            logging.error('Generator does not seem to be supported: {}'.format(e))
-            
-        solarInfo = self.TPWlocal.get_solars()
-        logging.debug('solarInfo {}'.format(solarInfo))
-        solar = len(solarInfo) != 0
-        logging.debug('Test if solar installed ' + str(solar))
-        if solar:
-            self.solarInstalled = True
-            logging.debug('Solar installed ' + str(solar))
-        else:
-            self.solarInstalled = False
-        self.metersDayStart = self.TPWlocal.get_meters()
-        if self.solarInstalled:
-            self.DSsolarMeter = self.metersDayStart.get_meter(MeterType.SOLAR)
-        self.DSbatteryMeter = self.metersDayStart.get_meter(MeterType.BATTERY)
-        self.DSloadMeter = self.metersDayStart.get_meter(MeterType.LOAD)
-        self.DSsiteMeter = self.metersDayStart.get_meter(MeterType.SITE)
-        if self.generatorInstalled:
-            self.DSgeneratorMeter = self.metersDayStart.get_meter(MeterType.GENERATOR)
-
         return(self.localAccessUp)
 
 

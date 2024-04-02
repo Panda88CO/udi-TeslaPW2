@@ -185,7 +185,7 @@ class TeslaPWController(udi_interface.Node):
    
             logging.debug('local GW {}'.format(self.GW))
 
-        if self.cloud_access_enabled:     
+        if self.cloud_access_enabled:
             logging.debug('Attempting to log in via cloud auth')
 
             if self.TPW_cloud.authendicated():
@@ -232,6 +232,8 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(self.TPW_cloud)
             logging.debug(self.site_id )
             self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
+            self.TPW.init_local()
+            self.TPW.init_cloud()
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
 
 
@@ -270,110 +272,8 @@ class TeslaPWController(udi_interface.Node):
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
             
-            logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))
-            #self.TPW = tesla_info(self.TPW_cloud )
-            #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
-            #self.localAccess = self.TPW.localAccess()
-            #self.cloudAccess = self.TPW.cloudAccess()
-            '''
-            if self.cloudAccess:
-                logging.debug('Attempting to log in via cloud auth')
-                count = 1
-                logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))
+            logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))             
 
-                #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
-                self.poly.Notices.clear()
-                logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))
-                logging.debug('finished login procedures' )
-                logging.info('Creating Nodes')
-            
-                PWs= self.TPW_cloud.tesla_get_products()
-                logging.debug('PWs{}'.format(self.PWs))
-
-                for site_id in self.PWs:
-                    string = str(self.PWs[site_id]['energy_site_id'])
-                    logging.debug(string)
-                    string = string[-14:]
-                    logging.debug(string)
-                    node_address =  self.poly.getValidAddress(string)
-                    logging.debug(string)
-                    string = self.PWs[site_id]['site_name']
-                    logging.debug(string)
-                    node_name = self.poly.getValidName(string)
-                    logging.debug(string)
-                    #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
-                    #teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
-                    #self.wait_for_node_done()
-
-            else:
-                logging.info('Cloud Acces not enabled')
-            
-            if self.localAccess:
-                logging.debug('Attempting to log in via local auth')
-                try:
-                    self.poly.Notices['localPW'] = 'Tesla PowerWall may need to be turned OFF and back ON to allow loacal access'
-                    #self.localAccessUp  = self.TPW.loginLocal(local_email, local_password, local_ip)
-                    self.localAccessUp  = self.TPW.loginLocal()
-                    count = 1
-                    while not self.localAccessUp and count < 5:
-                        time.sleep(1)
-                        self.localAccessUp  = self.TPW.loginLocal()
-                        count = count +1
-                        logging.info('Waiting for local system access to be established')
-                    if not  self.localAccessUp:
-                        logging.error('Failed to establish local access - check email, password and IP address')   
-                        return
-                    logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
-
-                except:
-                    logging.error('local authenticated failed.')
-                    self.localAccess = False
-            '''
-                
- 
-            
-            '''
-            node addresses:
-               setup node:            pwsetup 'Control Parameters'
-               main status node:      pwstatus 'Power Wall Status'
-               generator status node: genstatus 'Generator Status'
-               
-            
-
-            if not self.poly.getNode('pwstatus'):
-                node = teslaPWNode(self.poly, self.address, 'pwstatus', 'Power Wall Status', self.TPW, site_id)
-                self.poly.addNode(node)
-                self.wait_for_node_done()
-
-            if self.TPW.solarInstalled:
-                if not self.poly.getNode('solarstatus'):
-                    node = teslaPWSolarNode(self.poly, self.address, 'solarstatus', 'Solar Status', self.TPW)
-                    self.poly.addNode(node)
-                    self.wait_for_node_done()
-            else:
-                temp = self.poly.getNode('solarstatus')
-                if temp:
-                    self.poly.delNode(temp)
-
-
-            if self.TPW.generatorInstalled:
-                if not self.poly.getNode('genstatus'):
-                    node = teslaPWGenNode(self.poly, self.address, 'genstatus', 'Generator Status', self.TPW)
-                    self.poly.addNode(node)
-                    self.wait_for_node_done()
-            else:
-                temp = self.poly.getNode('genstatus')
-                if temp:
-                    self.poly.delNode(temp)
-        
-            if self.cloudAccess:
-                if not self.poly.getNode('pwsetup'):
-                    node = teslaPWSetupNode(self.poly, self.address, 'pwsetup', 'Control Parameters', self.TPW)
-                    self.poly.addNode(node)
-                    self.wait_for_node_done()
-            else:
-                self.poly.delNode('pwsetup')
-            '''
             logging.debug('Node installation complete')
             self.initialized = True
             self.longPoll()
