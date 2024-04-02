@@ -578,6 +578,11 @@ class teslaAccess(udi_interface.OAuth):
     def teslaUpdateCloudData(self, site_id, mode):
         logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
         self.update_date_time()
+        while not self.authendicated():
+            self.try_authendication()
+            logging.info('Cloud Access not Authenticated yet - press Autenticate button')
+            time.sleep(5)
+        
         if mode == 'critical':
             temp =self.tesla_get_live_status(site_id)
             self.tesla_get_today_history(site_id, 'energy')
