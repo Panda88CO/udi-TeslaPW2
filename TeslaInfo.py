@@ -71,8 +71,23 @@ class tesla_info(object):
         logging.debug('init_local')
         self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
         self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
-
+        self.solarInstalled = False
+        self.generatorInstalled = False
         try:
+            meters = self.TPWlocal.get_meters()
+            
+            installed_dev = meters.meters
+            logging.debug('installed dev {}'.format(installed_dev))
+            for tmp_meter in installed_dev:
+                logging.debug('meter: {} '.format(tmp_meter))
+                if 'generator' in tmp_meter.values():
+                    self.generatorInstalled = True
+                if 'solar' in tmp_meter.values():
+                    self.solarInstalled = True
+        except Exception as e:
+            logging.debug('Exception {}'.format(e))
+                              
+        '''
             #self.gateway_id = self.TWPlocal.get_gateway_din()
             generator  = self.TPWlocal._api.get('generators')
             logging.debug('generator {}'.format(generator))
@@ -86,7 +101,7 @@ class tesla_info(object):
         except Exception as e:
             self.generatorInstalled = False
             logging.error('Generator does not seem to be supported: {}'.format(e))
-            
+    
         solarInfo = self.TPWlocal.get_solars()
         logging.debug('solarInfo {}'.format(solarInfo))
         solar = len(solarInfo) != 0
@@ -96,6 +111,7 @@ class tesla_info(object):
             logging.debug('Solar installed ' + str(solar))
         else:
             self.solarInstalled = False
+        '''
         self.metersDayStart = self.TPWlocal.get_meters()
         if self.solarInstalled:
             self.DSsolarMeter = self.metersDayStart.get_meter(MeterType.SOLAR)
