@@ -31,8 +31,8 @@ class TeslaPWController(udi_interface.Node):
         self.primary = primary
         self.address = address
         self.name = name
-        self.cloudAccess = False
-        self.localAccess = False
+        #self.cloudAccess = False
+        #self.localAccess = False
         self.initialized = False
         self.localAccessUp = False
         self.cloudAccessUp = False
@@ -196,7 +196,7 @@ class TeslaPWController(udi_interface.Node):
                 logging.info('Waiting to authenticate to complete - press authenticate button')   
                 self.cloudAccessUp =  self.TPW_cloud.try_authendication()
 
-            #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
+            #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
             self.poly.Notices.clear()     
             self.TPW_cloud.cloud_initialilze(self.region)      
             PWs = self.TPW_cloud.tesla_get_products()
@@ -235,27 +235,9 @@ class TeslaPWController(udi_interface.Node):
         teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
 
 
-        logging.debug('Access: {} {}'.format(self.localAccess, self.cloudAccess))
+        logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))
 
-        '''
-        if self.cloudAccess:
-            no_message = True
-            while not self.TPW_cloud.authendicated():
-                
-                logging.info('Waiting for authendication')
-                if no_message:
-                    self.poly.Notices['auth'] = 'Please initiate authentication'
-                    no_message = False
-                time.sleep(5)
-            self.poly.Notices.clear()
-        #self.TPW = tesla_info(self.TPW_cloud)
-        #self.poly.setCustomParamsDoc()
-        # Wait for things to initialize....
-        #self.check_config()
-        #while not self.initialized:
-        #    time.sleep(1)
-        '''
-        if self.cloudAccess or self.localAccess:
+        if self.cloudAccessUp or self.localAccessUp:
             
             logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
             self.tesla_initialize()
@@ -268,7 +250,7 @@ class TeslaPWController(udi_interface.Node):
     def tesla_initialize(self):
         logging.debug('starting Login process')
         try:
-            logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
+            logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccessUp, self.cloudAccessUp))
             
             logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))             
 
@@ -348,13 +330,13 @@ class TeslaPWController(udi_interface.Node):
         #   self.longPollCountMissed = 0
         #self.node.setDriver('GV2', value)
         #self.node.setDriver('GV3', self.longPollCountMissed)     
-        if self.cloudAccess == False and self.localAccess == False:
+        if self.cloudAccessUp == False and self.localAccessUp == False:
             self.node.setDriver('GV4', 0)
-        elif self.cloudAccess == True and self.localAccess == False:
+        elif self.cloudAccessUp == True and self.localAccessUp == False:
             self.node.setDriver('GV4', 1)
-        elif self.cloudAccess == False and self.localAccess == True:
+        elif self.cloudAccessUp == False and self.localAccessUp == True:
             self.node.setDriver('GV4', 2)
-        elif self.cloudAccess == True and self.localAccess == True:
+        elif self.cloudAccessUp == True and self.localAccessUp == True:
             self.node.setDriver('GV4', 3)
 
         #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
