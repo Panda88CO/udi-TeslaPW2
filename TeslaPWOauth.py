@@ -274,7 +274,8 @@ class teslaAccess(udi_interface.OAuth):
             try:
                 accessToken = self.getAccessToken()
                 self.poly.Notices.clear()
-                return(True)
+                logging.debug('access token (try auth {})'.format(self._oauthTokens))
+                return(self._oauthTokens.get('expiry') != None)
             except ValueError as err:
                 logging.warning('Access token is not yet available. Please authenticate.')
                 self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
@@ -286,6 +287,7 @@ class teslaAccess(udi_interface.OAuth):
         
 
     def authendicated(self):
+        logging.debug('authendicated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
         return(self._oauthTokens.get('expiry') != None)
  
     # Call your external service API
