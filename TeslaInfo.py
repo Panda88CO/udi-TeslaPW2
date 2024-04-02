@@ -156,7 +156,7 @@ class tesla_info(object):
             self.daysTotalGridServices = 0 #Does not seem to exist
             self.daysTotalGenerator = 0 #needs to be updated - may not ex     
         else:
-            self.TPWcloud.teslaUpdateCloudData('all')
+            self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
             self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar(self.site_id, 'today')
             self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption(self.site_id, 'today')
             self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration(self.site_id, 'today')
@@ -258,7 +258,7 @@ class tesla_info(object):
             # Get data from the cloud....
             if self.TPWcloudAccess:
                 logging.debug('pollSystemData - CLOUD')
-                self.cloudAccessUp = self.TPWcloud.teslaUpdateCloudData(level)
+                self.cloudAccessUp = self.TPWcloud.teslaUpdateCloudData(self.site_id,level)
                 if level == 'all':
                     self.daysTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'today')
                     self.daysTotalConsumption = self.TPWcloud.tesla_home_energy_total(self.site_id, 'today' )
