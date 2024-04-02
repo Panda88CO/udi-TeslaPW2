@@ -150,18 +150,22 @@ class tesla_info(object):
             self.daysTotalGenerator = 0 #needs to be updated - may not ex     
         else:
             self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
-            self.daysTotalSolar = self.TPWcloud.teslaExtractDaysSolar(self.site_id, 'today')
-            self.daysTotalConsumption = self.TPWcloud.teslaExtractDaysConsumption(self.site_id, 'today')
-            self.daysTotalGeneraton = self.TPWcloud.teslaExtractDaysGeneration(self.site_id, 'today')
-            self.daysTotalBattery = self.TPWcloud.teslaExtractDaysBattery(self.site_id, 'today')
-            self.daysTotalGenerator = self.TPWcloud.teslaExtractDaysGeneratorUse(self.site_id, 'today')
-            self.daysTotalGridServices = self.TPWcloud.teslaExtractDaysGridServicesUse(self.site_id, 'today')
-            self.yesterdayTotalSolar = self.TPWcloud.teslaExtractYesteraySolar(self.site_id, 'yesterday')
-            self.yesterdayTotalConsumption = self.TPWcloud.teslaExtractYesterdayConsumption(self.site_id, 'yesterday')
-            self.yesterdayTotalGeneration  = self.TPWcloud.teslaExtractYesterdayGeneraton(self.site_id, 'yesterday')
-            self.yesterdayTotalBattery =  self.TPWcloud.teslaExtractYesterdayBattery(self.site_id, 'yesterday') 
-            self.yesterdayTotalGridServices = self.TPWcloud.teslaExtractYesterdayGridServiceUse(self.site_id, 'yesterday')
-            self.yesterdayTotalGenerator = self.TPWcloud.teslaExtractYesterdayGeneratorUse(self.site_id, 'yesterday')
+            self.daysTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'today')
+            self.daysTotalConsumption = self.TPWcloud.tesla_home_energy_total(self.site_id, 'today' )
+            self.daysTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'today')
+            self.daysTotalBattery = self.TPWcloud.tesla_home_energy_battery(self.site_id, 'today')
+            self.daysTotalGrid = self.TPWcloud.tesla_home_energy_grid(self.site_id, 'today')
+            self.daysTotalGenerator = self.TPWcloud.tesla_home_energy_generator(self.site_id, 'today')
+            self.daysTotalSolar = self.TPWcloud.tesla_home_energy_solar(self.site_id, 'today')                                                     
+            self.daysTotalGridServices = self.TPWcloud.tesla_grid_service_export(self.site_id, 'today') - self.TPWcloud.tesla_grid_service_import(self.site_id, 'today') #
+            self.yesterdayTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'yesterday')
+            self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(self.site_id, 'yesterday' )
+            self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'yesterday')
+            self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(self.site_id, 'yesterday')
+            self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(self.site_id, 'yesterday')
+            self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(self.site_id, 'yesterday')
+            self.yesterdaTotalSolar = self.TPWcloud.tesla_home_energy_solar(self.site_id, 'yesterday')         
+            self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(self.site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(self.site_id, 'yesterday')#
 
         logging.debug('teslaInitializeData - 1 - grid status {} '.format(GridStatus))
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]

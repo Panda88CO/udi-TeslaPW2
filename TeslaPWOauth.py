@@ -824,7 +824,8 @@ class teslaPWAccess(teslaAccess):
 
     def tesla_grid_service_import(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])   
+            return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])
+        
     '''
     def teslaExtractDaysSolar(self, site_id):
         return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])
