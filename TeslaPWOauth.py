@@ -17,6 +17,7 @@ import requests
 import time
 #import urllib
 from datetime import timedelta, datetime
+from TeslaOauth import teslaAccess
 from tzlocal import get_localzone
 #from udi_interface import logging, Custom
 #from oauth import OAuth
@@ -39,32 +40,15 @@ except ImportError:
 
 # Implements the API calls to your external service
 # It inherits the OAuth class
-class teslaAccess(udi_interface.OAuth):
+class teslaPWAccess(teslaAccess):
     yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com'
 
     def __init__(self, polyglot, scope):
-        super().__init__(polyglot)
+        super().__init__(polyglot, scope)
         logging.info('OAuth initializing')
         self.poly = polyglot
         self.scope = scope
-        #self.customParameters = Custom(self.poly, 'customparams')
-        #self.scope_str = None
-        self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
-        self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
-        self.EndpointCN= 'https://fleet-api.prd.cn.vn.cloud.tesla.cn'
-        self.api  = '/api/1'
-        #self.local_access_enabled = False
-        self.cloud_access_enabled = False
-        #self.state = secrets.token_hex(16)
-        self.region = ''
-        #self.handleCustomParamsDone = False
-        #self.customerDataHandlerDone = False
-        self.customNsHandlerDone = False
-        self.customOauthHandlerDone = False
-        self.authendication_done = False
-        self.temp_unit = 'C'
-        
-        self.poly = polyglot
+
 
         logging.info('External service connectivity initialized...')
 
@@ -97,7 +81,7 @@ class teslaAccess(udi_interface.OAuth):
         #    logging.debug('Waiting for customParams to complete - getAccessToken')
         #    time.sleep(0.2)
         # self.getAccessToken()
-    
+    '''
     # The OAuth class needs to be hooked to these 3 handlers
     def customDataHandler(self, data):
         logging.debug('customDataHandler called')
@@ -150,7 +134,7 @@ class teslaAccess(udi_interface.OAuth):
     # Your service may need to access custom params as well...
 
 
-   
+    
     def cloud_access(self):
         return(self.cloud_access_enabled)
     
@@ -342,7 +326,7 @@ class teslaAccess(udi_interface.OAuth):
         except requests.exceptions.HTTPError as error:
             logging.error(f"Call { method } { completeUrl } failed: { error }")
             return None
-
+    '''
 
     # Then implement your service specific APIs
     ########################################
@@ -577,6 +561,7 @@ class teslaAccess(udi_interface.OAuth):
 
     def teslaUpdateCloudData(self, site_id, mode):
         logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
+        access = False
         self.update_date_time()
         while not self.authendicated():
             self.try_authendication()
@@ -588,15 +573,17 @@ class teslaAccess(udi_interface.OAuth):
             self.tesla_get_today_history(site_id, 'energy')
             if temp != None:
                 self.site_live_info[site_id] = temp
-                return(True)
+                access = True
+            else:
+                access = False
         elif mode == 'all':
             access = False
             temp =self.tesla_get_live_status(site_id)
             if temp != None:
                 self.site_live_info[site_id]  = temp
                 access = True
-            logging.debug('sitelive : {}'.format(self.site_live_info[site_id] ))    
-            temp = self.tesla_get_site_info('site_info')
+            logging.debug('sitelive : {}'.format(self.site_live_info))
+            temp = self.tesla_get_site_info(site_id)
             if temp != None:
                 self.site_info = temp
                 access = True
@@ -609,8 +596,9 @@ class teslaAccess(udi_interface.OAuth):
             if self.date_changed:
                 self.tesla_get_yesterday_history(site_id, 'energy')
                 self.tesla_get_yesterday_history(site_id, 'backup')
-                self.tesla_get_yesterday_history(site_id, 'charge')                
-            return(access)
+                self.tesla_get_yesterday_history(site_id, 'charge')
+            logging.debug('history_data : {}'.format(self.history_data))
+        return(access)
 
 
     def supportedOperatingModes(self):
