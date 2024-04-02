@@ -512,8 +512,8 @@ class teslaPWAccess(teslaAccess):
         logging.debug('process_energy_data: {}'.format(hdata))
     
         for indx in range(0,len(hdata['time_series'])):
-            e_data = hdata['time_series'][indx]
-            time_str = e_data['timestamp']
+            energy_data = hdata['time_series'][indx]
+            time_str = energy_data['timestamp']
             dt_object = datetime.fromisoformat(time_str)
             date_str = dt_object.strftime('%Y-%m-%d')
             if date_str == self.t_now_date:
@@ -523,19 +523,68 @@ class teslaPWAccess(teslaAccess):
             else:
                 date_key = 'unknown'
             if date_key != 'unknown':
-                self.history_data[site_id]['energy'][date_key] = e_data
+                self.history_data[site_id]['energy'][date_key] = energy_data
 
     def process_backup_data(self, site_id, hdata):
         logging.debug('process_backup_data: {}'.format(hdata))
-        if hdata['events_count'] > 0:
-            for indx in range(0,len(hdata['events'])):
-                event = hdata['events'][indx]
+        backup_data = hdata['response']
+        total_duration = 0
+        date_key = 'unknown' 
+        if int(backup_data['total_events']) > 0:
+            time_str = backup_data['events'][0]['timestamp'] # all days should be the same
+            dt_object = datetime.fromisoformat(time_str)
+            date_str = dt_object.strftime('%Y-%m-%d')
+            if date_str == self.t_now_date:
+                date_key = 'today'                
+            elif date_str == self.t_yesterday_date:
+                date_key = 'yesterday'
+            else:
+                date_key = 'unknown'
+            for indx in range(0,len(backup_data['events'])):
+                event = backup_data['events'][indx]
+                total_duration = total_duration + event['duration']
+        temp = {}
+        temp['total_duration'] = total_duration
+        temp['total_events'] = int(backup_data['total_events'])
+        if date_key != 'unknown':
+            self.history_data[site_id]['backup'][date_key] = temp
+
         # need to figure put how to deal with dates
             
 
 
-    def process_charge_data(self, side_id, hdata):
-        logging.debug('process_charge_data: {}'.format(hdata))
+    def process_charge_data(self, site_id, hist_data):
+        logging.debug('process_charge_data: {}'.format(hist_data))
+        charge_data = hist_data['response']
+        total_duration = 0
+        total_events = 0
+        total_energy = 0
+        date_key = 'unknown' 
+        if 'charge_history' in charge_data:
+            if len(charge_data['charge_history']) >  0:
+                epoch_time = charge_data['charge_history'][0]['charge_start_time']['seconds'] # all days should be the same
+                dt_object = datetime.fromtimestamp(epoch_time)
+                date_str = dt_object.strftime('%Y-%m-%d')
+                if date_str == self.t_now_date:
+                    date_key = 'today'                
+                elif date_str == self.t_yesterday_date:
+                    date_key = 'yesterday'
+                else:
+                    date_key = 'unknown'
+                total_events = len(charge_data['charge_history'])
+                for indx in range(0,len(charge_data['charge_history'])):                    
+                    event = charge_data['charge_history'][indx]
+                    total_duration = total_duration + charge_data['charge_history'][indx]['charge_duration']['seconds']
+                    total_energy = total_energy + charge_data['charge_history'][indx]['energy_added_wh']
+        temp = {}
+        temp['total_duration'] = total_duration
+        temp['total_events'] = total_events
+        temp['total_energy'] = total_energy
+        if date_key != 'unknown':
+            self.history_data[site_id]['backup'][date_key] = temp
+
+
+
 
     def process_history_data(self, site_id, type, hist_data):
         logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
