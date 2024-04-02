@@ -527,10 +527,10 @@ class teslaPWAccess(teslaAccess):
 
     def process_backup_data(self, site_id, hdata):
         logging.debug('process_backup_data: {}'.format(hdata))
-        backup_data = hdata['response']
+        backup_data = hdata
         total_duration = 0
         date_key = 'unknown' 
-        if int(backup_data['total_events']) > 0:
+        if int(backup_data['events_count']) > 0:
             time_str = backup_data['events'][0]['timestamp'] # all days should be the same
             dt_object = datetime.fromisoformat(time_str)
             date_str = dt_object.strftime('%Y-%m-%d')
@@ -586,8 +586,8 @@ class teslaPWAccess(teslaAccess):
 
 
 
-    def process_history_data(self, site_id, type, hist_data):
-        logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
+    def process_history_data(self, site_id, type, hdata):
+        logging.debug('process_history_data - {} {} {}'.format(site_id, type, hdata))
         self.update_date_time()
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
@@ -595,11 +595,11 @@ class teslaPWAccess(teslaAccess):
             self.history_data[site_id][type] = {}
 
         if type == 'energy':
-            self.process_energy_data(site_id, hist_data)
+            self.process_energy_data(site_id, hdata)
         elif type == 'backup':
-            self.process_backup_data(site_id, hist_data)
+            self.process_backup_data(site_id, hdata)
         elif type == 'charge':
-            self.process_charge_data(site_id, hist_data)
+            self.process_charge_data(site_id, hdata)
         else:
             logging.error('Unknown type provided: {}'.format(type))
 
