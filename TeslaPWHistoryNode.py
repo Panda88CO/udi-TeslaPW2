@@ -149,19 +149,10 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
     drivers = [
-            {'driver': 'GV0', 'value': -1, 'uom': 33},  #battery level
-            {'driver': 'GV1', 'value': 0, 'uom': 51},  #battery level
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #mode
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #grid status
-            {'driver': 'GV4', 'value': 0, 'uom': 25},  #on/off line
-            {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid services
-            {'driver': 'GV6', 'value': 0, 'uom': 33},  #battery supply
             {'driver': 'GV7', 'value': 0, 'uom': 33},  #battery today
             {'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
-            {'driver': 'GV9', 'value': 0, 'uom': 33},  #grid supply
             {'driver': 'GV10', 'value': 0, 'uom': 33}, #grid today
             {'driver': 'GV11', 'value': 0, 'uom': 33}, #grid yesterday
-            {'driver': 'GV12', 'value': 0, 'uom': 33}, #load
             {'driver': 'GV13', 'value': 0, 'uom': 33}, #consumption today
             {'driver': 'GV14', 'value': 0, 'uom': 33}, #consumption yesterday
             {'driver': 'GV15', 'value': 0, 'uom': 33}, #generation today
@@ -170,12 +161,14 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV18', 'value': 0, 'uom': 33}, #grid service yesterday
             {'driver': 'GV19', 'value': 0, 'uom': 33}, #Solar today
             {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            #{'driver': 'GV21', 'value': 0, 'uom': 103}, #Current buy rate
-            #{'driver': 'GV22', 'value': 0, 'uom': 103}, #Current sell rate
-            #{'driver': 'GV23', 'value': 99, 'uom': 25}, #Peak/Partial/offpeak
-            #{'driver': 'GV24', 'value': 99, 'uom': 25}, #Summer/Winter
-           
+            {'driver': 'GV21', 'value': 0, 'uom': 33}, #backup today event
+            {'driver': 'GV22', 'value': 0, 'uom': 33}, #backup today time            
+            {'driver': 'GV23', 'value': 0, 'uom': 33}, #backup yesterday event
+            {'driver': 'GV24', 'value': 0, 'uom': 33}, #backup yesterday time
+            {'driver': 'GV25', 'value': 0, 'uom': 33}, #charge today pwr
+            {'driver': 'GV26', 'value': 0, 'uom': 33}, #charge today time            
+            {'driver': 'GV27', 'value': 0, 'uom': 33}, #charge yesterday pwr
+            {'driver': 'GV28', 'value': 0, 'uom': 33}, #charge yesterday time            
            
             ]
 
