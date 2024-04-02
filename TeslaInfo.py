@@ -32,10 +32,6 @@ class tesla_info(object):
         self.TPWlocalAccess = PWlocal != None
         self.systemReady = False 
         self.firstPollCompleted = False
-
-
-        #self.local_access_enabled = my_Tesla_PW.local_access()
-        #self.cloud_access_enabled = my_Tesla_PW.cloud_access()
         self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
@@ -62,10 +58,7 @@ class tesla_info(object):
     def init_cloud(self):
         if self.cloud_access_enabled():
             self.cloudAccessUp = True
-            self.TPWcloud.tesla_get_site_info(self.site_id)
-            self.TPWcloud.tesla_get_live_status(self.site_id)
-            self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
-            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
+            self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
             logging.debug('Clould data retrieved tesla_info')
 
     def init_local(self):

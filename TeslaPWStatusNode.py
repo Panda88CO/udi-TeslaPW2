@@ -50,6 +50,7 @@ class teslaPWStatusNode(udi_interface.Node):
 
         sub_adr = self.primary[-8:]
         #if self.TPW.cloud_access_enabled():
+        self.TPW.teslaInitializeData()
         teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
         if self.TPW.solarInstalled:
             teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)

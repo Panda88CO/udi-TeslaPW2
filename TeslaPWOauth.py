@@ -262,7 +262,7 @@ class teslaAccess(udi_interface.OAuth):
             self.poly.Notices.clear()
 
         except requests.exceptions.HTTPError as error:
-            logging.error(f"Failed to refresh oAuth token: { error }")
+            logging.warning(f"Failed to refresh oAuth token: { error } - try Authenticating again")
             self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             raise ValueError('Access token is not available')
 
