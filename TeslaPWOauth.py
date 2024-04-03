@@ -73,10 +73,12 @@ class teslaPWAccess(teslaAccess):
         self.tz_offset = ''
         self.tz_str = ''
         self.t_yesterday_date = ''
+        self.NaN = -2147483647
+        self.total_pack_energy = self.NaN
         self.update_date_time()
         self.site_info = {}
         self.site_live_info = {}
-
+  
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customParams to complete - getAccessToken')
         #    time.sleep(0.2)
@@ -96,6 +98,8 @@ class teslaPWAccess(teslaAccess):
                 site = temp['response'][indx]
                 if 'energy_site_id' in site:
                     power_walls[str(site['energy_site_id' ])] = site
+                    if 'total_pack_energy' in site:
+                        self.total_pack_energy = site['total_pack_energy' ] 
         return(power_walls)
     
     def tesla_get_live_status(self, site_id):
@@ -104,6 +108,8 @@ class teslaPWAccess(teslaAccess):
         logging.debug('live_status: {} '.format(temp))
         if 'response' in temp:
             self.site_live_info[site_id] = temp['response']
+            if 'total_pack_energy' in self.site_live_info[site_id]:
+                self.total_pack_energy = self.site_live_info[site_id]['total_pack_energy' ] 
             return(self.site_live_info[site_id])
 
     def tesla_get_site_info(self, site_id):
@@ -493,7 +499,13 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['grid_power'])
 
     def teslaExtractEnergyRemaining(self, site_id): 
-        return(self.site_live_info[site_id]['energy_left'])
+        if 'total_pack_energy' in self.site_live_info[site_id]:
+            self.total_pack_energy = self.site_live_info[site_id]['total_pack_energy']
+            return(self.site_live_info[site_id]['energy_left'])
+        elif self.total_pack_energy != self.NaN:
+            return(self.total_pack_energy)
+        else:
+            return(None)
 
     def teslaExtractGeneratorSupply (self, site_id):
         return(self.site_live_info[site_id]['generator_power'])

@@ -98,8 +98,11 @@ class teslaPWStatusNode(udi_interface.Node):
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
         #self.node.setDriver('GV0', round(tmp,2))
-        logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
-        self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
+        if self.TPW.getTPW_energy_remaining():
+            logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
+            self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
+        else:
+             self.node.setDriver('GV1', 99, True, True, 25)
         logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
         self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
         logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))

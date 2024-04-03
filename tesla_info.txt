@@ -33,6 +33,31 @@ products:
 	], 
 	'count': 1} 
 
+products: 
+{'response': 	
+	{'energy_site_id': 2252180231966670, 
+	'resource_type': 'battery', 
+	'site_name': 'Olgaard Saratoga', 
+	'id': 'STE20200117-00014', 
+	'gateway_id': '1118431-00-L--TG11925500082D', 
+	'asset_site_id': '6328e895-ffe4-4ef1-9529-d56d3e4ef84c', 
+	'grid_installation_id': 'a6fa15b1-8830-44e7-be73-28dcbe9ce391', 
+	'warp_site_number': 'STE20200117-00014', 
+	'percentage_charged': 100, 
+	'battery_type': 'ac_powerwall', 
+	'backup_capable': True, 
+	'battery_power': -10, 
+	'go_off_grid_test_banner_enabled': None, 
+	'storm_mode_enabled': True, 
+	'powerwall_onboarding_settings_set': True, 
+	'powerwall_tesla_electric_interested_in': None, 
+	'vpp_tour_enabled': None, 
+	'sync_grid_alert_enabled': True, 
+	'breaker_alert_enabled': True, 
+	'components': {'battery': True, 'battery_type': 'ac_powerwall', 'solar': True, 'grid': True, 'load_meter': True, 'market_type': 'residential'}, 
+	'features': {'rate_plan_manager_no_pricing_constraint': True}}
+	], 
+	'count': 1} 
 
 
 
@@ -54,7 +79,21 @@ live_status:
 	'storm_mode_active': False, 
 	'timestamp': '2024-03-15T16:24:27-07:00', 
 	'wall_connectors': []}} 
-
+{'response'::
+	{'solar_power': 2040.1600341796875, 
+	'percentage_charged': 100, 
+	'backup_capable': True, 
+	'battery_power': 0, 
+	'load_power': 537.010009765625, 
+	'grid_status': 'Active', 
+	'grid_services_active': False, 
+	'grid_power': -1503.1500244140625, 
+	'grid_services_power': 0, 
+	'generator_power': 0, 
+	'island_status': 'on_grid', 
+	'storm_mode_active': False, 
+	'timestamp': '2024-04-03T11:13:56-07:00', 
+	'wall_connectors': []}} 
  
 site_info: 
 {'response': 
