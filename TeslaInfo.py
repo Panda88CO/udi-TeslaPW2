@@ -56,14 +56,17 @@ class tesla_info(object):
     
 
     def init_cloud(self):
-        if self.cloud_access_enabled():
-            self.cloudAccessUp = True            
-            self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
-            # force update of yesterdays data as day did not change 
-            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
-            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'backup')
-            self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'charge')
-            logging.debug('Clould data retrieved tesla_info')
+        logging.debug('init_cloud')
+        while not self.cloudAccessUp:
+            logging.info('Waiting for cloud access')
+            time.sleep(5)       
+        self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
+        # force update of yesterdays data as day did not change 
+        self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
+        self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'backup')
+        self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'charge')
+        logging.debug('Cloud data retrieved tesla_info')
+        
 
     def init_local(self):
         logging.debug('init_local')
