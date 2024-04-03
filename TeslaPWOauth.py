@@ -124,9 +124,11 @@ class teslaPWAccess(teslaAccess):
         logging.debug('site_info: {} '.format(temp))   
         if 'response' in temp:
             self.site_info[site_id] = temp['response']
+            logging.debug('tesla_get_site_info'.format(self.site_info[site_id] ))
             if 'components' in self.site_info[site_id]:
                 if 'installation_time_zone' in self.site_info[site_id]['components']:
                     self.installation_tz[site_id] = str(self.site_info[site_id]['components']['installation_time_zone'])
+            logging.debug('Timezone {}'.format(self.installation_tz))
             return(self.site_info)
 
     def tesla_set_backup_percent(self, site_id, reserve_pct):
@@ -180,6 +182,7 @@ class teslaPWAccess(teslaAccess):
         #self.tz_str = t_now.tzname()
         t_yesterday = t_now - timedelta(days = 1)
         self.t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
+        logging.debug('timezone info : {}'.format(self.installation_tz))
         if self.installation_tz[site_id]:
             self.tz_str = self.installation_tz[site_id]
         else:
