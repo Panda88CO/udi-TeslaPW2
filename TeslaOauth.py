@@ -63,8 +63,8 @@ class teslaAccess(udi_interface.OAuth):
         self.customOauthHandlerDone = False
         self.authendication_done = False
         self.temp_unit = 'C'
-        self.poly.subscribe(self.poly.CUSTOMNS, self.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.oauthHandler)
+        #self.poly.subscribe(self.poly.CUSTOMNS, self.customNsHandler)
+        #self.poly.subscribe(self.poly.OAUTH, self.oauthHandler)
         self.poly = polyglot
 
         logging.info('External service connectivity initialized...')

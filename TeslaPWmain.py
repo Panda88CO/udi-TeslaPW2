@@ -21,10 +21,10 @@ VERSION = '0.1.5'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat
 
-    def __init__(self, polyglot, primary, address, name):
-        super(TeslaPWController, self).__init__(polyglot, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, TPW_cloud):
+        super(TeslaPWController, self).__init__(polyglot, primary, address, name )
         self.poly = polyglot
-
+        self.TPW_cloud = TPW_cloud
         logging.info('_init_ Tesla Power Wall Controller')
         self.ISYforced = False
         self.name = 'Tesla PowerWall Info'
@@ -56,9 +56,9 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
-        #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
-        #self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        #self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
+        self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
+        self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
+        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
@@ -74,7 +74,7 @@ class TeslaPWController(udi_interface.Node):
         self.wait_for_node_done()
         self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
-        self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        
 
 
         self.node.setDriver('ST', 1, True, True)
@@ -371,7 +371,11 @@ if __name__ == "__main__":
         polyglot.start(VERSION)
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
-        TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWalls')
+
+        TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
+
+        TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWalls', TPW_cloud)
+
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
