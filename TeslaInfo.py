@@ -143,7 +143,7 @@ class tesla_info(object):
             logging.debug('Logged in Cloud - retrieving data')
             self.TPWcloudAccess = True
             self.cloudAccessUp = True
-            self.TPWcloud.teslaUpdateCloudData(self.site_id, 'all')
+           
 
         return(self.cloudAccessUp)
 
