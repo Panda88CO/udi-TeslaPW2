@@ -54,11 +54,11 @@ class TeslaPWController(udi_interface.Node):
         #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
+        self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
-        self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
+        #self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
         self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
+        self.poly.subscribe(self.poly.OAUTH, self.oauthHandler)
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
@@ -80,6 +80,28 @@ class TeslaPWController(udi_interface.Node):
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
 
+    def oauthHandler(self, token):
+        # When user just authorized, pass this to your service, which will pass it to the OAuth handler
+        self.TPW_cloud.oauthHandler(token)
+
+        # Then proceed with device discovery
+        self.configDoneHandler()
+
+    def configDoneHandler(self):
+        # We use this to discover devices, or ask to authenticate if user has not already done so
+        polyglot.Notices.clear()
+
+        # First check if user has authenticated
+        try:
+            self.TPW_cloud.getAccessToken()
+        except ValueError as err:
+            logging.warning('Access token is not yet available. Please authenticate.')
+            logging.debug('Error: {}'.format(err))
+            polyglot.Notices['auth'] = 'Please initiate authentication'
+            return
+
+        # If getAccessToken did raise an exception, then proceed with device discovery
+        #controller.discoverDevices()
 
 
     def customParamsHandler(self, userParams):
@@ -168,7 +190,6 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.poly.updateProfile()
    
-
         logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         while not self.customParam_done or not self.TPW_cloud.customNsDone():
             logging.info('Waiting for node to initialize')
@@ -198,7 +219,7 @@ class TeslaPWController(udi_interface.Node):
 
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
             self.poly.Notices.clear()     
-            self.TPW_cloud.cloud_initialilze(self.region)      
+            self.TPW_cloud.cloud_initialilze(self.region)
             PWs = self.TPW_cloud.tesla_get_products()
             logging.debug('PWs: {}'.format(PWs))
             if self.GW:
