@@ -668,10 +668,10 @@ class tesla_info(object):
         logging.debug('getTPW_stormMode ')  
         return(self.TPWcloud.teslaSetStormMode(mode==1))
 
-    #def getTPW_touMode(self):
-    #    logging.debug('getTPW_touMode ')  
-    #    if self.TPWcloudAccess:
-    #        return(self.TOU_MODES.index([self.TPWcloud.teslaExtractTouMode(self.site_id)]))
+    def getTPW_touMode(self):
+        logging.debug('getTPW_touMode ')  
+        if self.TPWcloudAccess:
+            return(self.TOU_MODES.index([self.TPWcloud.teslaExtractTouMode(self.site_id)]))
 
 
     def getTPW_touSchedule(self):
