@@ -57,9 +57,12 @@ class tesla_info(object):
 
     def init_cloud(self):
         logging.debug('init_cloud')
-        while not self.cloudAccessUp:
+        self.teslaCloudConnect()
+        while not self.TPWcloud.authendicated():
             logging.info('Waiting for cloud access')
             time.sleep(5)       
+        self.TPWcloudAccess = True
+        self.cloudAccessUp = True
         self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
         # force update of yesterdays data as day did not change 
         self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
