@@ -74,8 +74,9 @@ class teslaPWAccess(teslaAccess):
         self.tz_str = ''
         self.t_yesterday_date = ''
         self.NaN = -2147483647
-        self.total_pack_energy = self.NaN
-        self.update_date_time()
+        self.total_pack_energy = {}
+        self.installation_tz = {}
+        #self.update_date_time()
         self.site_info = {}
         self.site_live_info = {}
   
@@ -99,25 +100,33 @@ class teslaPWAccess(teslaAccess):
                 if 'energy_site_id' in site:
                     power_walls[str(site['energy_site_id' ])] = site
                     if 'total_pack_energy' in site:
-                        self.total_pack_energy = site['total_pack_energy' ] 
+                        self.total_pack_energy[str(site['energy_site_id' ])] = site['total_pack_energy' ] 
         return(power_walls)
     
     def tesla_get_live_status(self, site_id):
         logging.debug('tesla_get_live_status ')
+        if site_id not in self.total_pack_energy:
+            self.total_pack_energy[site_id] = self.NaN
         temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
         logging.debug('live_status: {} '.format(temp))
         if 'response' in temp:
             self.site_live_info[site_id] = temp['response']
             if 'total_pack_energy' in self.site_live_info[site_id]:
-                self.total_pack_energy = self.site_live_info[site_id]['total_pack_energy' ] 
+                self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy' ]
+    
             return(self.site_live_info[site_id])
 
     def tesla_get_site_info(self, site_id):
         logging.debug('tesla_get_site_info ')
+        if site_id not in self.installation_tz:
+            self.installation_tz[site_id] = None
         temp = self._callApi('GET','/energy_sites/'+site_id +'/site_info' )
         logging.debug('site_info: {} '.format(temp))   
         if 'response' in temp:
             self.site_info[site_id] = temp['response']
+            if 'components' in self.site_info[site_id]:
+                if 'installation_time_zone' in self.site_info[site_id]['components']:
+                    self.installation_tz[site_id] = str(self.site_info[site_id]['components']['installation_time_zone'])
             return(self.site_info)
 
     def tesla_set_backup_percent(self, site_id, reserve_pct):
@@ -159,7 +168,7 @@ class teslaPWAccess(teslaAccess):
         temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
-    def update_date_time(self):
+    def update_date_time(self, site_id):
         t_now = datetime.now(get_localzone())
         today_date_str = t_now.strftime('%Y-%m-%d')
         self.date_changed = (today_date_str != self.previous_date_str)
@@ -168,10 +177,13 @@ class teslaPWAccess(teslaAccess):
         self.t_now_time = t_now.strftime('T%H:%M:%S')
         tz_offset = t_now.strftime('%z')   
         self.tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
-        self.tz_str = t_now.tzname()
+        #self.tz_str = t_now.tzname()
         t_yesterday = t_now - timedelta(days = 1)
         self.t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
-
+        if self.installation_tz[site_id]:
+            self.tz_str = self.installation_tz[site_id]
+        else:
+            self.tz_str = t_now.tzname()
 
         #t_now = datetime.now(get_localzone())
         #t_yesterday = t_now - timedelta(days = 1)
@@ -181,13 +193,14 @@ class teslaPWAccess(teslaAccess):
 
     def tesla_get_today_history(self, site_id, type):
         logging.debug('tesla_get_today_history : {}'.format(type))
+        self.update_date_time(site_id)
         if type in self.HISTORY_TYPES:
             #t_now = datetime.now(get_localzone())
             #self.t_now_date = t_now.strftime('%Y-%m-%d')
             #self.t_now_time = t_now.strftime('T%H:%M:%S')
             #tz_offset = t_now.strftime('%z')   
             #self.tz_offset = tz_offset[0:3]+':'+tz_offset[-2:]
-            #tz_str = t_now.tzname()
+
             t_start_str = self.t_now_date+'T00:00:00'+self.tz_offset
             t_end_str = self.t_now_date+self.t_now_time+self.tz_offset
             params = {
@@ -210,6 +223,7 @@ class teslaPWAccess(teslaAccess):
 
     def tesla_get_yesterday_history(self, site_id, type):
         logging.debug('tesla_get_yesterday_history : {}'.format(type))
+        self.update_date_time(site_id)
         if type in self.HISTORY_TYPES:
             #self.prepare_date_time()
             #t_now = datetime.now(get_localzone())
@@ -242,6 +256,7 @@ class teslaPWAccess(teslaAccess):
 
     def tesla_get_2day_history(self, site_id, type):
         logging.debug('tesla_get_2day_history : {}'.format(type))
+        self.update_date_time(site_id)
         if type in self.HISTORY_TYPES:
             #t_now = datetime.now(get_localzone())
             #t_yesterday = t_now - timedelta(days = 1)
@@ -353,7 +368,7 @@ class teslaPWAccess(teslaAccess):
 
     def process_history_data(self, site_id, type, hist_data):
         logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
-        self.update_date_time()
+        self.update_date_time(site_id)
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
         if type not in self.history_data[site_id]:
@@ -376,7 +391,7 @@ class teslaPWAccess(teslaAccess):
     def teslaUpdateCloudData(self, site_id, mode):
         logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
         access = False
-        self.update_date_time()
+        self.update_date_time(site_id)
         while not self.authendicated():
             self.try_authendication()
             logging.info('Cloud Access not Authenticated yet - press Autenticate button')
