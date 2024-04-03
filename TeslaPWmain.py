@@ -44,7 +44,7 @@ class TeslaPWController(udi_interface.Node):
         self.site_id = None
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
-        self.Notices = Custom(polyglot, 'notices')
+        self.Notices = Custom(self.poly, 'notices')
         #self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'vehicle_device_data')
@@ -87,9 +87,12 @@ class TeslaPWController(udi_interface.Node):
         # Then proceed with device discovery
         self.configDoneHandler()
 
+    def check_config(self):
+        pass
+
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
-        polyglot.Notices.clear()
+        self.poly.Notices.clear()
 
         # First check if user has authenticated
         try:
@@ -97,7 +100,7 @@ class TeslaPWController(udi_interface.Node):
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
             logging.debug('Error: {}'.format(err))
-            polyglot.Notices['auth'] = 'Please initiate authentication'
+            self.poly.Notices['auth'] = 'Please initiate authentication'
             return
 
         # If getAccessToken did raise an exception, then proceed with device discovery
@@ -172,7 +175,12 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('customParamsHandler fnish ')
         self.customParam_done = True
 
+
+    
     '''
+
+
+
     def main_module_enabled(self, node_name):
         logging.debug('main_module_enabled called {}'.format(node_name))
         if node_name in self.customParameters :           
