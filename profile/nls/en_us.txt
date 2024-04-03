@@ -50,8 +50,8 @@ ST-nlspwstatus-GV27-NAME = Yesterday charge power
 ST-nlspwstatus-GV28-NAME = Yesterday charge time
 
 SEASON-0 = Winter
-SEASON-1 = SUMMER
-SEASON-2 = BETWEEN SUmmer and Winter
+SEASON-1 = Summer
+SEASON-2 = Between SUmmer and Winter
 SEASON-99 = Unknown
 
 PERIOD-0 = Off-peak

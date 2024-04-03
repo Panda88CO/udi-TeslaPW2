@@ -14,6 +14,7 @@ from TeslaInfo import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPWSolarNode import teslaPWSolarNode
 from TeslaPWGenNode import teslaPWGenNode
+from TeslaPWHistoryNode import teslaPWHistoryNode
 
 
 class teslaPWStatusNode(udi_interface.Node):
@@ -56,7 +57,9 @@ class teslaPWStatusNode(udi_interface.Node):
             teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
         if self.TPW.generatorInstalled:
             teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
-        
+        teslaPWHistoryNode(self.poly, self.primary, 'hist_'+sub_adr, 'History', self.TPW)
+
+
         self.TPW.teslaInitializeData()
         self.updateISYdrivers()
         self.node_ok = True
@@ -68,29 +71,10 @@ class teslaPWStatusNode(udi_interface.Node):
         return(self.node_ok)
 
 
-    def season2ISY(self, season):
-        logging.debug('season2ISY {}'.format(season))
-        if season.upper() == 'WINTER':
-            return(0)
-        elif season.upper() == 'SUMMER':
-            return(1)
-        elif season != None:
-            return(2)
-        else:
-            return (99)
+ 
         
 
-    def period2ISY(self, period):
-        logging.debug('period2ISY {}'.format(period))
-        if period.upper() == 'OFF_PEAK':
-            return(0)
-        elif period.upper() == 'PARTIAL_PEAK':
-            return(1)
-        elif period.upper() == 'PEAK':
-            return(2)
-        else:
-            return (99) 
-
+  
     def updateISYdrivers(self):
 
 

@@ -118,14 +118,14 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
         self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
         self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
-        self.node.setDriver('GV21', self.TPW.getTPW_daysGeneration())
-        self.node.setDriver('GV22', self.TPW.getTPW_yesterdayGeneration())
-        self.node.setDriver('GV23', self.TPW.getTPW_daysGridServicesUse())
-        self.node.setDriver('GV24', self.TPW.getTPW_yesterdayGridServicesUse())
-        self.node.setDriver('GV25', self.TPW.getTPW_daysSolar())
+        self.node.setDriver('GV21', self.TPW.getTPW_days_backup_events())
+        self.node.setDriver('GV22', self.TPW.getTPW_days_backup_time())
+        self.node.setDriver('GV23', self.TPW.getTPW_yesterday_backup_events())
+        self.node.setDriver('GV24', self.TPW.getTPW_days_evcharge_power())
+        self.node.setDriver('GV25', self.TPW.getTPW_days_evcharge_time())
         self.node.setDriver('GV26', self.TPW.getTPW_yesterdaySolar())
-        self.node.setDriver('GV27', self.TPW.getTPW_daysSolar())
-        self.node.setDriver('GV28', self.TPW.getTPW_yesterdaySolar())
+        self.node.setDriver('GV27', self.TPW.getTPW_yesterday_evcharge_power())
+        self.node.setDriver('GV28', self.TPW.getTPW_yesterday_evcharge_time())
 
 
     def update_PW_data(self, level):

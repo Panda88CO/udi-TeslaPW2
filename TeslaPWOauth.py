@@ -346,7 +346,7 @@ class teslaPWAccess(teslaAccess):
         temp['total_events'] = total_events
         temp['total_energy'] = total_energy
         if date_key != 'unknown':
-            self.history_data[site_id]['backup'][date_key] = temp
+            self.history_data[site_id]['charge'][date_key] = temp
 
 
 
@@ -422,7 +422,7 @@ class teslaPWAccess(teslaAccess):
     def isConnectedToPW(self):
         return( self.authendicated())
 
- 
+
    
     def teslaSolarInstalled(self, site_id):
         return(self.site_info[site_id]['components']['solar'])
@@ -592,6 +592,25 @@ class teslaPWAccess(teslaAccess):
         if day in self.DAY_HISTORY:
             return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])
         
+
+    def tesla_backup_events(self, site_id, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[site_id]['backup'][day]['total_events'])
+        
+    def tesla_backup_time(self, site_id, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[site_id]['backup'][day]['total_duration'])
+
+    def tesla_evcharge_power(self, site_id, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[site_id]['charge'][day]['total_energy'])
+        
+    def tesla_evcharge_time(self, site_id, day):
+        if day in self.DAY_HISTORY:
+            return(self.history_data[site_id]['charge'][day]['total_duration'])
+
+
+
     '''
     def teslaExtractDaysSolar(self, site_id):
         return(self.history_data[site_id]['energy']['today']['solar_energy_exported'])

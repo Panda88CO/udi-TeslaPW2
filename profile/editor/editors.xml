@@ -72,5 +72,7 @@
   <editor id = "DOLLAR" > 
      <range  uom="103" min="0" max="5" prec="2" />
   </editor>  
-
+  <editor id = "count" > 
+     <range  uom="0" min="0" max="100" prec="0" />
+  </editor>  
 </editors> 

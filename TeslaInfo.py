@@ -715,3 +715,52 @@ class tesla_info(object):
         if self.localAccessUp:
             self.TPWlocal.close()
 
+
+
+    def getTPW_days_backup_events(self):
+        try:
+            return(self.TPWcloud.tesla_backup_events(self.site_id, 'today'))
+        except:
+            return(None)
+        
+    def getTPW_yesterday_backup_events(self):
+        try:
+            return(self.TPWcloud.tesla_backup_events(self.site_id, 'yesterday'))
+        except:
+            return(None)
+        
+    def getTPW_days_backup_time(self):
+        try:
+            return(self.TPWcloud.tesla_backup_time(self.site_id, 'today'))
+        except:
+            return(None)
+            
+    def getTPW_yesterday_backup_time(self):
+        try:
+            return(self.TPWcloud.tesla_backup_time(self.site_id, 'yesterday'))       
+        except:
+            return(None)
+        
+    def getTPW_days_evcharge_power(self):
+        try:
+            return(self.TPWcloud.tesla_evcharge_power(self.site_id, 'today'))
+        except:
+            return(None)
+            
+    def getTPW_yesterday_evcharge_power(self):
+        try:
+            return(self.TPWcloud.tesla_evcharge_power(self.site_id, 'yesterday'))
+        except:
+            return(None)
+        
+    def getTPW_days_evcharge_time(self):
+        try:
+            return(self.TPWcloud.tesla_evcharge_time(self.site_id, 'today'))
+        except:
+            return(None)
+            
+    def getTPW_yesterday_evcharge_time(self):
+        try:
+            return(self.TPWcloud.tesla_evcharge_time(self.site_id, 'yesterday'))           
+        except:
+            return(None)        
