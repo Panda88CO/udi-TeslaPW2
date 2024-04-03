@@ -121,17 +121,17 @@ class teslaPWStatusNode(udi_interface.Node):
         self.node.setDriver('GV12', self.TPW.getTPW_load())
         
         self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
-        self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
+        #self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
         self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
-        self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
+        #self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
         self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption())
-        self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
+        #self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
         self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration())
-        self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
+        #self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
         self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
-        self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
+        #self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
         self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
-        self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
+        #self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
 
 
 
@@ -160,20 +160,20 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid services
             {'driver': 'GV6', 'value': 0, 'uom': 33},  #battery supply
             {'driver': 'GV7', 'value': 0, 'uom': 33},  #battery today
-            {'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
+            #{'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
             {'driver': 'GV9', 'value': 0, 'uom': 33},  #grid supply
             {'driver': 'GV10', 'value': 0, 'uom': 33}, #grid today
-            {'driver': 'GV11', 'value': 0, 'uom': 33}, #grid yesterday
+            #{'driver': 'GV11', 'value': 0, 'uom': 33}, #grid yesterday
             {'driver': 'GV12', 'value': 0, 'uom': 33}, #load
             {'driver': 'GV13', 'value': 0, 'uom': 33}, #consumption today
-            {'driver': 'GV14', 'value': 0, 'uom': 33}, #consumption yesterday
+            #{'driver': 'GV14', 'value': 0, 'uom': 33}, #consumption yesterday
             {'driver': 'GV15', 'value': 0, 'uom': 33}, #generation today
-            {'driver': 'GV16', 'value': 0, 'uom': 33}, #generation yesterday
+            #{'driver': 'GV16', 'value': 0, 'uom': 33}, #generation yesterday
             {'driver': 'GV17', 'value': 0, 'uom': 33}, #grid service today
-            {'driver': 'GV18', 'value': 0, 'uom': 33}, #grid service yesterday
+            #{'driver': 'GV18', 'value': 0, 'uom': 33}, #grid service yesterday
             {'driver': 'GV19', 'value': 0, 'uom': 33}, #Solar today
-            {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
+            #{'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
+            #{'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
             #{'driver': 'GV21', 'value': 0, 'uom': 103}, #Current buy rate
             #{'driver': 'GV22', 'value': 0, 'uom': 103}, #Current sell rate
             #{'driver': 'GV23', 'value': 99, 'uom': 25}, #Peak/Partial/offpeak

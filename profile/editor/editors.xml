@@ -23,7 +23,7 @@
   </editor>
 
   <editor id = "OP_MODE" > 
-     <range  uom="25" subset="0-3" nls="EN_MODE" />
+     <range  uom="25" subset="0-3,99" nls="EN_MODE" />
   </editor>
 
   <editor id = "GRID_ST" > 
@@ -31,11 +31,11 @@
   </editor>
 
   <editor id = "TOU_MODE" > 
-     <range  uom="25" subset="0-1" nls="EN_TOU_MODE" />
+     <range  uom="25" subset="0-1,99" nls="EN_TOU_MODE" />
   </editor>
 
   <editor id = "ON_LINE" > 
-     <range  uom="25" subset="0-1" nls="EN_ONLINE" />
+     <range  uom="25" subset="0-1,99" nls="EN_ONLINE" />
   </editor>
 
   <editor id = "TOGGLE" > 
@@ -48,6 +48,7 @@
 
   <editor id = "KWH" > 
      <range  uom="33" min="-100" max="100" prec="1" />
+     <range uom="25" subset="99" nls="error" />
   </editor>
 
   <editor id = "KWH_20" > 

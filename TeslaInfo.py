@@ -179,7 +179,7 @@ class tesla_info(object):
 
         logging.debug('teslaInitializeData - 1 - grid status {} '.format(GridStatus))
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
-        #self.TOU_MODES = ["economics", "balanced"]
+        self.TOU_MODES = ["economics", "balanced"]
         self.metersStart = True
         self.gridstatus = {'on_grid':0, 'islanded_ready':1, 'islanded':2, 'transition ot grid':3}
         

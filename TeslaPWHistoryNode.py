@@ -16,7 +16,7 @@ from TeslaPWSolarNode import teslaPWSolarNode
 from TeslaPWGenNode import teslaPWGenNode
 
 
-class teslaPWStatusNode(udi_interface.Node):
+class teslaPWHistoryNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key
 
     def __init__(self, polyglot, primary, address, name, TPW):
@@ -44,18 +44,7 @@ class teslaPWStatusNode(udi_interface.Node):
         #polyglot.subscribe(polyglot.START, self.start, address)
         
     def start(self):   
-        logging.debug('Start Tesla Power Wall Status Node')
-        #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
-        logging.info('Adding power wall sub-nodes')
-
-        sub_adr = self.primary[-8:]
-        #if self.TPW.cloud_access_enabled():
-        self.TPW.teslaInitializeData()
-        teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
-        if self.TPW.solarInstalled:
-            teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
-        if self.TPW.generatorInstalled:
-            teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
+        logging.debug()
         
         self.TPW.teslaInitializeData()
         self.updateISYdrivers()
@@ -98,24 +87,24 @@ class teslaPWStatusNode(udi_interface.Node):
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
         #self.node.setDriver('GV0', round(tmp,2))
-        logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
-        self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
-        logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
-        self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
-        logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
-        self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
-        logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
-        self.node.setDriver('GV3', self.TPW.getTPW_gridStatus())
-        logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
-        self.node.setDriver('GV4', self.TPW.getTPW_onLine())
-        logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
-        self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
-        logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
-        self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel())
-        logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply()))
-        self.node.setDriver('GV9', self.TPW.getTPW_gridSupply())
-        logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
-        self.node.setDriver('GV12', self.TPW.getTPW_load())
+        #logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
+        #self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
+        #logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
+        #self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
+        #logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
+        #self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
+        #logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
+        #self.node.setDriver('GV3', self.TPW.getTPW_gridStatus())
+        #logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
+        #self.node.setDriver('GV4', self.TPW.getTPW_onLine())
+        #logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
+        #self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
+        #logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
+        #self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel())
+        #logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply()))
+        #self.node.setDriver('GV9', self.TPW.getTPW_gridSupply())
+        #logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
+        #self.node.setDriver('GV12', self.TPW.getTPW_load())
         
         self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
         self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
@@ -129,7 +118,14 @@ class teslaPWStatusNode(udi_interface.Node):
         self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
         self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
         self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
-
+        self.node.setDriver('GV21', self.TPW.getTPW_daysGeneration())
+        self.node.setDriver('GV22', self.TPW.getTPW_yesterdayGeneration())
+        self.node.setDriver('GV23', self.TPW.getTPW_daysGridServicesUse())
+        self.node.setDriver('GV24', self.TPW.getTPW_yesterdayGridServicesUse())
+        self.node.setDriver('GV25', self.TPW.getTPW_daysSolar())
+        self.node.setDriver('GV26', self.TPW.getTPW_yesterdaySolar())
+        self.node.setDriver('GV27', self.TPW.getTPW_daysSolar())
+        self.node.setDriver('GV28', self.TPW.getTPW_yesterdaySolar())
 
 
     def update_PW_data(self, level):

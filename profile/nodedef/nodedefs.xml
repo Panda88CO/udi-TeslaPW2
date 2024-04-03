@@ -56,6 +56,59 @@
       </cmds>
    </nodeDef> 
 
+
+      <nodeDef id="pwhistory" nls="nlspwstatus">
+      <editors />
+      <sts>
+         <st id="GV0" editor="KWH" />
+         <st id="GV1" editor="PERCENT" />
+         <st id="GV2" editor="OP_MODE" />
+         <st id="GV3" editor="GRID_ST" />
+         <st id="GV4" editor="ON_LINE" />
+         <st id="GV5" editor="TOGGLE" />
+         <st id="GV6" editor="KWH_20" />
+         <st id="GV7" editor="KWH" />
+         <st id="GV8" editor="KWH" />
+         <st id="GV9" editor="KWH" />
+         <st id="GV10" editor="KWH" />
+         <st id="GV11" editor="KWH" />
+         <st id="GV12" editor="KWH" />
+         <st id="GV13" editor="KWH" />
+         <st id="GV14" editor="KWH" />
+         <st id="GV15" editor="KWH" />
+         <st id="GV16" editor="KWH" />
+         <st id="GV17" editor="KWH" />
+         <st id="GV18" editor="KWH" />
+         <st id="GV19" editor="KWH" />
+         <st id="GV20" editor="KWH" />
+         <st id="GV21" editor="KWH" />
+         <st id="GV22" editor="TIME" />
+         <st id="GV23" editor="KWH" />
+         <st id="GV24" editor="TIME" />
+         <st id="GV25" editor="KWH" />
+         <st id="GV26" editor="TIME" />
+         <st id="GV27" editor="KWH" />
+         <st id="GV28" editor="TIME" />
+
+
+
+
+
+
+         <!-->st id="GV21" editor="DOLLAR" />
+         <st id="GV23" editor="PERIOD" />
+         <st id="GV24" editor="SEASON" />-->
+
+      </sts>
+      <cmds>
+         <sends>
+         </sends>
+         <accepts>
+            <cmd id="UPDATE" /> 
+         </accepts>
+      </cmds>
+   </nodeDef> 
+
    <nodeDef id="pwsolar" nls="nlspwsolar">
       <editors />
       <sts>

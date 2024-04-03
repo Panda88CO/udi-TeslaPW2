@@ -40,9 +40,14 @@ ST-nlspwstatus-GV17-NAME = Grid Service Power Today
 ST-nlspwstatus-GV18-NAME = Grid Service Power Yesterday
 ST-nlspwstatus-GV19-NAME = Solar Power Today
 ST-nlspwstatus-GV20-NAME = Solar Power Yesterday
-#ST-nlspwstatus-GV21-NAME = Utility Electricy cost (/kWh)
-#ST-nlspwstatus-GV23-NAME = Utility Period
-#ST-nlspwstatus-GV24-NAME = Utility Season
+ST-nlspwstatus-GV21-NAME = Today nbr backup events 
+ST-nlspwstatus-GV22-NAME = Today backup event time
+ST-nlspwstatus-GV23-NAME = Yesterday nbr backup events 
+ST-nlspwstatus-GV24-NAME = Yesterday backup event 
+ST-nlspwstatus-GV25-NAME = Today charge power
+ST-nlspwstatus-GV26-NAME = Today charge time
+ST-nlspwstatus-GV27-NAME = Yesterday charge power
+ST-nlspwstatus-GV28-NAME = Yesterday charge time
 
 SEASON-0 = Winter
 SEASON-1 = SUMMER
@@ -104,9 +109,11 @@ EN_MODE-0 = backup
 EN_MODE-1 = self consumption
 EN_MODE-2 = autonomous
 EN_MODE-3 = site control
+EN_MODE-99 = Unknown
 
-EN_TOU_MODE-0 = economics
-EN_TOU_MODE-1 = balanced
+EN_TOU_MODE-0 = Economics
+EN_TOU_MODE-1 = Balanced
+EN_TOU_MODE-99 = Unknown
 
 EN_GRID_STATUS-0 = on grid
 EN_GRID_STATUS-1 = islanded ready
@@ -116,4 +123,6 @@ EN_GRID_STATUS-99 = unknown code
 
 EN_ONLINE-0 = offline
 EN_ONLINE-1 = online
-EN_ONLINE-2 = unknown
+EN_ONLINE-99 = unknown
+
+error-99 = Unknown

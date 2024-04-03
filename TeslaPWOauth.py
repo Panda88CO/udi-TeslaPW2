@@ -58,7 +58,7 @@ class teslaPWAccess(teslaAccess):
         self.EXPORT_RULES = ['battery_ok', 'pv_only', 'never']
         self.HISTORY_TYPES = ['backup', 'charge', 'energy' ]
         self.DAY_HISTORY = ['today', 'yesterday']
-        #self.TOU_MODES = ["economics", "balanced"]
+        self.TOU_MODES = ["economics", "balanced"]
         self.daysConsumption = {}
         self.tokeninfo = {}
         self.touScheduleList = []
