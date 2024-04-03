@@ -45,7 +45,7 @@ class TeslaPWController(udi_interface.Node):
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(polyglot, 'notices')
-        self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
+        #self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
         #self.TPW_cloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -57,8 +57,8 @@ class TeslaPWController(udi_interface.Node):
         #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.myNetatmo.customDataHandler)
-        self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
+        #self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
+        #self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
@@ -74,7 +74,7 @@ class TeslaPWController(udi_interface.Node):
         self.wait_for_node_done()
         self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
-
+        self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
 
 
         self.node.setDriver('ST', 1, True, True)
