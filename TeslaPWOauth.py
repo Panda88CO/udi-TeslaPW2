@@ -112,7 +112,7 @@ class teslaPWAccess(teslaAccess):
         if 'response' in temp:
             self.site_live_info[site_id] = temp['response']
             if 'total_pack_energy' in self.site_live_info[site_id]:
-                self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy' ]
+                self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy']
     
             return(self.site_live_info[site_id])
 

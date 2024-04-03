@@ -63,8 +63,11 @@ class tesla_info(object):
             time.sleep(5)       
         self.TPWcloudAccess = True
         self.cloudAccessUp = True
-        self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
-        # force update of yesterdays data as day did not change 
+        self.TPWcloud.tesla_get_site_info(self.site_id) # needs to run first to get timezone name 
+        self.TPWcloud.tesla_get_live_status(self.site_id)
+        self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
+        self.TPWcloud.tesla_get_today_history(self.site_id, 'backup')
+        self.TPWcloud.tesla_get_today_history(self.site_id, 'charge')
         self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
         self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'backup')
         self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'charge')
