@@ -190,7 +190,7 @@ class teslaAccess(udi_interface.OAuth):
             expiry = self._oauthTokens.get('expiry')
 
             # If expired or expiring in less than 60 seconds, refresh
-            if ((expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now())):
+            if ((expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now())) or True:
 
                 logging.info(f"Access tokens: Token is expired since { expiry }. Initiating refresh.")
                 self._oAuthTokensRefresh()
