@@ -139,7 +139,6 @@ class teslaPWAccess(teslaAccess):
         logging.debug('backup_percent: {} '.format(temp))   
 
 
-
     def tesla_set_off_grid_vehicle_charging(self, site_id, reserve_pct ):
         logging.debug('tesla_set_off_grid_vehicle_charging : {}'.format(reserve_pct))
         reserve = int(reserve_pct)

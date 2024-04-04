@@ -73,19 +73,23 @@ class teslaPWSetupNode(udi_interface.Node):
         value = int(command.get('value'))
         self.TPW.setTPW_touMode(value)
         self.node.setDriver('GV4', value)
+    
+    def set_grid_mode(self, command):
+        logging.info('set_grid_mode{}'.format(command))
+        query = command.get("query")
+        imp_mode = int(query.get("import.uom25"))
+        exp_mode = int(query.get("export.uom25"))
+        self.TPW.setTPW_import_export_op(imp_mode, exp_mode)   
+
+        self.node.setDriver('GV5', int(query.get("import.uom25")))
+        self.node.setDriver('GV6', exp_mode)
+
+    def set_EV_charge_reserve(self, command):
+        logging.debug('set_EV_charge_reserve')
+        value = int(command.get('value'))
+        self.TPW.setTPW_EV_charge_limit(value)
+        self.node.setDriver('GV7', value)
     '''
-    def setWeekendOffpeakStart(self, command):
-        logging.debug('setWeekendOffpeakStart')
-        value = int(command.get('value'))
-        self.TPW.setTPW_updateTouSchedule('off_peak', 'weekend', 'start', value)
-        self.node.setDriver('GV5', value)
-
-    def setWeekendOffpeakEnd(self, command):
-        logging.debug('setWeekendOffpeakEnd')
-        value = int(command.get('value'))
-        self.TPW.setTPW_updateTouSchedule('off_peak', 'weekend', 'end', value)
-        self.node.setDriver('GV6', value)
-
     def setWeekendPeakStart(self, command):
         logging.debug('setWeekendPeakStart')
         value = int(command.get('value'))
@@ -132,10 +136,12 @@ class teslaPWSetupNode(udi_interface.Node):
 
     id = 'pwsetup'
     commands = { 'UPDATE': ISYupdate
-                ,'BACKUP_PCT' : setBackupPercent
-                ,'STORM_MODE' :setStormMode
-                ,'OP_MODE': setOperatingMode
-                ,'TOU_MODE':setTOUmode
+                ,'BACKUP_PCT'   : setBackupPercent
+                ,'STORM_MODE'   :setStormMode
+                ,'OP_MODE'      : setOperatingMode
+                ,'TOU_MODE'     :setTOUmode
+                ,'GRID_MODE'    : set_grid_mode
+                ,'EV_CHRG_MODE' : set_EV_charge_reserve
                 #,'WE_O_PEAK_START': setWeekendOffpeakStart
                 #,'WE_O_PEAK_END':setWeekendOffpeakEnd
                 #,'WE_PEAK_START':setWeekendPeakStart
@@ -151,10 +157,10 @@ class teslaPWSetupNode(udi_interface.Node):
             {'driver': 'GV1', 'value': 0, 'uom': 51},  #backup reserve
             {'driver': 'GV2', 'value': 0, 'uom': 25},  #operating mode
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #storm mode
-            #{'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
-            #{'driver': 'GV5', 'value': 0, 'uom': 58},  #weekend off start
-            #{'driver': 'GV6', 'value': 0, 'uom': 58},  #weekend off end
-            #{'driver': 'GV7', 'value': 0, 'uom': 58},  #weekend on start
+            {'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
+            {'driver': 'GV5', 'value': 0, 'uom': 25},  #weekend off start
+            {'driver': 'GV6', 'value': 0, 'uom': 25},  #weekend off end
+            {'driver': 'GV7', 'value': 0, 'uom': 25},  #weekend on start
             #{'driver': 'GV8', 'value': 0, 'uom': 58},  #weekend on end
             #{'driver': 'GV9', 'value': 0, 'uom': 58},  #weekday off start
             #{'driver': 'GV10', 'value': 0, 'uom': 58}, #weekday off end

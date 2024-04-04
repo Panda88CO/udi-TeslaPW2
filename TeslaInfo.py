@@ -762,4 +762,17 @@ class tesla_info(object):
         try:
             return(self.TPWcloud.tesla_evcharge_time(self.site_id, 'yesterday'))           
         except:
-            return(None)        
+            return(None)       
+
+
+    def setTPW_yesterday_evcharge_time(self, imp_mode, exp_mode):
+        try:
+            return(self.TPWcloud.tesla_set_grid_import_export(self.site_id, imp_mode==1, exp_mode))           
+        except:
+            return(None)               
+        
+    def set_EV_charge_reserve(self, percent):
+        try:
+            return(self.TPWcloud.tesla_set_off_grid_vehicle_charging(self.site_id, percent))           
+        except:
+            return(None)               

@@ -140,6 +140,10 @@
          <st id="GV1" editor="PERCENT" />
          <st id="GV2" editor="OP_MODE" />
          <st id="GV3" editor="TOGGLE" />
+         <st id="GV4" editor="TOU_MODE" />
+         <st id="GV5" editor="GRID_IMP_MODE" />  
+         <st id="GV6" editor="GRID_EXP_MODE" />
+         <st id="GV7" editor="PERCENT" />                         
          <!--<st id="GV4" editor="TOU_MODE" />
          <st id="GV5" editor="TIME" />
          <st id="GV6" editor="TIME" />
@@ -157,8 +161,8 @@
             <cmd id="BACKUP_PCT" > 
                <p id="" editor="PERCENT" init="GV1" /> 
             </cmd> 
-            <cmd id="setOP_MODE" > 
-               <p id="" editor="OP_MODE" init="GV2" /> 
+            <cmd id="OP_MODE" > 
+               <p id="" editor="setOP_MODE" init="GV2" /> 
             </cmd> 
             <cmd id="STORM_MODE" > 
                <p id="" editor="TOGGLE" init="GV3" /> 
@@ -166,6 +170,15 @@
             <cmd id="TOU_MODE" > 
                <p id="" editor="setTOU_MODE" init="GV4" /> 
             </cmd> 
+            <cmd id="GRID_MODE" > 
+               <p id="import" editor="setGRID_IMP_MODE" init="GV5" /> 
+               <p id="export" editor="setGRID_EXP_MODE" init="GV6" /> 
+            </cmd> 
+            <cmd id="EV_CHRG_MODE" > 
+               <p id="" editor="PERCENT" init="GV7" /> 
+            </cmd> 
+
+
             <!--<cmd id="WE_O_PEAK_START" > 
                <p id="" editor="TIMESET" init="GV5" /> 
             </cmd> 

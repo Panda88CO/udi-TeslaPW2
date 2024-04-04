@@ -19,15 +19,15 @@
   </editor>
   
   <editor id = "PERCENT" > 
-     <range  uom="51" min="0" max="100" prec="1" />
+     <range  uom="51" min="0" max="100" prec="0" />
   </editor>
 
   <editor id = "OP_MODE" > 
-     <range  uom="25" subset="0-3,99" nls="EN_MODE" />
+     <range  uom="25" subset="0-2,99" nls="EN_MODE" />
   </editor>
 
   <editor id = "setOP_MODE" > 
-     <range  uom="25" subset="0-3" nls="EN_MODE" />
+     <range  uom="25" subset="0-2" nls="EN_MODE" />
   </editor>
   <editor id = "GRID_ST" > 
      <range  uom="25" subset="0-3,99" nls="EN_GRID_STATUS" />
@@ -37,9 +37,23 @@
      <range  uom="25" subset="0-1,99" nls="EN_TOU_MODE" />
   </editor>
 
+  <editor id = "GRID_IMP_MODE" > 
+     <range  uom="25" subset="0-1,99" nls="GRID_IMP_MODE" />
+  </editor>
+  <editor id = "setGRID_IMP_MODE" > 
+     <range  uom="25" subset="0-1" nls="GRID_IMP_MODE" />
+  </editor>
+  <editor id = "GRID_EXP_MODE" > 
+     <range  uom="25" subset="0-1,99" nls="GRID_EXP_MODE" />
+  </editor>
+  <editor id = "setGRID_EXP_MODE" > 
+     <range  uom="25" subset="0-1" nls="GRID_EXP_MODE" />
+  </editor>  
+
   <editor id = "setTOU_MODE" > 
      <range  uom="25" subset="0-1" nls="EN_TOU_MODE" />
   </editor>
+
 
   <editor id = "ON_LINE" > 
      <range  uom="25" subset="0-1,99" nls="EN_ONLINE" />
