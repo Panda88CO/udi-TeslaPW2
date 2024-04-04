@@ -100,7 +100,6 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.node.setDriver('GV24', self.TPW.getTPW_yesterday_backup_time())
         #self.node.setDriver('GV25', self.TPW.getTPW_days_evcharge_power())
         #self.node.setDriver('GV26', self.TPW.getTPW_days_evcharge_time())
-
         #self.node.setDriver('GV27', self.TPW.getTPW_yesterday_evcharge_power())
         #self.node.setDriver('GV28', self.TPW.getTPW_yesterday_evcharge_time())
 
