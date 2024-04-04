@@ -550,7 +550,7 @@ class tesla_info(object):
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalGeneration
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysGeneration(self.site_id, 'yesterday')
+            Pwr = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'yesterday')
         logging.debug('getTPW_daysGeneration ' + str(Pwr))
         return(round(Pwr/1000,2))
 
