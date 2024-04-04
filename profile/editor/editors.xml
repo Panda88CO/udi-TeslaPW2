@@ -19,19 +19,26 @@
   </editor>
   
   <editor id = "PERCENT" > 
-     <range  uom="51" min="0" max="100" prec="2" />
+     <range  uom="51" min="0" max="100" prec="1" />
   </editor>
 
   <editor id = "OP_MODE" > 
      <range  uom="25" subset="0-3,99" nls="EN_MODE" />
   </editor>
 
+  <editor id = "setOP_MODE" > 
+     <range  uom="25" subset="0-3" nls="EN_MODE" />
+  </editor>
   <editor id = "GRID_ST" > 
      <range  uom="25" subset="0-3,99" nls="EN_GRID_STATUS" />
   </editor>
 
   <editor id = "TOU_MODE" > 
      <range  uom="25" subset="0-1,99" nls="EN_TOU_MODE" />
+  </editor>
+
+  <editor id = "setTOU_MODE" > 
+     <range  uom="25" subset="0-1" nls="EN_TOU_MODE" />
   </editor>
 
   <editor id = "ON_LINE" > 
@@ -47,7 +54,7 @@
   </editor>
 
   <editor id = "KWH" > 
-     <range  uom="33" min="-100" max="100" prec="1" />
+     <range uom="33" min="-100" max="100" prec="1" />
      <range uom="25" subset="99" nls="error" />
   </editor>
 

@@ -384,7 +384,7 @@ class tesla_info(object):
 
     def setTPW_backoffLevel(self, backupPercent):
         logging.debug('setTPW_backoffLevel')
-        return(self.TPWcloud.teslaSetBackoffLevel(backupPercent))
+        return(self.TPWcloud.tesla_set_backup_percent(backupPercent))
 
     def getTPW_gridStatus(self):
 
@@ -661,9 +661,9 @@ class tesla_info(object):
             else:
                 return(0)
 
-    def setTPW_stormMode(self, mode):
+    def tesla_set_storm_mode(self, mode):
         logging.debug('getTPW_stormMode ')  
-        return(self.TPWcloud.teslaSetStormMode(mode==1))
+        return(self.TPWcloud.tesla_set_storm_mode(mode==1))
 
     def getTPW_touMode(self):
         logging.debug('getTPW_touMode ')  

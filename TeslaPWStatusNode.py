@@ -134,13 +134,13 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
     drivers = [
-            {'driver': 'GV0', 'value': -1, 'uom': 33},  #battery level
+            #{'driver': 'GV0', 'value': 99, 'uom': 25},  #battery level
             {'driver': 'GV1', 'value': 0, 'uom': 51},  #battery level
             {'driver': 'GV2', 'value': 0, 'uom': 25},  #mode
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #grid status
             {'driver': 'GV4', 'value': 0, 'uom': 25},  #on/off line
             {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid services
-            {'driver': 'GV6', 'value': 0, 'uom': 33},  #battery supply
+            #{'driver': 'GV6', 'value': 0, 'uom': 33},  #battery supply
             {'driver': 'GV7', 'value': 0, 'uom': 33},  #battery today
             #{'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
             {'driver': 'GV9', 'value': 0, 'uom': 33},  #grid supply
