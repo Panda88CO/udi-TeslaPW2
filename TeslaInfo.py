@@ -67,10 +67,10 @@ class tesla_info(object):
         self.TPWcloud.tesla_get_live_status(self.site_id)
         self.TPWcloud.tesla_get_today_history(self.site_id, 'energy')
         self.TPWcloud.tesla_get_today_history(self.site_id, 'backup')
-        self.TPWcloud.tesla_get_today_history(self.site_id, 'charge')
+        #self.TPWcloud.tesla_get_today_history(self.site_id, 'charge')
         self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'energy')
         self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'backup')
-        self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'charge')
+        #self.TPWcloud.tesla_get_yesterday_history(self.site_id, 'charge')
         logging.debug('Cloud data retrieved tesla_info')
         
 

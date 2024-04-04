@@ -424,11 +424,11 @@ class teslaPWAccess(teslaAccess):
             
             self.tesla_get_today_history(site_id, 'energy')
             self.tesla_get_today_history(site_id, 'backup')
-            self.tesla_get_today_history(site_id, 'charge')
+            #self.tesla_get_today_history(site_id, 'charge')
             if self.date_changed:
                 self.tesla_get_yesterday_history(site_id, 'energy')
                 self.tesla_get_yesterday_history(site_id, 'backup')
-                self.tesla_get_yesterday_history(site_id, 'charge')
+                #self.tesla_get_yesterday_history(site_id, 'charge')
             logging.debug('history_data : {}'.format(self.history_data))
         return(access)
 
