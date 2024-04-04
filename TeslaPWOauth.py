@@ -126,8 +126,8 @@ class teslaPWAccess(teslaAccess):
             self.site_info[site_id] = temp['response']
             logging.debug('tesla_get_site_info'.format(self.site_info[site_id] ))
             if 'components' in self.site_info[site_id]:
-                if 'installation_time_zone' in self.site_info[site_id]['components']:
-                    self.installation_tz[site_id] = str(self.site_info[site_id]['components']['installation_time_zone'])
+                if 'installation_time_zone' in self.site_info[site_id]:
+                    self.installation_tz[site_id] = str(self.site_info[site_id]['installation_time_zone'])
             logging.debug('Timezone {}'.format(self.installation_tz))
             return(self.site_info)
 
