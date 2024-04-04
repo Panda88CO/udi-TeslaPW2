@@ -35,7 +35,7 @@ class tesla_info(object):
         self.operationModeEnum = {0:'backup', 1:'self_consumption', 2:'autonomous', 3:'site_ctrl'}
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
-        #self.TOU_MODES = ["economics", "balanced"]
+        self.TOU_MODES = ["economics", "balanced"]
         #\if not self.local_access_enabled() and not self.cloud_access_enabled():
         #    logging.debug('No connection specified')
         #logging.debug('Tesla_info before retrieving clould data')
@@ -182,7 +182,7 @@ class tesla_info(object):
 
         logging.debug('teslaInitializeData - 1 - grid status {} '.format(GridStatus))
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
-        self.TOU_MODES = ["economics", "balanced"]
+        #self.TOU_MODES = ["economics", "balanced"]
         self.metersStart = True
         self.gridstatus = {'on_grid':0, 'islanded_ready':1, 'islanded':2, 'transition ot grid':3}
         
@@ -250,9 +250,7 @@ class tesla_info(object):
                 self.yesterdayTotalGrid = self.daysTotalGridServices
                 self.yesterdayTotalGridServices = self.daysTotalGridServices
                 self.yesterdayTotalGenerator = self.daysTotalGenerator
- 
            
-                
                 if self.localAccessUp:
                     if self.TPWlocal.is_authenticated():
                         self.metersDayStart = self.TPWlocal.get_meters()
@@ -264,7 +262,6 @@ class tesla_info(object):
                         if self.generatorInstalled:
                             self.DSgeneratorMeter = self.metersDayStart.get_meter(MeterType.GENERATOR)
 
-            
             # Get data from the cloud....
             if self.TPWcloudAccess:
                 logging.debug('pollSystemData - CLOUD')
@@ -287,8 +284,7 @@ class tesla_info(object):
                     self.yesterdaTotalSolar = self.TPWcloud.tesla_home_energy_solar(self.site_id, 'yesterday')         
                     self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(self.site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(self.site_id, 'yesterday')#
 
-            # Get data directly from PW....
-              
+            # Get data directly from PW....              
             if self.localAccessUp:
                 self.status = self.TPWlocal.get_sitemaster()
                 self.meters = self.TPWlocal.get_meters()
@@ -646,7 +642,6 @@ class tesla_info(object):
             else:
                 return(0)
 
-
     def getTPW_gridServiceActive(self):
         logging.debug('getTPW_gridServiceActive ')  
         if self.localAccessUp and self.firstPollCompleted:
@@ -657,7 +652,6 @@ class tesla_info(object):
             return(1)
         else:
             return (0)
-
 
     def getTPW_stormMode(self):
         logging.debug('getTPW_stormMode ')  
@@ -673,9 +667,11 @@ class tesla_info(object):
 
     def getTPW_touMode(self):
         logging.debug('getTPW_touMode ')  
-        if self.TPWcloudAccess:
-            return(self.TOU_MODES.index([self.TPWcloud.teslaExtractTouMode(self.site_id)]))
-
+        tmp = self.TPWcloud.teslaExtractTouMode(self.site_id)
+        for indx in range(0,len(self.TOU_MODES)):
+            if self.TOU_MODES[indx] == tmp:
+                return(indx)
+        return(99)
 
     def getTPW_touSchedule(self):
         logging.debug('getTPW_touSchedule ')  
