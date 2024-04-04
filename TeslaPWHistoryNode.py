@@ -44,9 +44,9 @@ class teslaPWHistoryNode(udi_interface.Node):
         #polyglot.subscribe(polyglot.START, self.start, address)
         
     def start(self):   
-        logging.debug()
+        logging.debug('Start')
         
-        self.TPW.teslaInitializeData()
+        #self.TPW.teslaInitializeData()
         self.updateISYdrivers()
         self.node_ok = True
 
@@ -81,31 +81,7 @@ class teslaPWHistoryNode(udi_interface.Node):
             return (99) 
 
     def updateISYdrivers(self):
-
-
-        logging.debug('StatusNode updateISYdrivers')
-        #tmp = self.TPW.getTPW_backup_time_remaining()
-        #logging.debug('GV0: {}'.format(tmp))
-        #self.node.setDriver('GV0', round(tmp,2))
-        #logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
-        #self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
-        #logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
-        #self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
-        #logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
-        #self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
-        #logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
-        #self.node.setDriver('GV3', self.TPW.getTPW_gridStatus())
-        #logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
-        #self.node.setDriver('GV4', self.TPW.getTPW_onLine())
-        #logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
-        #self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
-        #logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
-        #self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel())
-        #logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply()))
-        #self.node.setDriver('GV9', self.TPW.getTPW_gridSupply())
-        #logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
-        #self.node.setDriver('GV12', self.TPW.getTPW_load())
-        
+        logging.debug('HistoryNode updateISYdrivers')
         self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
         self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
         self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
@@ -121,15 +97,16 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.node.setDriver('GV21', self.TPW.getTPW_days_backup_events())
         self.node.setDriver('GV22', self.TPW.getTPW_days_backup_time())
         self.node.setDriver('GV23', self.TPW.getTPW_yesterday_backup_events())
-        self.node.setDriver('GV24', self.TPW.getTPW_days_evcharge_power())
-        self.node.setDriver('GV25', self.TPW.getTPW_days_evcharge_time())
-        self.node.setDriver('GV26', self.TPW.getTPW_yesterdaySolar())
-        self.node.setDriver('GV27', self.TPW.getTPW_yesterday_evcharge_power())
-        self.node.setDriver('GV28', self.TPW.getTPW_yesterday_evcharge_time())
+        self.node.setDriver('GV24', self.TPW.getTPW_yesterday_backup_time())
+        #self.node.setDriver('GV25', self.TPW.getTPW_days_evcharge_power())
+        #self.node.setDriver('GV26', self.TPW.getTPW_days_evcharge_time())
+
+        #self.node.setDriver('GV27', self.TPW.getTPW_yesterday_evcharge_power())
+        #self.node.setDriver('GV28', self.TPW.getTPW_yesterday_evcharge_time())
 
 
     def update_PW_data(self, level):
-        self.TPW.pollSystemData(level) 
+        pass
 
 
     def ISYupdate (self, command):
@@ -161,10 +138,10 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV22', 'value': 0, 'uom': 33}, #backup today time            
             {'driver': 'GV23', 'value': 0, 'uom': 33}, #backup yesterday event
             {'driver': 'GV24', 'value': 0, 'uom': 33}, #backup yesterday time
-            {'driver': 'GV25', 'value': 0, 'uom': 33}, #charge today pwr
-            {'driver': 'GV26', 'value': 0, 'uom': 33}, #charge today time            
-            {'driver': 'GV27', 'value': 0, 'uom': 33}, #charge yesterday pwr
-            {'driver': 'GV28', 'value': 0, 'uom': 33}, #charge yesterday time            
+            #{'driver': 'GV25', 'value': 0, 'uom': 33}, #charge today pwr
+            #{'driver': 'GV26', 'value': 0, 'uom': 33}, #charge today time            
+            #{'driver': 'GV27', 'value': 0, 'uom': 33}, #charge yesterday pwr
+            #{'driver': 'GV28', 'value': 0, 'uom': 33}, #charge yesterday time            
            
             ]
 

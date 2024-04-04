@@ -72,9 +72,7 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
  
-        
-
-  
+    
     def updateISYdrivers(self):
 
 

@@ -489,11 +489,11 @@ class tesla_info(object):
         logging.debug('getTPW_daysConsumption ' + str(Pwr))
         return(round(Pwr/1000,2))
 
-    def getTPW_daysGeneration(self):  
+    def getTPW_daysGeneration(self):  #Need to check if this is what is wanted
         if self.localAccessUp and self.firstPollCompleted:
             Pwr = self.daysTotalGeneraton
         else:
-            Pwr = self.TPWcloud.teslaExtractDaysGeneration(self.site_id, 'today')
+            Pwr = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'today')
         logging.debug('getTPW_daysGeneration ' + str(Pwr))        
         return(round(Pwr/1000,2))
 

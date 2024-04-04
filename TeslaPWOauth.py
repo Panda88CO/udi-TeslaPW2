@@ -489,7 +489,7 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['solar_power'])
 
     def teslaExtractTouMode(self, site_id):
-        return(self.site_info[site_id]['components']['tou_settings']['optimization_strategy'])
+        return(self.site_info[site_id]['tou_settings']['optimization_strategy'])
 
     def teslaExtractTouScheduleList(self, site_id):        
         self.touScheduleList = self.site_live_info[site_id]['components']['tou_settings']['schedule']

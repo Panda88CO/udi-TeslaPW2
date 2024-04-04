@@ -316,7 +316,7 @@ class TeslaPWController(udi_interface.Node):
         if self.initialized:    
             if 'longPoll' in pollList:
                 self.longPoll()
-            elif 'shortPoll' in pollList:
+            elif 'shortPoll' in pollList and 'longPoll' not in pollList:
                 self.shortPoll()
         else:
             logging.info('Waiting for system/nodes to initialize')
