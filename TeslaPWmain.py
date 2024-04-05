@@ -66,7 +66,7 @@ class TeslaPWController(udi_interface.Node):
 
         logging.debug('Controller init DONE')
         
-        self.poly.ready()
+       
         self.poly.addNode(self, conn_status='ST')
         self.wait_for_node_done()
         self.poly.updateProfile()
@@ -416,6 +416,7 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW_cloud.TPW_cloud.oauthHandler)
 
+        polyglot.ready()
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
