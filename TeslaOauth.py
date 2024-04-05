@@ -43,7 +43,7 @@ class teslaAccess(udi_interface.OAuth):
     yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com'
 
     def __init__(self, polyglot, scope):
-        super().__init__(polyglot)
+        #super().__init__(polyglot)
         logging.info('OAuth initializing')
         self.poly = polyglot
         self.scope = scope
@@ -182,7 +182,7 @@ class teslaAccess(udi_interface.OAuth):
             return(self.customParameters[key]  == value)
         else:
             return(False)
-        '''
+        
     
     def getAccessToken(self):
         # Make sure we have received tokens before attempting to renew
@@ -201,7 +201,7 @@ class teslaAccess(udi_interface.OAuth):
         else:
             raise ValueError('Access token is not available')
     
-    '''
+    
     
     def _oAuthTokensRefresh(self):
         logging.debug(f"Refresh token before: { self._oauthTokens }")
