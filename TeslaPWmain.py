@@ -30,6 +30,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly = polyglot
         self.TPW_cloud = TPW_cloud
         logging.info('_init_ Tesla Power Wall Controller - TPW_cloud {}'.format(self.TPW_cloud))
+        logging.debug('TPW_cloud {} {}'.format(self.TPW_cloud.customDataHandlerDone, self.TPW_cloud))
         self.ISYforced = False
         self.name = 'Tesla PowerWall Info'
         self.primary = primary
