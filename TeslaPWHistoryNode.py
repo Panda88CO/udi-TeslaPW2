@@ -118,30 +118,82 @@ class teslaPWHistoryNode(udi_interface.Node):
     id = 'pwstatus'
     commands = { 'UPDATE': ISYupdate, 
                 }
+    '''
+    ST-nlspwstatus-ST-NAME = Connected to Tesla
+    ST-nlspwstatus-GV0-NAME = Remaining Battery 
+    ST-nlspwstatus-GV1-NAME = Inst Solar Export
+    ST-nlspwstatus-GV2-NAME = Inst Battery Export
+    ST-nlspwstatus-GV3-NAME = Inst Home Load
+    ST-nlspwstatus-GV4-NAME = Inst Grid Import
+    
+    ST-nlspwstatus-GV5-NAME = Operation Mode
+    ST-nlspwstatus-GV6-NAME = Grid Status
+    ST-nlspwstatus-GV7-NAME = Grid Services Active
 
+    ST-nlspwstatus-GV8-NAME = Home Total Use Today
+    ST-nlspwstatus-GV9-NAME = Solar Export Today
+    ST-nlspwstatus-GV10-NAME = Battery Export Today
+    ST-nlspwstatus-GV11-NAME = Battery Import Today
+    ST-nlspwstatus-GV12-NAME = Grid Import Today
+    ST-nlspwstatus-GV13-NAME= Grid Export Today
+    ST-nlspwstatus-GV14-NAME = Grid Service Today
+
+    ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
+    ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
+    ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
+    ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
+    ST-nlspwstatus-GV19-NAME = Grid Import Yesterday
+    ST-nlspwstatus-GV20-NAME= Grid Export Yesterday
+    ST-nlspwstatus-GV21-NAME = Grid Service Yesterday
+
+    ST-nlspwstatus-GV22-NAME = Today nbr backup events 
+    ST-nlspwstatus-GV23-NAME = Today backup event time
+    ST-nlspwstatus-GV24-NAME = Yesterday nbr backup events 
+    ST-nlspwstatus-GV25-NAME = Yesterday backup event time
+    ST-nlspwstatus-GV26-NAME = Today charge power
+    ST-nlspwstatus-GV27-NAME = Today charge time
+    ST-nlspwstatus-GV28-NAME = Yesterday charge power
+    ST-nlspwstatus-GV29-NAME = Yesterday charge time
+
+    '''
 
     drivers = [
-            {'driver': 'GV7', 'value': 0, 'uom': 33},  #battery today
-            {'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
-            {'driver': 'GV10', 'value': 0, 'uom': 33}, #grid today
-            {'driver': 'GV11', 'value': 0, 'uom': 33}, #grid yesterday
-            {'driver': 'GV13', 'value': 0, 'uom': 33}, #consumption today
-            {'driver': 'GV14', 'value': 0, 'uom': 33}, #consumption yesterday
-            {'driver': 'GV15', 'value': 0, 'uom': 33}, #generation today
-            {'driver': 'GV16', 'value': 0, 'uom': 33}, #generation yesterday
-            {'driver': 'GV17', 'value': 0, 'uom': 33}, #grid service today
-            {'driver': 'GV18', 'value': 0, 'uom': 33}, #grid service yesterday
-            {'driver': 'GV19', 'value': 0, 'uom': 33}, #Solar today
-            {'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            {'driver': 'GV21', 'value': 0, 'uom': 33}, #backup today event
-            {'driver': 'GV22', 'value': 0, 'uom': 33}, #backup today time            
-            {'driver': 'GV23', 'value': 0, 'uom': 33}, #backup yesterday event
-            {'driver': 'GV24', 'value': 0, 'uom': 33}, #backup yesterday time
-            #{'driver': 'GV25', 'value': 0, 'uom': 33}, #charge today pwr
-            #{'driver': 'GV26', 'value': 0, 'uom': 33}, #charge today time            
-            #{'driver': 'GV27', 'value': 0, 'uom': 33}, #charge yesterday pwr
-            #{'driver': 'GV28', 'value': 0, 'uom': 33}, #charge yesterday time            
+            {'driver': 'ST', 'value': 99, 'uom': 25},  #online         
+            
+            #{'driver': 'GV0', 'value': 0, 'uom': 51},       
+            #{'driver': 'GV1', 'value': 0, 'uom': 33},
+            #{'driver': 'GV2', 'value': 0, 'uom': 33},  
+            #{'driver': 'GV3', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV4', 'value': 0, 'uom': 33},  
+            #{'driver': 'GV5', 'value': 99, 'uom': 25},  
+            #{'driver': 'GV6', 'value': 99, 'uom': 25},  
+            #{'driver': 'GV7', 'value': 99, 'uom': 25},  
+    
+            {'driver': 'GV8', 'value': 99, 'uom': 25}, 
+            {'driver': 'GV9', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV10', 'value': 0, 'uom': 33},  
+            {'driver': 'GV11', 'value': 0, 'uom': 33},  
+            {'driver': 'GV12', 'value': 0, 'uom': 33},
+            {'driver': 'GV13', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV14', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV15', 'value': 0, 'uom': 33},
+            
+            {'driver': 'GV16', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV17', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV18', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV19', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV20', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV21', 'value': 0, 'uom': 33},
+            {'driver': 'GV22', 'value': 0, 'uom': 0},
+            {'driver': 'GV23', 'value': 0, 'uom': 58},
+            {'driver': 'GV24', 'value': 0, 'uom': 0}, 
+            {'driver': 'GV25', 'value': 0, 'uom': 58}, 
+            {'driver': 'GV26', 'value': 99, 'uom': 33},
+            {'driver': 'GV27', 'value': 99, 'uom': 58}, 
+            {'driver': 'GV28', 'value': 99, 'uom': 33},
+            {'driver': 'GV28', 'value': 99, 'uom': 58},                      
+            ]          
            
-            ]
+            
 
 

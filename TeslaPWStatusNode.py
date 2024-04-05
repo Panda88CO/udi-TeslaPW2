@@ -71,50 +71,94 @@ class teslaPWStatusNode(udi_interface.Node):
         return(self.node_ok)
 
 
- 
-    
+    def PW_setDriver(self, key, value, Unit=None):
+        logging.debug('PW_setDriver : {} {} {}'.format(key, value, Unit))
+        if value == None:
+            logging.debug('None value passed = seting 99, UOM 25')
+            self.node.setDriver(key, 99, False, False, 25)
+        else:
+            if Unit:
+                self.node.setDriver(key, value, False, False, Unit)
+            else:
+                self.node.setDriver(key, value)
+
     def updateISYdrivers(self):
 
 
         logging.debug('StatusNode updateISYdrivers')
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
-        #self.node.setDriver('GV0', round(tmp,2))
-        if self.TPW.getTPW_energy_remaining():
-            logging.debug(('GV0: Battery Energy remiaining: {}'.format(self.TPW.getTPW_energy_remaining())))
-            self.node.setDriver('GV0', self.TPW.getTPW_energy_remaining())
-        else:
-             self.node.setDriver('GV1', 99, True, True, 25)
-        logging.debug('GV1: '+ str(self.TPW.getTPW_chargeLevel()))
-        self.node.setDriver('GV1', self.TPW.getTPW_chargeLevel())
-        logging.debug('GV2: '+ str(self.TPW.getTPW_operationMode()))
-        self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
-        logging.debug('GV3: '+ str(self.TPW.getTPW_gridStatus()))
-        self.node.setDriver('GV3', self.TPW.getTPW_gridStatus())
-        logging.debug('GV4: '+ str(self.TPW.getTPW_onLine()))
-        self.node.setDriver('GV4', self.TPW.getTPW_onLine())
-        logging.debug('GV5: '+ str(self.TPW.getTPW_gridServiceActive()))
-        self.node.setDriver('GV5', self.TPW.getTPW_gridServiceActive())
-        logging.debug('GV6: '+ str(self.TPW.getTPW_chargeLevel()))
-        self.node.setDriver('GV6', self.TPW.getTPW_chargeLevel())
-        logging.debug('GV9: '+ str(self.TPW.getTPW_gridSupply()))
-        self.node.setDriver('GV9', self.TPW.getTPW_gridSupply())
-        logging.debug('GV12: '+ str(self.TPW.getTPW_load()))
-        self.node.setDriver('GV12', self.TPW.getTPW_load())
-        
-        self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
-        #self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
-        self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
-        #self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
-        self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption())
-        #self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
-        self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration())
-        #self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
-        self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
-        #self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
-        self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
-        #self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
 
+        self.PW_setDriver('GV0', round(self.TPW.getTPW_chargeLevel()),1))
+     
+        self.PW_setDriver('GV1', self.TPW.getTPW_chargeLevel())
+
+        self.PW_setDriver('GV2', self.TPW.getTPW_operationMode())
+
+        self.PW_setDriver('GV3', self.TPW.)
+
+        self.PW_setDriver('GV4', self.TPW.)
+
+        self.PW_setDriver('GV5', self.TPW.)
+
+        self.PW_setDriver('GV6', self.TPW.)
+
+        self.PW_setDriver('GV7', self.TPW.)
+        self.PW_setDriver('GV8', self.TPW.)
+
+        self.PW_setDriver('GV9', self.TPW.)
+
+        self.PW_setDriver('GV10', self.TPW.)
+
+        self.PW_setDriver('GV11', self.TPW.)
+
+        self.PW_setDriver('GV12', self.TPW.)
+        self.PW_setDriver('GV13', self.TPW.getTPW_chargeLevel())
+        self.PW_setDriver('GV14', self.TPW.getTPW_gridSupply())
+        self.PW_setDriver('GV15', self.TPW.getTPW_load())
+        
+
+        self.PW_setDriver('GV16', self.TPW.)
+
+        self.PW_setDriver('GV17', self.TPW.)
+
+        self.PW_setDriver('GV18', self.TPW.)
+
+        self.PW_setDriver('GV19', self.TPW.)
+
+        self.PW_setDriver('GV20', self.TPW.)
+        self.PW_setDriver('GV21', self.TPW.)
+
+        self.PW_setDriver('GV22', self.TPW.)
+
+        self.PW_setDriver('GV23', self.TPW.)
+
+        self.PW_setDriver('GV24', self.TPW.)
+
+        self.PW_setDriver('GV25', self.TPW.)
+
+        self.PW_setDriver('GV26', self.TPW.)
+
+        self.PW_setDriver('GV27', self.TPW.)
+
+        self.PW_setDriver('GV28', self.TPW.)
+
+        self.PW_setDriver('GV29', self.TPW.)
+        '''
+        self.PW_setDriver('GV7', self.TPW.getTPW_daysBattery())
+        #self.PW_setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
+        self.PW_setDriver('GV10', self.TPW.getTPW_daysGrid())
+        #self.PW_setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
+        self.PW_setDriver('GV13', self.TPW.getTPW_daysConsumption())
+        #self.PW_setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
+        self.PW_setDriver('GV15', self.TPW.getTPW_daysGeneration())
+        #self.PW_setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
+        self.PW_setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
+        #self.PW_setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
+        self.PW_setDriver('GV17', self.TPW.getTPW_daysSolar())
+        #self.PW_setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
+        '''
 
 
     def update_PW_data(self, level):
@@ -131,37 +175,81 @@ class teslaPWStatusNode(udi_interface.Node):
     id = 'pwstatus'
     commands = { 'UPDATE': ISYupdate, 
                 }
+    '''
+    ST-nlspwstatus-ST-NAME = Connected to Tesla
+    ST-nlspwstatus-GV0-NAME = Remaining Battery 
+    ST-nlspwstatus-GV1-NAME = Inst Solar Export
+    ST-nlspwstatus-GV2-NAME = Inst Battery Export
+    ST-nlspwstatus-GV3-NAME = Inst Home Load
+    ST-nlspwstatus-GV4-NAME = Inst Grid Import
 
+    ST-nlspwstatus-GV5-NAME = Operation Mode
+    ST-nlspwstatus-GV6-NAME = Grid Status
+    ST-nlspwstatus-GV7-NAME = Grid Services Active
+
+    ST-nlspwstatus-GV8-NAME = Home Total Use Today
+    ST-nlspwstatus-GV9-NAME = Solar Export Today
+    ST-nlspwstatus-GV10-NAME = Battery Export Today
+    ST-nlspwstatus-GV11-NAME = Battery Import Today
+    ST-nlspwstatus-GV12-NAME = Grid Import Today
+    ST-nlspwstatus-GV13-NAME= Grid Export Today
+    ST-nlspwstatus-GV14-NAME = Grid Service Today
+
+    ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
+    ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
+    ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
+    ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
+    ST-nlspwstatus-GV19-NAME = Grid Import Yesterday
+    ST-nlspwstatus-GV20-NAME= Grid Export Yesterday
+    ST-nlspwstatus-GV21-NAME = Grid Service Yesterday
+
+    ST-nlspwstatus-GV22-NAME = Today nbr backup events 
+    ST-nlspwstatus-GV23-NAME = Today backup event time
+    ST-nlspwstatus-GV24-NAME = Yesterday nbr backup events 
+    ST-nlspwstatus-GV25-NAME = Yesterday backup event time
+    ST-nlspwstatus-GV26-NAME = Today charge power
+    ST-nlspwstatus-GV27-NAME = Today charge time
+    ST-nlspwstatus-GV28-NAME = Yesterday charge power
+    ST-nlspwstatus-GV29-NAME = Yesterday charge time
+
+    '''
 
     drivers = [
-            #{'driver': 'GV0', 'value': 99, 'uom': 25},  #battery level
-            {'driver': 'GV1', 'value': 0, 'uom': 51},  #battery level
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #mode
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #grid status
-            {'driver': 'GV4', 'value': 0, 'uom': 25},  #on/off line
-            {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid services
-            #{'driver': 'GV6', 'value': 0, 'uom': 33},  #battery supply
-            {'driver': 'GV7', 'value': 0, 'uom': 33},  #battery today
-            #{'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
-            {'driver': 'GV9', 'value': 0, 'uom': 33},  #grid supply
-            {'driver': 'GV10', 'value': 0, 'uom': 33}, #grid today
-            #{'driver': 'GV11', 'value': 0, 'uom': 33}, #grid yesterday
-            {'driver': 'GV12', 'value': 0, 'uom': 33}, #load
-            {'driver': 'GV13', 'value': 0, 'uom': 33}, #consumption today
-            #{'driver': 'GV14', 'value': 0, 'uom': 33}, #consumption yesterday
-            {'driver': 'GV15', 'value': 0, 'uom': 33}, #generation today
-            #{'driver': 'GV16', 'value': 0, 'uom': 33}, #generation yesterday
-            {'driver': 'GV17', 'value': 0, 'uom': 33}, #grid service today
-            #{'driver': 'GV18', 'value': 0, 'uom': 33}, #grid service yesterday
-            {'driver': 'GV19', 'value': 0, 'uom': 33}, #Solar today
-            #{'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            #{'driver': 'GV20', 'value': 0, 'uom': 33}, #Solar yesterday
-            #{'driver': 'GV21', 'value': 0, 'uom': 103}, #Current buy rate
-            #{'driver': 'GV22', 'value': 0, 'uom': 103}, #Current sell rate
-            #{'driver': 'GV23', 'value': 99, 'uom': 25}, #Peak/Partial/offpeak
-            #{'driver': 'GV24', 'value': 99, 'uom': 25}, #Summer/Winter
-           
-           
+            {'driver': 'ST', 'value': 99, 'uom': 25},  #online         
+            {'driver': 'GV0', 'value': 0, 'uom': 51},       
+            {'driver': 'GV1', 'value': 0, 'uom': 33},
+            {'driver': 'GV2', 'value': 0, 'uom': 33},  
+            {'driver': 'GV3', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV4', 'value': 0, 'uom': 33},  
+
+            {'driver': 'GV5', 'value': 99, 'uom': 25},  
+            {'driver': 'GV6', 'value': 99, 'uom': 25},  
+            {'driver': 'GV7', 'value': 99, 'uom': 25},  
+
+            {'driver': 'GV8', 'value': 99, 'uom': 25}, 
+            {'driver': 'GV9', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV10', 'value': 0, 'uom': 33},  
+            {'driver': 'GV11', 'value': 0, 'uom': 33},  
+            {'driver': 'GV12', 'value': 0, 'uom': 33},
+            {'driver': 'GV13', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV14', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV15', 'value': 0, 'uom': 33},
+            
+            #{'driver': 'GV16', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV17', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV18', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV19', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV20', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV21', 'value': 0, 'uom': 33},
+            #{'driver': 'GV22', 'value': 0, 'uom': 0},
+            #{'driver': 'GV23', 'value': 0, 'uom': 58},
+            #{'driver': 'GV24', 'value': 0, 'uom': 0}, 
+            #{'driver': 'GV25', 'value': 0, 'uom': 58}, 
+            #{'driver': 'GV26', 'value': 99, 'uom': 33},
+            #{'driver': 'GV27', 'value': 99, 'uom': 58}, 
+            #{'driver': 'GV28', 'value': 99, 'uom': 33},
+            #{'driver': 'GV28', 'value': 99, 'uom': 58},    
+                     
             ]
 
 

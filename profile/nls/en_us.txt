@@ -16,38 +16,11 @@ CON_STATE-1 = Cloud
 CON_STATE-2 = Local
 CON_STATE-3 = Local and Cloud
 
+
+#new node define
 ND-pwstatus-NAME = Power Wall Status
 ND-pwstatus-ICON = Electricity
-CMD-nlspwstatus-UPDATE-NAME = Update System Data
-#ST-nlspwstatus-GV0-NAME = Battery Remaining Power
-ST-nlspwstatus-GV1-NAME = Battery Charge Level
-ST-nlspwstatus-GV2-NAME = Operation Mode
-ST-nlspwstatus-GV3-NAME = Grid Status
-ST-nlspwstatus-GV4-NAME = Connected to Tesla
-ST-nlspwstatus-GV5-NAME = Grid Services Active
-ST-nlspwstatus-GV6-NAME = Current Battery Supply
-ST-nlspwstatus-GV7-NAME = Battery Power Today
-ST-nlspwstatus-GV8-NAME = Battery Power Yesterday
-ST-nlspwstatus-GV9-NAME = Current Grid Supply
-ST-nlspwstatus-GV10-NAME = Power Consumed Today
-ST-nlspwstatus-GV11-NAME = Power Consumed Yesterday
-ST-nlspwstatus-GV12-NAME = Current Load
-ST-nlspwstatus-GV13-NAME = Total Power Today
-ST-nlspwstatus-GV14-NAME = Total Power Yesterday
-ST-nlspwstatus-GV15-NAME = Generated Power Today
-ST-nlspwstatus-GV16-NAME = Generated Power Yesterday
-ST-nlspwstatus-GV17-NAME = Grid Service Power Today
-ST-nlspwstatus-GV18-NAME = Grid Service Power Yesterday
-ST-nlspwstatus-GV19-NAME = Solar Power Today
-ST-nlspwstatus-GV20-NAME = Solar Power Yesterday
-ST-nlspwstatus-GV21-NAME = Today nbr backup events 
-ST-nlspwstatus-GV22-NAME = Today backup event time
-ST-nlspwstatus-GV23-NAME = Yesterday nbr backup events 
-ST-nlspwstatus-GV24-NAME = Yesterday backup event 
-ST-nlspwstatus-GV25-NAME = Today charge power
-ST-nlspwstatus-GV26-NAME = Today charge time
-ST-nlspwstatus-GV27-NAME = Yesterday charge power
-ST-nlspwstatus-GV28-NAME = Yesterday charge time
+
 
 SEASON-0 = Winter
 SEASON-1 = Summer
@@ -131,3 +104,44 @@ GRID_IMP_MODE-99 = Unknown
 GRID_EXP_MODE-0 = PV-only
 GRID_EXP_MODE-1 = Battery-ok
 GRID_EXP_MODE-99 = Unknown
+
+
+ND-pwstatus-NAME = Power Wall Status
+ND-pwstatus-ICON = Electricity
+CMD-nlspwstatus-UPDATE-NAME = Update System Data
+ST-nlspwstatus-ST-NAME = Connected to Tesla
+ST-nlspwstatus-GV0-NAME = Remaining Battery 
+ST-nlspwstatus-GV1-NAME = Inst Solar Export
+ST-nlspwstatus-GV2-NAME = Inst Battery Export
+ST-nlspwstatus-GV3-NAME = Inst Home Load
+ST-nlspwstatus-GV4-NAME = Inst Grid Import
+
+ST-nlspwstatus-GV5-NAME = Operation Mode
+ST-nlspwstatus-GV6-NAME = Grid Status
+ST-nlspwstatus-GV7-NAME = Grid Services Active
+
+ST-nlspwstatus-GV8-NAME = Home Total Use Today
+ST-nlspwstatus-GV9-NAME = Solar Export Today
+ST-nlspwstatus-GV10-NAME = Battery Export Today
+ST-nlspwstatus-GV11-NAME = Battery Import Today
+ST-nlspwstatus-GV12-NAME = Grid Import Today
+ST-nlspwstatus-GV13-NAME= Grid Export Today
+ST-nlspwstatus-GV14-NAME = Grid Service Today
+
+ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
+ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
+ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
+ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
+ST-nlspwstatus-GV19-NAME = Grid Import Yesterday
+ST-nlspwstatus-GV20-NAME= Grid Export Yesterday
+ST-nlspwstatus-GV21-NAME = Grid Service Yesterday
+
+ST-nlspwstatus-GV22-NAME = Today nbr backup events 
+ST-nlspwstatus-GV23-NAME = Today backup event time
+ST-nlspwstatus-GV24-NAME = Yesterday nbr backup events 
+ST-nlspwstatus-GV25-NAME = Yesterday backup event time
+ST-nlspwstatus-GV26-NAME = Today charge power
+ST-nlspwstatus-GV27-NAME = Today charge time
+ST-nlspwstatus-GV28-NAME = Yesterday charge power
+ST-nlspwstatus-GV29-NAME = Yesterday charge time
+

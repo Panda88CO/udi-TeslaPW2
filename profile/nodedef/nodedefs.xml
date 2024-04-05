@@ -21,30 +21,39 @@
    <nodeDef id="pwstatus" nls="nlspwstatus">
       <editors />
       <sts>
-         <!--<st id="GV0" editor="KWH" />-->
-         <st id="GV1" editor="PERCENT" />
-         <st id="GV2" editor="OP_MODE" />
-         <st id="GV3" editor="GRID_ST" />
-         <st id="GV4" editor="ON_LINE" />
-         <st id="GV5" editor="TOGGLE" />
-         <!--<st id="GV6" editor="KWH_20" />-->
-         <st id="GV7" editor="KWH" />
-         <!--<st id="GV8" editor="KWH" />-->
+         <st id="ST" editor="ON_LINE" />      
+         <st id="GV0" editor="KWH" />
+         <st id="GV1" editor="KWH" />
+         <st id="GV2" editor="KWH" />
+         <st id="GV3" editor="KWH" />
+         <st id="GV4" editor="KWH" />
+         <st id="GV5" editor="OP_MODE" />
+         <st id="GV6" editor="GRID_ST" />
+         <st id="GV7" editor="EN_MODE" />
+         <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
-         <!--<st id="GV11" editor="KWH" />-->
+         <st id="GV11" editor="KWH" />
          <st id="GV12" editor="KWH" />
          <st id="GV13" editor="KWH" />
-         <!--<st id="GV14" editor="KWH" />-->
+         <st id="GV14" editor="KWH" />
          <st id="GV15" editor="KWH" />
-         <!--<st id="GV16" editor="KWH" />-->
+         <!--
+         <st id="GV16" editor="KWH" />
          <st id="GV17" editor="KWH" />
-         <!--<st id="GV18" editor="KWH" />-->
+         <st id="GV18" editor="KWH" />
          <st id="GV19" editor="KWH" />
-         <!--<st id="GV20" editor="KWH" />-->
-         <!-->st id="GV21" editor="DOLLAR" />
-         <st id="GV23" editor="PERIOD" />
-         <st id="GV24" editor="SEASON" />-->
+         <st id="GV20" editor="KWH" />
+         <st id="GV21" editor="KWH" />
+         <st id="GV22" editor="count" />    
+         <st id="GV23" editor="TIME" />
+         <st id="GV24" editor="count" />
+         <st id="GV25" editor="TIME" />
+         <st id="GV26" editor="KWH" />
+         <st id="GV27" editor="TIME" />
+         <st id="GV28" editor="KWH" />
+         <st id="GV29" editor="TIME" />
+         -->
 
       </sts>
       <cmds>
@@ -60,14 +69,17 @@
       <nodeDef id="pwhistory" nls="nlspwstatus">
       <editors />
       <sts>
-         <!--<st id="GV0" editor="KWH" />
-         <st id="GV1" editor="PERCENT" />
-         <st id="GV2" editor="OP_MODE" />
-         <st id="GV3" editor="GRID_ST" />
-         <st id="GV4" editor="ON_LINE" />
-         <st id="GV5" editor="TOGGLE" />
-         <st id="GV6" editor="KWH_20" />-->
-         <st id="GV7" editor="KWH" />
+         <st id="ST" editor="ON_LINE" />     
+         <!--      
+         <st id="GV0" editor="KWH" />
+         <st id="GV1" editor="KWH" />
+         <st id="GV2" editor="KWH" />
+         <st id="GV3" editor="KWH" />
+         <st id="GV4" editor="KWH" />
+         <st id="GV5" editor="OP_MODE" />
+         <st id="GV6" editor="GRID_ST" />
+         <st id="GV7" editor="EN_MODE" />
+         -->
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
@@ -76,22 +88,21 @@
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
          <st id="GV15" editor="KWH" />
+
          <st id="GV16" editor="KWH" />
          <st id="GV17" editor="KWH" />
          <st id="GV18" editor="KWH" />
          <st id="GV19" editor="KWH" />
          <st id="GV20" editor="KWH" />
-         <st id="GV21" editor="count" />
-         <st id="GV22" editor="TIME" />
-         <st id="GV23" editor="count" />
-         <st id="GV24" editor="TIME" />
-         <!--<st id="GV25" editor="KWH" />
-         <st id="GV26" editor="TIME" />
-         <st id="GV27" editor="KWH" />
-         <st id="GV28" editor="TIME" />-->
-         <!-->st id="GV21" editor="DOLLAR" />
-         <st id="GV23" editor="PERIOD" />
-         <st id="GV24" editor="SEASON" />-->
+         <st id="GV21" editor="KWH" />
+         <st id="GV22" editor="count" />    
+         <st id="GV23" editor="TIME" />
+         <st id="GV24" editor="count" />
+         <st id="GV25" editor="TIME" />
+         <st id="GV26" editor="KWH" />
+         <st id="GV27" editor="TIME" />
+         <st id="GV28" editor="KWH" />
+         <st id="GV29" editor="TIME" />
 
       </sts>
       <cmds>
