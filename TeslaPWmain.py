@@ -108,7 +108,7 @@ class TeslaPWController(udi_interface.Node):
 
 
     def customParamsHandler(self, userParams):
-        logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
+        #logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
 
@@ -195,10 +195,10 @@ class TeslaPWController(udi_interface.Node):
         site_string = ''
 
         logging.debug('start')
-        logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
+        #logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.poly.updateProfile()
    
-        logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
+        #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         while not self.customParam_done or not self.TPW_cloud.customNsDone():
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
@@ -268,7 +268,7 @@ class TeslaPWController(udi_interface.Node):
 
         if self.cloudAccessUp or self.localAccessUp:
             
-            logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
+            #logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
             self.tesla_initialize()
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
@@ -281,7 +281,7 @@ class TeslaPWController(udi_interface.Node):
         try:
             logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccessUp, self.cloudAccessUp))
             
-            logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))             
+            #logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))             
 
             logging.debug('Node installation complete')
             self.initialized = True
@@ -408,4 +408,3 @@ if __name__ == "__main__":
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
-        
