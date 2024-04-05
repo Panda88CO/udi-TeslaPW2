@@ -161,6 +161,10 @@ class tesla_info(object):
             self.yesterdayTotalGenerator = 0
             self.daysTotalGridServices = 0 #Does not seem to exist
             self.daysTotalGenerator = 0 #needs to be updated - may not ex     
+            self.daysTotalBattery_imp = 0
+            self.daysTotalBattery_exp = 0
+            self.daysTotalSite_imp = 0
+
         else:
             self.TPWcloud.teslaUpdateCloudData(self.site_id,'all')
             self.daysTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(self.site_id, 'today')
@@ -247,9 +251,12 @@ class tesla_info(object):
                 self.yesterdayTotalConsumption = self.daysTotalConsumption
                 self.yesterdayTotalGeneration  = self.daysTotalGeneraton
                 self.yesterdayTotalBattery =  self.daysTotalBattery
+                self.yesterdayTotalBattery_imp =  self.daysTotalBattery_imp
+                self.yesterdayTotalBattery_exp =  self.daysTotalBattery_exp
                 self.yesterdayTotalGrid = self.daysTotalGridServices
                 self.yesterdayTotalGridServices = self.daysTotalGridServices
                 self.yesterdayTotalGenerator = self.daysTotalGenerator
+                self.yesterdayTotalSite_imp = self.daysTotalSite_imp
            
                 if self.localAccessUp:
                     if self.TPWlocal.is_authenticated():
@@ -302,8 +309,10 @@ class tesla_info(object):
                     self.daysTotalSolar =  (self.solarMeter.energy_exported - self.DSsolarMeter.energy_exported)
                     self.daysTotalConsumption = (self.loadMeter.energy_imported - self.DSloadMeter.energy_imported)
                     self.daysTotalGeneraton = (self.siteMeter.energy_exported - self.DSsiteMeter.energy_exported )
-                    self.daysTotalBattery =  (float(self.batteryMeter.energy_exported - self.DSbatteryMeter.energy_exported - 
-                                                (self.batteryMeter.energy_imported - self.DSbatteryMeter.energy_imported)))
+                    self.daysTotalSite_imp =self.siteMeter.energy_imported - self.DSsiteMeter.energy_imported
+                    self.daysTotalBattery_exp =float(self.batteryMeter.energy_exported - self.DSbatteryMeter.energy_exported)
+                    self.daysTotalBattery_imp = float(self.batteryMeter.energy_imported - self.DSbatteryMeter.energy_imported)
+                    self.daysTotalBattery =  (self.daysTotalBattery_exp-self.daysTotalBattery )
                     
                     self.daysTotalGrid = -self.daysTotalConsumption - self.daysTotalGeneraton 
                     if not self.TPWcloudAccess:
@@ -430,7 +439,7 @@ class tesla_info(object):
     def getTPW_solarSupply(self):
         if self.solarInstalled:
             if self.cloudAccessUp:
-                solarPwr = self.TPWcloud.teslaExtractSolarSupply(self.site_id)
+                solarPwr = self.TPWcloud.tesla_live_solar_power(self.site_id)
             elif  self.localAccessUp and self.firstPollCompleted:
                 try:
                     #logging.debug(self.meters)
@@ -447,7 +456,7 @@ class tesla_info(object):
 
     def getTPW_batterySupply(self):
         if self.cloudAccessUp:
-            batteryPwr = self.TPWcloud.teslaExtractBatterySupply(self.site_id)
+            batteryPwr = self.TPWcloud.tesla_live_battery_power(self.site_id)
         elif  self.localAccessUp and self.firstPollCompleted:
             try:
                 batteryPwr = self.batteryMeter.instant_power
@@ -458,12 +467,19 @@ class tesla_info(object):
         logging.debug('getTPW_batterySupply' + str(batteryPwr))
         return(round(batteryPwr/1000,2))
  
+    def getTPW_instant_solar(self):
+        #nneed to find local
+        if self.cloudAccessUp:
+            gridPwr = self.TPWcloud.teslaExtractGridSupply(self.site_id)
+        #elif
+        else:
+            return(None)
 
 
         #site_live
     def getTPW_gridSupply(self):
         if self.cloudAccessUp:
-            gridPwr = self.TPWcloud.teslaExtractGridSupply(self.site_id)
+            gridPwr = self.TPWcloud.tesla_live_grid_power(self.site_id)
         elif  self.localAccessUp and self.firstPollCompleted:
             try:
                 gridPwr = self.siteMeter.instant_power
@@ -478,7 +494,7 @@ class tesla_info(object):
 
     def getTPW_load(self):
         if self.cloudAccessUp:
-            loadPwr = self.TPWcloud.teslaExtractLoad(self.site_id)
+            loadPwr = self.TPWcloud.tesla_live_load_power(self.site_id)
         elif  self.localAccessUp and self.firstPollCompleted:
             try:
                 loadPwr = self.loadMeter.instant_power
@@ -534,6 +550,25 @@ class tesla_info(object):
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
+    def getTPW_daysBattery_export(self):  
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_battery_energy_export(self.site_id, 'today') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.batteryMeter.energy_exported - self.DSbatteryMeter.energy_exported
+        else:
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+
+    def getTPW_daysBattery_import(self): 
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_battery_energy_import(self.site_id, 'today') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.batteryMeter.energy_imported - self.DSbatteryMeter.energy_imported
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+
     def getTPW_daysGrid(self):  
         if self.cloudAccessUp:
             Pwr = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'today') - self.TPWcloud.tesla_grid_energy_import(self.site_id, 'today') 
@@ -543,6 +578,29 @@ class tesla_info(object):
             return(None)
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
+
+    def getTPW_daysGrid_import(self):  
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_grid_energy_import(self.site_id, 'today') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.siteMeter.energy_imported - self.DSsiteMeter.energy_imported
+        else:
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+
+    def getTPW_daysGrid_export(self):  
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'today') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.siteMeter.energy_exported - self.DSsiteMeter.energy_exported
+        else:
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+
+
+
 
     def getTPW_daysGridServicesUse(self):  
         if self.cloudAccessUp:
@@ -607,6 +665,25 @@ class tesla_info(object):
             return(None)
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
+    def getTPW_yesterdayBattery_export(self):  
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_battery_energy_export(self.site_id, 'yesterday') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.yesterdayTotalBattery_exp
+        else:
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+
+    def getTPW_yesterdasBattery_import(self): 
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_battery_energy_import(self.site_id, 'yesterday') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.yesterdayTotalBattery_imp
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+    
 
     def getTPW_yesterdayGrid(self):  
 
@@ -619,6 +696,27 @@ class tesla_info(object):
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
+    def getTPW_yesterdayGrid_import(self):  
+
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_grid_energy_import(self.site_id, 'yesterday') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.yesterdayTotalSite_imp
+        else:
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
+    
+    def getTPW_yesterdayGrid_export(self):  
+
+        if self.cloudAccessUp:
+            Pwr = self.TPWcloud.tesla_grid_energy_export(self.site_id, 'yesterday') - self.TPWcloud.tesla_grid_energy_import(self.site_id, 'yesterday') 
+        elif  self.localAccessUp and self.firstPollCompleted:
+            Pwr = self.yesterdayTotalGeneraton
+        else:
+            return(None)
+        logging.debug('getTPW_daysBattery ' + str(Pwr))
+        return(round(Pwr/1000,2))
 
     def getTPW_yesterdayGridServicesUse(self):  
 

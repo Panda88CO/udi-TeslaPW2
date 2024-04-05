@@ -19,6 +19,7 @@ from os import truncate
 #import sys
 import time
 import math
+import numbers 
 
 def node_queue(self, data):
     self.n_queue.append(data['address'])
@@ -32,29 +33,37 @@ def mask2key (self, mask):
     logging.debug('mask2key : {}'.format(mask))
     return(int(round(math.log2(mask),0)))
     
-def daysToMask (yolink, dayList):
+def daysToMask (self, dayList):
     daysValue = 0 
     i = 0
-    for day in yolink.daysOfWeek:
+    for day in self.daysOfWeek:
         if day in dayList:
             daysValue = daysValue + pow(2,i)
         i = i+1
     return(daysValue)
 
-def maskToDays(yolink, daysValue):
+def maskToDays(self, daysValue):
     daysList = []
     for i in range(0,7):
         mask = pow(2,i)
         if (daysValue & mask) != 0 :
-            daysList.append(yolink.daysOfWeek[i])
+            daysList.append(self.daysOfWeek[i])
     return(daysList)
 
 
-def bool2Nbr(yolink, bool):
-    if bool:
+def bool2Nbr(self, bool):
+    if bool == True:
         return(1)
-    else:
+    elif bool == False:
         return(0)
+    else:
+        return(None)
+    
+def round2ISY(self,nbr, res):
+    if isinstance(nbr, numbers.Number):
+        return(round(nbr, res))
+    else:
+        return(None)
 
 def bool2ISY (self, data):
     if data:
@@ -93,6 +102,18 @@ def daylist2bin(self, daylist):
     if 'sat' in daylist:
         sum = sum + 64
     return(sum)
+
+
+def PW_setDriver(self, key, value, Unit=None):
+    logging.debug('PW_setDriver : {} {} {}'.format(key, value, Unit))
+    if value == None:
+        logging.debug('None value passed = seting 99, UOM 25')
+        self.node.setDriver(key, 99, False, False, 25)
+    else:
+        if Unit:
+            self.node.setDriver(key, value, False, False, Unit)
+        else:
+            self.node.setDriver(key, value)
 
 
 def send_rel_temp_to_isy(self, temperature, stateVar):

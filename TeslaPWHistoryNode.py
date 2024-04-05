@@ -17,7 +17,7 @@ from TeslaPWGenNode import teslaPWGenNode
 
 
 class teslaPWHistoryNode(udi_interface.Node):
-    from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY
+    from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
 
     def __init__(self, polyglot, primary, address, name, TPW):
         #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
@@ -82,27 +82,47 @@ class teslaPWHistoryNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('HistoryNode updateISYdrivers')
-        self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
-        self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
-        self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
-        self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
-        self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption())
-        self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
-        self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration())
-        self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
-        self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
-        self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
-        self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
-        self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
-        self.node.setDriver('GV21', self.TPW.getTPW_days_backup_events())
-        self.node.setDriver('GV22', self.TPW.getTPW_days_backup_time())
-        self.node.setDriver('GV23', self.TPW.getTPW_yesterday_backup_events())
-        self.node.setDriver('GV24', self.TPW.getTPW_yesterday_backup_time())
-        #self.node.setDriver('GV25', self.TPW.getTPW_days_evcharge_power())
-        #self.node.setDriver('GV26', self.TPW.getTPW_days_evcharge_time())
-        #self.node.setDriver('GV27', self.TPW.getTPW_yesterday_evcharge_power())
-        #self.node.setDriver('GV28', self.TPW.getTPW_yesterday_evcharge_time())
+        
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
+        '''
+        self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_chargeLevel(),1), 51)
+        self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_solarSupply(),2), 33)
+        self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_batterySupply(),2), 33)
+        self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_load(),2), 33)
+        self.PW_setDriver('GV4', self.round2ISY(self.TPW.getTPW_gridSupply(),2), 33)
+                
+        self.PW_setDriver('GV5', self.TPW.getTPW_operationMode())
+        self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus())
+        self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive())
 
+
+        '''
+        self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(),2), 33)
+        self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(),2), 33)
+        self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(),2), 33)       
+        self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(),2), 33)
+        self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(),2), 33) 
+        self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(),2), 33)
+        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(),2), 33)
+        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(),2), 33)
+
+
+        self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(),2), 33)
+        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesyerdayBattery_export(),2), 33)       
+        self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(),2), 33)
+        self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(),2), 33) 
+        self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(),2), 33)
+        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGridServicesUse(),2), 33)
+        self.PW_setDriver('TPW', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(),2), 33)
+
+        self.PW_setDriver('GV22', self.TPW.getTPW_days_backup_events())
+        self.PW_setDriver('GV23', self.round2ISY(self.TPW.getTPW_days_backup_time(),0), 58)
+        self.PW_setDriver('GV24', self.TPW.getTPW_yesterday_backup_events())
+        self.PW_setDriver('GV25', self.round2ISY(self.TPW.getTPW_yesterday_backup_time(),0), 58)
+        self.PW_setDriver('GV26', self.round2ISY(self.TPW.getTPW_days_evcharge_power(),0), 33)
+        self.PW_setDriver('GV27', self.round2ISY(self.TPW.getTPW_days_evcharge_time(),0), 58)
+        self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(),0), 33)
+        self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(),0), 58)
 
     def update_PW_data(self, level):
         pass
@@ -137,13 +157,14 @@ class teslaPWHistoryNode(udi_interface.Node):
     ST-nlspwstatus-GV12-NAME = Grid Import Today
     ST-nlspwstatus-GV13-NAME= Grid Export Today
     ST-nlspwstatus-GV14-NAME = Grid Service Today
+    ST-nlspwstatus-CPW-NAME = Generator Today
 
     ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
     ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
     ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
     ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
-    ST-nlspwstatus-GV19-NAME = Grid Import Yesterday
-    ST-nlspwstatus-GV20-NAME= Grid Export Yesterday
+    ST-nlspwstatus-GV19-NAME = Grid Export Yesterday
+    ST-nlspwstatus-GV20-NAME = Grid Import Yesterday
     ST-nlspwstatus-GV21-NAME = Grid Service Yesterday
 
     ST-nlspwstatus-GV22-NAME = Today nbr backup events 
@@ -154,7 +175,7 @@ class teslaPWHistoryNode(udi_interface.Node):
     ST-nlspwstatus-GV27-NAME = Today charge time
     ST-nlspwstatus-GV28-NAME = Yesterday charge power
     ST-nlspwstatus-GV29-NAME = Yesterday charge time
-
+    ST-nlspwstatus-TPW-NAME = Generator Yesterday
     '''
 
     drivers = [

@@ -465,22 +465,22 @@ class teslaPWAccess(teslaAccess):
     def tesla_grid_staus(self, site_id):
         return(self.site_live_info[site_id]['grid_status'])
     
-    def tesla_grid_service_active(self, site_id):
+    def tesla_live_grid_service_active(self, site_id):
         return(self.site_live_info[site_id]['grid_services_active'])
 
-    def tesla_grid_power(self, site_id):
+    def tesla_live_grid_power(self, site_id):
         return(self.site_live_info[site_id]['grid_power'])
     
-    def tesla_generator_power(self, site_id):
+    def tesla_live_generator_power(self, site_id):
         return(self.site_live_info[site_id]['generator_power'])
     
-    def tesla_load_power(self, site_id):
+    def tesla_live_load_power(self, site_id):
         return(self.site_live_info[site_id]['load_power'])
     
-    def tesla_battery_power(self, site_id):
+    def tesla_live_battery_power(self, site_id):
         return(self.site_live_info[site_id]['battery_power'])
     
-    def tesla_solar_power(self, site_id):
+    def tesla_live_solar_power(self, site_id):
         return(self.site_live_info[site_id]['solar_power'])
 
     def teslaExtractTouMode(self, site_id):
