@@ -36,7 +36,9 @@ class TeslaPWController(udi_interface.Node):
         self.name = name
         #self.cloudAccess = False
         #self.localAccess = False
+        self.config_done = False
         self.initialized = False
+
         self.localAccessUp = False
         self.cloudAccessUp = False
         self.customParam_done = False
@@ -88,7 +90,7 @@ class TeslaPWController(udi_interface.Node):
         self.configDoneHandler()
 
     def check_config(self):
-        pass
+        self.config_done= True
 
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
@@ -199,9 +201,9 @@ class TeslaPWController(udi_interface.Node):
         self.poly.updateProfile()
    
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
-        while not self.customParam_done or not self.TPW_cloud.customNsDone():
+        while not self.config_done:
             logging.info('Waiting for node to initialize')
-            logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
+            #logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
             time.sleep(2)
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         if self.local_access_enabled: 
