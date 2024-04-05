@@ -45,15 +45,10 @@ class teslaPWAccess(teslaAccess):
 
     def __init__(self, polyglot, scope):
         #super().__init__(polyglot, scope)
-        logging.info('OAuth initializing')
+        logging.info('teslaPWAccess initializing')
         self.poly = polyglot
         self.scope = scope
-
-
         logging.info('External service connectivity initialized...')
-
-        time.sleep(1)
-
         self.OPERATING_MODES = [ "self_consumption", "autonomous"]
         self.EXPORT_RULES = ['battery_ok', 'pv_only', 'never']
         self.HISTORY_TYPES = ['backup', 'charge', 'energy' ]
@@ -79,7 +74,8 @@ class teslaPWAccess(teslaAccess):
         #self.update_date_time()
         self.site_info = {}
         self.site_live_info = {}
-  
+        #time.sleep(1)
+        self.PWiniitalized = True
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customParams to complete - getAccessToken')
         #    time.sleep(0.2)
