@@ -61,6 +61,7 @@ class teslaAccess(udi_interface.OAuth):
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
         self.customOauthHandlerDone = False
+        self.customDataHandlerDone = False
         self.authendication_done = False
         self.temp_unit = 'C'
         #self.poly.subscribe(self.poly.CUSTOMNS, self.customNsHandler)

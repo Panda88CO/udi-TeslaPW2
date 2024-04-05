@@ -201,9 +201,9 @@ class TeslaPWController(udi_interface.Node):
         self.poly.updateProfile()
    
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
-        while not self.config_done:
+        while not self.customParam_done and not self.TPW_cloud.customNsHandlerDone and not self.TPW_cloud.customDataHandlerDone:
             logging.info('Waiting for node to initialize')
-            #logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsDone()))
+            logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone))
             time.sleep(2)
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         if self.local_access_enabled: 
