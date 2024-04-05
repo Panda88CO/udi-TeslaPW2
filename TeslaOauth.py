@@ -43,7 +43,7 @@ class teslaAccess(udi_interface.OAuth):
     yourApiEndpoint = 'https://fleet-api.prd.na.vn.cloud.tesla.com'
 
     def __init__(self, polyglot, scope):
-        super().__init__(polyglot)
+        #super().__init__(polyglot)
         logging.info('OAuth initializing')
         self.poly = polyglot
         self.scope = scope
