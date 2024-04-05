@@ -45,7 +45,7 @@ class TeslaPWController(udi_interface.Node):
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
-        #self.poly.subscribe(self.poly.START, self.start, address)
+        self.poly.subscribe(self.poly.START, self.start, address)
         #self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
         #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
@@ -404,7 +404,7 @@ if __name__ == "__main__":
         TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
 
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWalls', TPW_cloud)
-        polyglot.subscribe(polyglot.START, TPW.start, 'controller')
+        #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
         polyglot.subscribe(polyglot.STOP, TPW.stop)
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
         polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
