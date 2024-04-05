@@ -410,7 +410,7 @@ if __name__ == "__main__":
         while not TPW_cloud.PWiniitalized:
             logging.debug('Waiting for PWservice to initialize')
             time.sleep(1)
-
+        logging.debug('TPW_Clous {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
         #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
         polyglot.subscribe(polyglot.STOP, TPW.stop)
