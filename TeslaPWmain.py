@@ -25,10 +25,11 @@ class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat
 
     def __init__(self, polyglot, primary, address, name, TPW_cloud):
-        super(TeslaPWController, self).__init__(polyglot, primary, address, name )
+        super(TeslaPWController, self).__init__(polyglot, primary, address, name, TPW_cloud )
+
         self.poly = polyglot
         self.TPW_cloud = TPW_cloud
-        logging.info('_init_ Tesla Power Wall Controller')
+        logging.info('_init_ Tesla Power Wall Controller - TPW_cloud {}'.format(self.TPW_cloud))
         self.ISYforced = False
         self.name = 'Tesla PowerWall Info'
         self.primary = primary
@@ -410,7 +411,7 @@ if __name__ == "__main__":
         while not TPW_cloud.PWiniitalized:
             logging.debug('Waiting for PWservice to initialize')
             time.sleep(1)
-        logging.debug('TPW_Clous {}'.format(TPW_cloud))
+        logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
         #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
         polyglot.subscribe(polyglot.STOP, TPW.stop)
