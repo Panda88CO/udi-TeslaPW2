@@ -45,9 +45,6 @@ class TeslaPWController(udi_interface.Node):
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
-        #self.TPW_cloud = teslaPWAccess(self.poly, 'energy_device_data energy_cmds open_id offline_access')
-        #self.TPW_cloud = TeslaCloud(self.poly, 'energy_device_data energy_cmds open_id offline_access')
-        #self.TPW_cloud = TeslaCloud(self.poly, 'vehicle_device_data')
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
@@ -55,10 +52,10 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
+        #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
-        self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
+        #self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
+        #self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
@@ -404,6 +401,18 @@ if __name__ == "__main__":
         TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
 
         TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWalls', TPW_cloud)
+        #polyglot.subscribe(polyglot.START, self.start, address)
+        #polyglot.subscribe(polyglot.LOGLEVEL, self.handleLevelChange)
+        #polyglot.subscribe(polyglot.NOTICES, self.handleNotices)
+        #polyglot.subscribe(polyglot.CUSTOMPARAMS, self.handleParams)
+        #polyglot.subscribe(polyglot.POLL, self.systemPoll)
+        #polyglot.subscribe(polyglot.ADDNODEDONE, self.node_queue)
+
+        #polyglot.subscribe(polyglot.CONFIGDONE, TPW_cloud.check_config)
+        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW_cloud.customParamsHandler)
+        polyglot.subscribe(polyglot.CUSTOMDATA, TPW_cloud.TPW_cloud.customDataHandler)
+        polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.TPW_cloud.customNsHandler)
+        polyglot.subscribe(polyglot.OAUTH, TPW_cloud.TPW_cloud.oauthHandler)
 
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
