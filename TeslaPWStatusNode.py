@@ -176,7 +176,7 @@ class teslaPWStatusNode(udi_interface.Node):
         #self.PW_setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
         self.PW_setDriver('GV17', self.TPW.getTPW_daysSolar())
         #self.PW_setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
-        '''
+        
 
 
     def update_PW_data(self, level):
@@ -270,4 +270,4 @@ class teslaPWStatusNode(udi_interface.Node):
                      
             ]
 
-
+    
