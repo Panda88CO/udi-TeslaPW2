@@ -78,17 +78,16 @@ class teslaAccess(udi_interface.OAuth):
         # self.getAccessToken()
     
     # The OAuth class needs to be hooked to these 3 handlers
-    '''
+    
     def customDataHandler(self, data):
-        logging.debug('customDataHandler called')
+        logging.debug('customDataHandler called {}'.format(data))
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customDataHandler to complete')
-        #    time.sleep(1)
-        super().customDataHandler(data)
+        #    time.sleep(1)       
         self.customDataHandlerDone = True
         logging.debug('customDataHandler Finished')
     '''    
-    
+
     def customDataHandler(self, data):
         if data.get('token'):
             logging.info('Migrating tokens to the new version')
@@ -101,7 +100,7 @@ class teslaAccess(udi_interface.OAuth):
             
             # Continue processing as if it was in the right place
             self.customNsHandler('oauthTokens', data['token'])
-
+    '''
         
     def customNsHandler(self, key, data):
         logging.debug('customNsHandler called')
