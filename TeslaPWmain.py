@@ -2,6 +2,7 @@
 
 import sys
 import time 
+import traceback
 from TeslaInfo import tesla_info
 from TeslaLocal import tesla_local
 from TeslaPWOauth import teslaPWAccess
@@ -11,7 +12,9 @@ try:
     import udi_interface
     logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
+    Interface = udi_interface.Interface
     ISY = udi_interface.ISY
+
 except ImportError:
     import logging
     logging.basicConfig(level=30)
@@ -22,7 +25,7 @@ class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat
 
     def __init__(self, polyglot, primary, address, name, TPW_cloud):
-        super(TeslaPWController, self).__init__(polyglot, primary, address, name )
+        #super(TeslaPWController, self).__init__(polyglot, primary, address, name )
         self.poly = polyglot
         self.TPW_cloud = TPW_cloud
         logging.info('_init_ Tesla Power Wall Controller')
@@ -420,3 +423,6 @@ if __name__ == "__main__":
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
+    except Exception:
+        logging.error(f"Error starting plugin: {traceback.format_exc()}")
+        polyglot.stop()
