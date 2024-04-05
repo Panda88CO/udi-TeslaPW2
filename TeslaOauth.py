@@ -183,7 +183,7 @@ class teslaAccess(udi_interface.OAuth):
         else:
             return(False)
         '''
-    '''
+    
     def getAccessToken(self):
         # Make sure we have received tokens before attempting to renew
         logging.debug('self.getAccessToken: {}'.format(self._oauthTokens))
@@ -201,7 +201,7 @@ class teslaAccess(udi_interface.OAuth):
         else:
             raise ValueError('Access token is not available')
     
-
+    '''
     
     def _oAuthTokensRefresh(self):
         logging.debug(f"Refresh token before: { self._oauthTokens }")

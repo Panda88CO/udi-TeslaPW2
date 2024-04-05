@@ -90,62 +90,80 @@ class teslaPWStatusNode(udi_interface.Node):
         #logging.debug('GV0: {}'.format(tmp))
         self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
 
-        self.PW_setDriver('GV0', round(self.TPW.getTPW_chargeLevel()),1))
+        self.PW_setDriver('GV0', round(self.TPW.getTPW_chargeLevel(),1))
      
         self.PW_setDriver('GV1', self.TPW.getTPW_chargeLevel())
 
         self.PW_setDriver('GV2', self.TPW.getTPW_operationMode())
 
-        self.PW_setDriver('GV3', self.TPW.)
+        self.node.setDriver('GV7', self.TPW.getTPW_daysBattery())
+        self.node.setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
+        self.node.setDriver('GV10', self.TPW.getTPW_daysGrid())
+        self.node.setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
+        self.node.setDriver('GV13', self.TPW.getTPW_daysConsumption())
+        self.node.setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
+        self.node.setDriver('GV15', self.TPW.getTPW_daysGeneration())
+        self.node.setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
+        self.node.setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
+        self.node.setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
+        self.node.setDriver('GV17', self.TPW.getTPW_daysSolar())
+        self.node.setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
+        self.node.setDriver('GV21', self.TPW.getTPW_days_backup_events())
+        self.node.setDriver('GV22', self.TPW.getTPW_days_backup_time())
+        self.node.setDriver('GV23', self.TPW.getTPW_yesterday_backup_events())
+        self.node.setDriver('GV24', self.TPW.getTPW_yesterday_backup_time())
 
-        self.PW_setDriver('GV4', self.TPW.)
+        
+        #self.PW_setDriver('GV3', self.TPW.)
+        
+        #self.PW_setDriver('GV4', self.TPW.)
 
-        self.PW_setDriver('GV5', self.TPW.)
+        #self.PW_setDriver('GV5', self.TPW.)
 
-        self.PW_setDriver('GV6', self.TPW.)
+        #self.PW_setDriver('GV6', self.TPW.)
 
-        self.PW_setDriver('GV7', self.TPW.)
-        self.PW_setDriver('GV8', self.TPW.)
+        #self.PW_setDriver('GV7', self.TPW.)
+        #self.PW_setDriver('GV8', self.TPW.)
 
-        self.PW_setDriver('GV9', self.TPW.)
+        #self.PW_setDriver('GV9', self.TPW.)
 
-        self.PW_setDriver('GV10', self.TPW.)
+        #self.PW_setDriver('GV10', self.TPW.)
 
-        self.PW_setDriver('GV11', self.TPW.)
+        #self.PW_setDriver('GV11', self.TPW.)
 
-        self.PW_setDriver('GV12', self.TPW.)
-        self.PW_setDriver('GV13', self.TPW.getTPW_chargeLevel())
-        self.PW_setDriver('GV14', self.TPW.getTPW_gridSupply())
-        self.PW_setDriver('GV15', self.TPW.getTPW_load())
+        #self.PW_setDriver('GV12', self.TPW.)
+        #self.PW_setDriver('GV13', self.TPW.getTPW_chargeLevel())
+        #self.PW_setDriver('GV14', self.TPW.getTPW_gridSupply())
+        #self.PW_setDriver('GV15', self.TPW.getTPW_load())
         
 
-        self.PW_setDriver('GV16', self.TPW.)
+        #self.PW_setDriver('GV16', self.TPW.)
 
-        self.PW_setDriver('GV17', self.TPW.)
+        #self.PW_setDriver('GV17', self.TPW.)
 
-        self.PW_setDriver('GV18', self.TPW.)
+        #self.PW_setDriver('GV18', self.TPW.)
 
-        self.PW_setDriver('GV19', self.TPW.)
+        #self.PW_setDriver('GV19', self.TPW.)
 
-        self.PW_setDriver('GV20', self.TPW.)
-        self.PW_setDriver('GV21', self.TPW.)
+        #self.PW_setDriver('GV20', self.TPW.)
+        #self.PW_setDriver('GV21', self.TPW.)
 
-        self.PW_setDriver('GV22', self.TPW.)
+        #self.PW_setDriver('GV22', self.TPW.)
 
-        self.PW_setDriver('GV23', self.TPW.)
+        #self.PW_setDriver('GV23', self.TPW.)
 
-        self.PW_setDriver('GV24', self.TPW.)
+        #self.PW_setDriver('GV24', self.TPW.)
 
-        self.PW_setDriver('GV25', self.TPW.)
+        #self.PW_setDriver('GV25', self.TPW.)
 
-        self.PW_setDriver('GV26', self.TPW.)
+        #self.PW_setDriver('GV26', self.TPW.)
 
-        self.PW_setDriver('GV27', self.TPW.)
+        #self.PW_setDriver('GV27', self.TPW.)
 
-        self.PW_setDriver('GV28', self.TPW.)
+        #self.PW_setDriver('GV28', self.TPW.)
 
-        self.PW_setDriver('GV29', self.TPW.)
-        '''
+        #self.PW_setDriver('GV29', self.TPW.)
+        
         self.PW_setDriver('GV7', self.TPW.getTPW_daysBattery())
         #self.PW_setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
         self.PW_setDriver('GV10', self.TPW.getTPW_daysGrid())

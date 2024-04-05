@@ -58,7 +58,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
         self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.oauthHandler)
+        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
         logging.debug('self.address : ' + str(self.address))
         logging.debug('self.name :' + str(self.name))
         self.hb = 0
