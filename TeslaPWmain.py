@@ -45,13 +45,13 @@ class TeslaPWController(udi_interface.Node):
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
-        self.poly.subscribe(self.poly.START, self.start, address)
-        self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
+        #self.poly.subscribe(self.poly.START, self.start, address)
+        #self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
         #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
-        self.poly.subscribe(self.poly.POLL, self.systemPoll)
-        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
+        #self.poly.subscribe(self.poly.POLL, self.systemPoll)
+        #self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
         #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
         #self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
@@ -296,7 +296,10 @@ class TeslaPWController(udi_interface.Node):
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
 
-   
+    def handleNotices(self, level):
+        logging.info('handleNoticesl:')
+
+
     def stop(self):
         #self.removeNoticesAll()
         self.poly.Notices.clear()
@@ -400,16 +403,15 @@ if __name__ == "__main__":
 
         TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
 
-        TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWalls', TPW_cloud)
-        #polyglot.subscribe(polyglot.START, self.start, address)
-        #polyglot.subscribe(polyglot.LOGLEVEL, self.handleLevelChange)
-        #polyglot.subscribe(polyglot.NOTICES, self.handleNotices)
-        #polyglot.subscribe(polyglot.CUSTOMPARAMS, self.handleParams)
-        #polyglot.subscribe(polyglot.POLL, self.systemPoll)
-        #polyglot.subscribe(polyglot.ADDNODEDONE, self.node_queue)
-
-        #polyglot.subscribe(polyglot.CONFIGDONE, TPW_cloud.check_config)
-        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW_cloud.customParamsHandler)
+        TPW =TeslaPWController(polyglot, 'controller', 'controller', 'TeslaPowerWalls', TPW_cloud)
+        polyglot.subscribe(polyglot.START, TPW.start, 'controller')
+        polyglot.subscribe(polyglot.STOP, TPW.stop)
+        polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
+        polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
+        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)
+        polyglot.subscribe(polyglot.ADDNODEDONE, TPW.node_queue)
+        polyglot.subscribe(polyglot.CONFIGDONE, TPW.check_config)
+        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.customParamsHandler)
         polyglot.subscribe(polyglot.CUSTOMDATA, TPW_cloud.TPW_cloud.customDataHandler)
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW_cloud.TPW_cloud.oauthHandler)
