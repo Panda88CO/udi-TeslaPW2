@@ -15,7 +15,7 @@ MIT License
 import json
 import requests
 import time
-#import urllib
+import numbers
 from datetime import timedelta, datetime
 from TeslaOauth import teslaAccess
 from tzlocal import get_localzone
@@ -424,6 +424,20 @@ class teslaPWAccess(teslaAccess):
                 self.tesla_get_yesterday_history(site_id, 'energy')
                 self.tesla_get_yesterday_history(site_id, 'backup')
                 #self.tesla_get_yesterday_history(site_id, 'charge')
+            try:
+                tmp = self.history_data[site_id]['energy']['yesteday']['consumer_energy_imported_from_battery']
+                if not isinstance(tmp, numbers.Number):
+                    yesterday_data_needed = True
+                else:
+                    yesterday_data_needed = False
+            except Exception:
+                yesterday_data_needed = True
+
+            if yesterday_data_needed:
+                self.tesla_get_yesterday_history(site_id, 'energy')
+                self.tesla_get_yesterday_history(site_id, 'backup')
+                #self.tesla_get_yesterday_history(site_id, 'charge')
+                
             logging.debug('history_data : {}'.format(self.history_data))
         return(access)
 

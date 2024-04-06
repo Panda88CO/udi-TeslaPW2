@@ -104,6 +104,29 @@ def daylist2bin(self, daylist):
     return(sum)
 
 
+def season2ISY(self, season):
+    logging.debug('season2ISY {}'.format(season))
+    if season.upper() == 'WINTER':
+        return(0)
+    elif season.upper() == 'SUMMER':
+        return(1)
+    elif season != None:
+        return(2)
+    else:
+        return (99)
+    
+
+def period2ISY(self, period):
+    logging.debug('period2ISY {}'.format(period))
+    if period.upper() == 'OFF_PEAK':
+        return(0)
+    elif period.upper() == 'PARTIAL_PEAK':
+        return(1)
+    elif period.upper() == 'PEAK':
+        return(2)
+    else:
+        return (99) 
+
 def PW_setDriver(self, key, value, Unit=None):
     logging.debug('PW_setDriver : {} {} {}'.format(key, value, Unit))
     if value == None:

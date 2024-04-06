@@ -53,8 +53,8 @@ CMD-nlspwsetup-TOU_MODE-NAME =  Time of Use Mode
 CMD-nlspwsetup-GRID_MODE-NAME = Grid Operation
 
 CMD-nlspwsetup-EV_CHRG_MODE-NAME = EV offgrid charge limit
-CDMP-nlspwsetup-export-NAME = Export mode to grid
-CDMP-nlspwsetup-import-NAME = Charging from grid
+CDMP-export-NAME = Export mode to grid
+CDMP-import-NAME = Charging from grid
 CMD-nlspwsetup-UPDATE-NAME = Update System Data
 
 ST-nlspwsetup-GV1-NAME = Backup Reserve (%)

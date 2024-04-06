@@ -12,8 +12,8 @@ except ImportError:
 
 from TeslaInfo import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
-from TeslaPWSolarNode import teslaPWSolarNode
-from TeslaPWGenNode import teslaPWGenNode
+#from TeslaPWSolarNode import teslaPWSolarNode
+#from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWHistoryNode import teslaPWHistoryNode
 
 
@@ -99,6 +99,7 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(),2), 33) 
         self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(),2), 33)
         self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(),2), 33)
+        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(),2), 33)
         '''
         self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(),2), 33)
         self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesyerdayBattery_export(),2), 33)       
@@ -116,69 +117,8 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(),0), 33)
         self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(),0), 58)
         '''
-        #self.PW_setDriver('GV3', self.TPW.)
-        
-        #self.PW_setDriver('GV4', self.TPW.)
 
-        #self.PW_setDriver('GV5', self.TPW.)
 
-        #self.PW_setDriver('GV6', self.TPW.)
-
-        #self.PW_setDriver('GV7', self.TPW.)
-        #self.PW_setDriver('GV8', self.TPW.)
-
-        #self.PW_setDriver('GV9', self.TPW.)
-
-        #self.PW_setDriver('GV10', self.TPW.)
-
-        #self.PW_setDriver('GV11', self.TPW.)
-
-        #self.PW_setDriver('GV12', self.TPW.)
-        #self.PW_setDriver('GV13', self.TPW.getTPW_chargeLevel())
-        #self.PW_setDriver('GV14', self.TPW.getTPW_gridSupply())
-        #self.PW_setDriver('GV15', self.TPW.getTPW_load())
-        
-
-        #self.PW_setDriver('GV16', self.TPW.)
-
-        #self.PW_setDriver('GV17', self.TPW.)
-
-        #self.PW_setDriver('GV18', self.TPW.)
-
-        #self.PW_setDriver('GV19', self.TPW.)
-
-        #self.PW_setDriver('GV20', self.TPW.)
-        #self.PW_setDriver('GV21', self.TPW.)
-
-        #self.PW_setDriver('GV22', self.TPW.)
-
-        #self.PW_setDriver('GV23', self.TPW.)
-
-        #self.PW_setDriver('GV24', self.TPW.)
-
-        #self.PW_setDriver('GV25', self.TPW.)
-
-        #self.PW_setDriver('GV26', self.TPW.)
-
-        #self.PW_setDriver('GV27', self.TPW.)
-
-        #self.PW_setDriver('GV28', self.TPW.)
-
-        #self.PW_setDriver('GV29', self.TPW.)
-        
-        self.PW_setDriver('GV7', self.TPW.getTPW_daysBattery())
-        #self.PW_setDriver('GV8', self.TPW.getTPW_yesterdayBattery())
-        self.PW_setDriver('GV10', self.TPW.getTPW_daysGrid())
-        #self.PW_setDriver('GV11', self.TPW.getTPW_yesterdayGrid())
-        self.PW_setDriver('GV13', self.TPW.getTPW_daysConsumption())
-        #self.PW_setDriver('GV14', self.TPW.getTPW_yesterdayConsumption())
-        self.PW_setDriver('GV15', self.TPW.getTPW_daysGeneration())
-        #self.PW_setDriver('GV16', self.TPW.getTPW_yesterdayGeneration())
-        self.PW_setDriver('GV17', self.TPW.getTPW_daysGridServicesUse())
-        #self.PW_setDriver('GV18', self.TPW.getTPW_yesterdayGridServicesUse())
-        self.PW_setDriver('GV17', self.TPW.getTPW_daysSolar())
-        #self.PW_setDriver('GV20', self.TPW.getTPW_yesterdaySolar())
-        
 
 
     def update_PW_data(self, level):
