@@ -47,7 +47,7 @@ class TeslaPWController(udi_interface.Node):
         #self.Rtoken = None
         self.n_queue = []
         self.TPW = None
-        self.GW = None
+        self.Gateway= None
         self.site_id = None
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
@@ -224,7 +224,7 @@ class TeslaPWController(udi_interface.Node):
         if self.local_access_enabled: 
             self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
             self.TPW_local.loginLocal()
-            self.GW = self.TPW_local.get_GWserial_number()
+            self.Gateway= self.TPW_local.get_GWserial_number()
             logging.debug('local GW {}'.format(self.GW))
             site_string = self.poly.getValidAddress(str(self.GW))
             site_name = self.TPW_local.get_site_name()
@@ -247,21 +247,21 @@ class TeslaPWController(udi_interface.Node):
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
             self.poly.Notices.clear()     
             self.TPW_cloud.cloud_initialilze(self.region)
-            PWs = self.TPW_cloud.tesla_get_products()
-            logging.debug('PWs: {}'.format(PWs))
+            PowerWalls = self.TPW_cloud.tesla_get_products()
+            logging.debug('PowerWalls: {}'.format(PowerWalls))
             if self.GW:
-                for site in PWs:
-                    logging.debug('Site Loop {}  {}'.format(site, PWs[site]))
-                    if self.GW == str(PWs[site]['gateway_id']):
-                        site_string = str(PWs[site]['energy_site_id'])
-                        site_name = str(PWs[site]['site_name'])
+                for site in PowerWalls:
+                    logging.debug('Site Loop {}  {}'.format(site, PowerWalls[site]))
+                    if self.Gateway== str(PowerWalls[site]['gateway_id']):
+                        site_string = str(PowerWalls[site]['energy_site_id'])
+                        site_name = str(PowerWalls[site]['site_name'])
                         self.site_id = site
             
             else: # No local access -                      
-                for site in PWs:
-                    if 'energy_site_id' in PWs[site]:
-                        site_string = str(PWs[site]['energy_site_id'])
-                        site_name = str(PWs[site]['site_name'])
+                for site in PowerWalls:
+                    if 'energy_site_id' in PowerWalls[site]:
+                        site_string = str(PowerWalls[site]['energy_site_id'])
+                        site_name = str(PowerWalls[site]['site_name'])
                         self.site_id = site
                         return() # Only handle first found for now
 
@@ -270,7 +270,7 @@ class TeslaPWController(udi_interface.Node):
         logging.debug(site_string)
         node_address =  self.poly.getValidAddress(site_string)
 
-        site_name = PWs[site]['site_name']
+        site_name = PowerWalls[site]['site_name']
         logging.debug(site_name)
         node_name = self.poly.getValidName(site_name)
         logging.debug('node_address and name: {} {}'.format(node_address, node_name))
