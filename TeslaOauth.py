@@ -261,9 +261,9 @@ class teslaAccess(udi_interface.OAuth):
         '''
     def try_authendication(self):
         if (self._oauthTokens):  # has been authenticated before 
-            try:
-               
+            try:               
                 accessToken = self.getAccessToken()
+                logging.debug('try_authendication - accesstoken {}'.format(accessToken))
                 self.poly.Notices.clear()
                 logging.debug('access token (try auth {})'.format(self._oauthTokens))
                 return(self._oauthTokens.get('expiry') != None)
