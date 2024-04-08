@@ -73,7 +73,7 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(),2), 33)
 
         self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(),2), 33)
-        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesyerdayBattery_export(),2), 33)       
+        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesterdayBattery_export(),2), 33)       
         self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(),2), 33)
         self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(),2), 33) 
         self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(),2), 33)
