@@ -287,6 +287,8 @@ class teslaAccess(udi_interface.OAuth):
         try:
             self._oAuthTokensRefresh()  #force refresh
             accessToken = self.getAccessToken()
+            refresh_token = self._oauthTokens.get('refresh_token')
+            logging.debug('call api tokens: {} {}'.format(refresh_token, accessToken))
             self.poly.Notices.clear()
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
