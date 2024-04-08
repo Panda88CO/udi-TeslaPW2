@@ -70,7 +70,7 @@ class teslaAccess(udi_interface.OAuth):
 
         logging.info('External service connectivity initialized...')
 
-        time.sleep(1)
+        #time.sleep(1)
 
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customParams to complete - getAccessToken')

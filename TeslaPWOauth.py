@@ -390,10 +390,10 @@ class teslaPWAccess(teslaAccess):
         logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
         access = False
         self.update_date_time(site_id)
-        while not self.authendicated():
-            self.try_authendication()
-            logging.info('Cloud Access not Authenticated yet - press Autenticate button')
-            time.sleep(5)
+        #while not self.authendicated():
+        #    self.try_authendication()
+        #    logging.info('Cloud Access not Authenticated yet - press Autenticate button')
+        #    time.sleep(5)
         
         if mode == 'critical':
             temp =self.tesla_get_live_status(site_id)

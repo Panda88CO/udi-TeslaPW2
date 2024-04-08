@@ -219,7 +219,7 @@ class TeslaPWController(udi_interface.Node):
         while not self.customParam_done and not self.TPW_cloud.customNsHandlerDone and not self.TPW_cloud.customDataHandlerDone:
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone))
-            time.sleep(2)
+            time.sleep(5)
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         if self.local_access_enabled: 
             self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
@@ -238,8 +238,10 @@ class TeslaPWController(udi_interface.Node):
                 self.cloudAccessUp =  self.TPW_cloud.try_authendication()
 
             while  not  self.cloudAccessUp:
-                time.sleep(5)
+
+
                 logging.info('Waiting to authenticate to complete - press authenticate button')   
+                time.sleep(10)
                 self.cloudAccessUp =  self.TPW_cloud.try_authendication()
 
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
