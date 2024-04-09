@@ -47,18 +47,18 @@ class tesla_local:
     def loginLocal (self):
         logging.debug('Local Access Supported')
 
-        self.TPWlocal = Powerwall(self.IPaddress)
+        self.PWlocal = Powerwall(self.IPaddress)
 
         #logging.debug('self.TPWlocal - {}'.format(self.TPWlocal))
-        self.TPWlocal.login(self.localPassword, self.localEmail)
+        self.PWlocal.login(self.localPassword, self.localEmail)
         logging.debug('self.TPWlocal ')
         loginAttempts = 0
         #temp = self.TPWlocal.is_authenticated()
         #logging.debug('authendicated = {} '.format(temp))
-        while not(self.TPWlocal.is_authenticated()) and loginAttempts < 10:            
+        while not(self.PWlocal.is_authenticated()) and loginAttempts < 10:            
             logging.info('Trying to log into Tesla Power Wall') 
             time.sleep(30)
-            self.TPWlocal.login(self.localPassword, self.localEmail)
+            self.PWlocal.login(self.localPassword, self.localEmail)
             loginAttempts = loginAttempts + 1
             self.localAccessUp = False
             if loginAttempts == 10: 
@@ -72,17 +72,47 @@ class tesla_local:
 
 
 
-    def is_authendicated(self):
-        return(self.TPWlocal.is_authenticated())
+    def is_authenticated(self):
+        return(self.PWlocal.is_authenticated())
 
 
     def get_GWserial_number(self):
-        logging.debug('Gateway: {}'.format(self.TPWlocal.get_gateway_din()))
-        return(self.TPWlocal.get_gateway_din())
+        logging.debug('Gateway: {}'.format(self.PWlocal.get_gateway_din()))
+        return(self.PWlocal.get_gateway_din())
 
     def get_meters(self):
-        return(self.TPWlocal.get_meters())
+        return(self.PWlocal.get_meters())
 
     def get_site_name(self):
-        info = self.TPWlocal.get_site_info()
+        info = self.PWlocal.get_site_info()
         return(str(info.site_name))
+    
+    def get_backup_reserve_percentage(self):
+        return(self.PWlocal.get_backup_reserve_percentage())
+            
+    def get_sitemaster(self):
+        return(self.PWlocal.get_sitemaster())
+
+    def get_energy(self):
+        return(self.PWlocal.get_energy())
+    
+    def get_charge(self):
+        return(self.PWlocal.get_charge())
+
+    def get_grid_status(self):
+        return(self.get_grid_status())
+    
+    def get_operation_mode(self):
+        return(self.get_operation_mode())
+
+    #def running(self):
+    #    if  (self.PWlocal.running()):  
+    #        return(1)   
+    #    else:
+    #       return(0)
+    
+    def is_grid_services_active(self):
+        return(self.PWlocal.is_grid_services_active())
+    
+    def close(self):
+        return(self.PWlocal.close())

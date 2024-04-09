@@ -10,7 +10,7 @@ except ImportError:
     import logging
     logging.basicConfig(level=30)
 
-from TeslaInfo import tesla_info
+#from TeslaInfoV2 import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
 #from TeslaPWSolarNode import teslaPWSolarNode
 #from TeslaPWGenNode import teslaPWGenNode
@@ -20,11 +20,12 @@ from TeslaPWHistoryNode import teslaPWHistoryNode
 class teslaPWStatusNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+    def __init__(self, polyglot, primary, address, name, site_id, TPW):
         #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.poly = polyglot
         self.ISYforced = False
+        self.site_id = site_id
         self.TPW = TPW
         self.node_ok = False
         self.address = address
@@ -51,17 +52,17 @@ class teslaPWStatusNode(udi_interface.Node):
 
         sub_adr = self.primary[-8:]
         #if self.TPW.cloud_access_enabled():
-        self.TPW.teslaInitializeData()
-        teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.TPW)
+        self.TPW.teslaInitializeData(self.site_id)
+  
+        teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.site_id, self.TPW)
         #if self.TPW.solarInstalled:
         #    teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
         #if self.TPW.generatorInstalled:
         #    teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
-        teslaPWHistoryNode(self.poly, self.primary, 'hist_'+sub_adr, 'Usage History', self.TPW)
+        teslaPWHistoryNode(self.poly, self.primary, 'hist_'+sub_adr, 'Usage History', self.site_id, self.TPW)
 
 
-        self.TPW.teslaInitializeData()
-        self.updateISYdrivers()
+        self.updateISYdrivers(self.site_id)
         self.node_ok = True
 
     def stop(self):
@@ -73,33 +74,33 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
 
-    def updateISYdrivers(self):
+    def updateISYdrivers(self, site_id):
 
 
         logging.debug('StatusNode updateISYdrivers')
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
-        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
-        self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_chargeLevel(),1), 51)
-        self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_solarSupply(),2), 33)
-        self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_batterySupply(),2), 33)
-        self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_load(),2), 33)
-        self.PW_setDriver('GV4', self.round2ISY(self.TPW.getTPW_gridSupply(),2), 33)
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine(self.site_id)))
+        self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_chargeLevel(self.site_id),1), 51)
+        self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_solarSupply(self.site_id),2), 33)
+        self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_batterySupply(self.site_id),2), 33)
+        self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_load(self.site_id),2), 33)
+        self.PW_setDriver('GV4', self.round2ISY(self.TPW.getTPW_gridSupply(self.site_id),2), 33)
                 
-        self.PW_setDriver('GV5', self.TPW.getTPW_operationMode())
-        self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus())
-        self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive())
+        self.PW_setDriver('GV5', self.TPW.getTPW_operationMode(self.site_id))
+        self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus(self.site_id))
+        self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive(self.site_id))
 
 
     
-        self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(),2), 33)
-        self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(),2), 33)
-        self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(),2), 33)       
-        self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(),2), 33)
-        self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(),2), 33) 
-        self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(),2), 33)
-        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(),2), 33)
-        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(),2), 33)
+        self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
+        self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
+        self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(self.site_id),2), 33)       
+        self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(self.site_id),2), 33)
+        self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id),2), 33) 
+        self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id),2), 33)
+        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(self.site_id),2), 33)
+        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
         '''
         self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(),2), 33)
         self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesyerdayBattery_export(),2), 33)       
@@ -128,7 +129,7 @@ class teslaPWStatusNode(udi_interface.Node):
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         self.update_PW_data('all')
-        self.updateISYdrivers()
+        self.updateISYdrivers(self.site_id)
 
  
 

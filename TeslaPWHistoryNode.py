@@ -19,11 +19,12 @@ from OLD.TeslaPWGenNode import teslaPWGenNode
 class teslaPWHistoryNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+    def __init__(self, polyglot, primary, address, name, site_id, TPW):
         #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.poly = polyglot
         self.ISYforced = False
+        self.site_id = site_id
         self.TPW = TPW
         self.node_ok = False
         self.address = address
@@ -61,33 +62,33 @@ class teslaPWHistoryNode(udi_interface.Node):
     def updateISYdrivers(self):
         logging.debug('HistoryNode updateISYdrivers')
         
-        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine(self.site_id)))
 
-        self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(),2), 33)
-        self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(),2), 33)
-        self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(),2), 33)       
-        self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(),2), 33)
-        self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(),2), 33) 
-        self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(),2), 33)
-        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(),2), 33)
-        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(),2), 33)
+        self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
+        self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
+        self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(self.site_id),2), 33)       
+        self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(self.site_id),2), 33)
+        self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id),2), 33) 
+        self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id),2), 33)
+        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(self.site_id),2), 33)
+        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
 
-        self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(),2), 33)
-        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesterdayBattery_export(),2), 33)       
-        self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(),2), 33)
-        self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(),2), 33) 
-        self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(),2), 33)
-        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGridServicesUse(),2), 33)
-        self.PW_setDriver('TPW', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(),2), 33)
+        self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(self.site_id),2), 33)
+        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesterdayBattery_export(self.site_id),2), 33)       
+        self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(self.site_id),2), 33)
+        self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33) 
+        self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id),2), 33)
+        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGridServicesUse(self.site_id),2), 33)
+        self.PW_setDriver('TPW', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(self.site_id),2), 33)
 
-        self.PW_setDriver('GV22', self.TPW.getTPW_days_backup_events())
-        self.PW_setDriver('GV23', self.round2ISY(self.TPW.getTPW_days_backup_time(),0), 58)
-        self.PW_setDriver('GV24', self.TPW.getTPW_yesterday_backup_events())
-        self.PW_setDriver('GV25', self.round2ISY(self.TPW.getTPW_yesterday_backup_time(),0), 58)
-        self.PW_setDriver('GV26', self.round2ISY(self.TPW.getTPW_days_evcharge_power(),0), 33)
-        self.PW_setDriver('GV27', self.round2ISY(self.TPW.getTPW_days_evcharge_time(),0), 58)
-        self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(),0), 33)
-        self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(),0), 58)
+        self.PW_setDriver('GV22', self.TPW.getTPW_days_backup_events(self.site_id))
+        self.PW_setDriver('GV23', self.round2ISY(self.TPW.getTPW_days_backup_time(self.site_id),0), 58)
+        self.PW_setDriver('GV24', self.TPW.getTPW_yesterday_backup_events(self.site_id))
+        self.PW_setDriver('GV25', self.round2ISY(self.TPW.getTPW_yesterday_backup_time(self.site_id),0), 58)
+        self.PW_setDriver('GV26', self.round2ISY(self.TPW.getTPW_days_evcharge_power(self.site_id),0), 33)
+        self.PW_setDriver('GV27', self.round2ISY(self.TPW.getTPW_days_evcharge_time(self.site_id),0), 58)
+        self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(self.site_id),0), 33)
+        self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(self.site_id),0), 58)
 
     def update_PW_data(self, level):
         pass

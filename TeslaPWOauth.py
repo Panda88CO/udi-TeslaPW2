@@ -85,7 +85,7 @@ class teslaPWAccess(teslaAccess):
     ########################################
     ############################################
    
-    def tesla_get_products(self):
+    def tesla_get_products(self) -> dict:
         power_walls= {}
         logging.debug('tesla_get_products ')
         temp = self._callApi('GET','/products' )

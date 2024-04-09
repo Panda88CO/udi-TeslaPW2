@@ -221,12 +221,12 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone))
             time.sleep(5)
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
-        self.TPW = tesla_info()
+        self.TPW = tesla_info(self.TPW_cloud)
 
         if self.local_access_enabled: 
             self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
             #self.TPW_local.loginLocal()
-            #self.Gateway= self.TPW_local.get_GWserial_number()
+            self.Gateway= self.TPW.get_GWserial_number()
             #logging.debug('local GW {}'.format(self.GW))
             ##site_string = self.poly.getValidAddress(str(self.GW))
             #site_name = self.TPW_local.get_site_name()
@@ -249,40 +249,25 @@ class TeslaPWController(udi_interface.Node):
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
             #self.poly.Notices.clear()     
             self.TPW.init_cloud(self.region)
-            PowerWalls = self.TPW.tesla_get_products()
-            logging.debug('PowerWalls: {}'.format(PowerWalls))
-            if self.GW:
-                for site in PowerWalls:
-                    logging.debug('Site Loop {}  {}'.format(site, PowerWalls[site]))
-                    if self.Gateway== str(PowerWalls[site]['gateway_id']):
-                        site_string = str(PowerWalls[site]['energy_site_id'])
-                        site_name = str(PowerWalls[site]['site_name'])
-                        self.site_id = site
-            
-            else: # No local access -                      
-                for site in PowerWalls:
-                    if 'energy_site_id' in PowerWalls[site]:
-                        site_string = str(PowerWalls[site]['energy_site_id'])
-                        site_name = str(PowerWalls[site]['site_name'])
-                        self.site_id = site
-                        return() # Only handle first found for now
 
-        logging.debug(site_string)
-        site_string = site_string[-14:]
-        logging.debug(site_string)
-        node_address =  self.poly.getValidAddress(site_string)
+        self.PowerWalls = self.TPW.tesla_get_products()
+        for PW_site in self.PowerWalls:
+            site_string = self.PowerWalls[PW_site]['energy_site_id']
+            site_string = site_string[-14:]
+            logging.debug(site_string)
+            node_address =  self.poly.getValidAddress(site_string)
 
-        site_name = PowerWalls[site]['site_name']
-        logging.debug(site_name)
-        node_name = self.poly.getValidName(site_name)
-        logging.debug('node_address and name: {} {}'.format(node_address, node_name))
-        logging.debug(self.TPW_local)
-        logging.debug(self.TPW_cloud)
-        logging.debug(self.site_id )
-        self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
-        self.TPW.init_local()
-        self.TPW.init_cloud()
-        teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW)
+            site_name = self.PowerWalls[PW_site]['site_name']
+            logging.debug(site_name)
+            node_name = self.poly.getValidName(site_name)
+            logging.debug('node_address and name: {} {}'.format(node_address, node_name))
+            #logging.debug(self.TPW_local)
+            #logging.debug(self.TPW_cloud)
+            #logging.debug(self.site_id )
+            #self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
+            #self.TPW.init_local()
+            #self.TPW.init_cloud()
+            teslaPWStatusNode(self.poly, node_address, node_address, node_name, PW_site, self.TPW)
 
 
         logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))

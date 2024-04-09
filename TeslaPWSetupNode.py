@@ -12,14 +12,15 @@ except ImportError:
 
                
 class teslaPWSetupNode(udi_interface.Node):
-    from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY
+    from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, PW_setDriver
 
-    def __init__(self, polyglot, primary, address, name, TPW):
+    def __init__(self, polyglot, primary, address, name, site_id, TPW):
         super(teslaPWSetupNode, self).__init__(polyglot, primary, address, name)
 
         logging.info('_init_ Tesla Power Wall setup Node')
         self.poly = polyglot
         self.ISYforced = False
+        self.site_id = site_id
         self.TPW = TPW
         self.node_ok = False
         self.address = address 
@@ -39,10 +40,10 @@ class teslaPWSetupNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('Node updateISYdrivers')
-        self.node.setDriver('GV1', self.TPW.getTPW_backoffLevel())
-        self.node.setDriver('GV2', self.TPW.getTPW_operationMode())
-        self.node.setDriver('GV3', self.TPW.getTPW_stormMode())
-        self.node.setDriver('GV4', self.TPW.getTPW_touMode())
+        self.PW_setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
+        self.PW_setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
+        self.PW_setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
+        self.PW_setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
 
     def node_ready(self):
         return(self.node_ok)
@@ -53,42 +54,42 @@ class teslaPWSetupNode(udi_interface.Node):
     def setStormMode(self, command):
         logging.debug('setStormMode')
         value = int(command.get('value'))
-        self.TPW.setTPW_stormMode(value)
-        self.node.setDriver('GV3', value)
+        self.TPW.setTPW_stormMode(value, self.site_id)
+        self.PW_setDriver('GV3', value)
         
     def setOperatingMode(self, command):
         logging.debug('setOperatingMode')
         value = int(command.get('value'))
-        self.TPW.setTPW_operationMode(value)
-        self.node.setDriver('GV2', value)
+        self.TPW.setTPW_operationMode(value, self.site_id)
+        self.PW_setDriver('GV2', value)
     
     def setBackupPercent(self, command):
         logging.debug('setBackupPercent')
         value = float(command.get('value'))
-        self.TPW.setTPW_backoffLevel(value)
-        self.node.setDriver('GV1', value)
+        self.TPW.setTPW_backoffLevel(value, self.site_id)
+        self.PW_setDriver('GV1', value)
 
     def setTOUmode(self, command):
         logging.debug('setTOUmode')
         value = int(command.get('value'))
         self.TPW.setTPW_touMode(value)
-        self.node.setDriver('GV4', value)
+        self.PW_setDriver('GV4', value)
     
     def set_grid_mode(self, command):
         logging.info('set_grid_mode{}'.format(command))
         query = command.get("query")
         imp_mode = int(query.get("import.uom25"))
         exp_mode = int(query.get("export.uom25"))
-        self.TPW.setTPW_import_export_op(imp_mode, exp_mode)   
+        self.TPW.setTPW_import_export_op(imp_mode, exp_mode, self.site_id)   
 
-        self.node.setDriver('GV5', int(query.get("import.uom25")))
-        self.node.setDriver('GV6', exp_mode)
+        self.PW_setDriver('GV5', int(query.get("import.uom25")))
+        self.PW_setDriver('GV6', exp_mode)
 
     def set_EV_charge_reserve(self, command):
         logging.debug('set_EV_charge_reserve')
         value = int(command.get('value'))
-        self.TPW.setTPW_EV_charge_limit(value)
-        self.node.setDriver('GV7', value)
+        self.TPW.setTPW_EV_charge_limit(value, self.site_id)
+        self.PW_setDriver('GV7', value)
 
 
     def ISYupdate (self, command):
