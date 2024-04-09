@@ -226,7 +226,7 @@ class TeslaPWController(udi_interface.Node):
         if self.local_access_enabled: 
             self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
             #self.TPW_local.loginLocal()
-            self.Gateway= self.TPW.get_GWserial_number()
+            #self.Gateway= self.TPW.get_GWserial_number()
             #logging.debug('local GW {}'.format(self.GW))
             ##site_string = self.poly.getValidAddress(str(self.GW))
             #site_name = self.TPW_local.get_site_name()
