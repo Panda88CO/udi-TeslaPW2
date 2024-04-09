@@ -3,8 +3,8 @@
 import sys
 import time 
 import traceback
-from TeslaInfo import tesla_info
-from TeslaLocal import tesla_local
+from TeslaInfoV2 import tesla_info
+
 from TeslaPWOauth import teslaPWAccess
 from TeslaPWStatusNode import teslaPWStatusNode
 
@@ -221,33 +221,35 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(' 1 2 : {} {} '.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone))
             time.sleep(5)
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
+        self.TPW = tesla_info()
+
         if self.local_access_enabled: 
-            self.TPW_local = tesla_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
-            self.TPW_local.loginLocal()
-            self.Gateway= self.TPW_local.get_GWserial_number()
-            logging.debug('local GW {}'.format(self.GW))
-            site_string = self.poly.getValidAddress(str(self.GW))
-            site_name = self.TPW_local.get_site_name()
+            self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
+            #self.TPW_local.loginLocal()
+            #self.Gateway= self.TPW_local.get_GWserial_number()
+            #logging.debug('local GW {}'.format(self.GW))
+            ##site_string = self.poly.getValidAddress(str(self.GW))
+            #site_name = self.TPW_local.get_site_name()
 
         if self.cloud_access_enabled:
             logging.debug('Attempting to log in via cloud auth')
 
-            if self.TPW_cloud.authendicated():
-                self.cloudAccessUp = True
-            else:
-                self.cloudAccessUp =  self.TPW_cloud.try_authendication()
+            #if self.TPW_cloud.authendicated():
+            #    self.cloudAccessUp = True
+            #else:
+            #    self.cloudAccessUp =  self.TPW_cloud.try_authendication()
 
-            while  not  self.cloudAccessUp:
+            #while  not  self.cloudAccessUp:
 
 
-                logging.info('Waiting to authenticate to complete - press authenticate button')   
-                time.sleep(10)
-                self.cloudAccessUp =  self.TPW_cloud.try_authendication()
+            #    logging.info('Waiting to authenticate to complete - press authenticate button')   
+            #    time.sleep(10)
+            #    self.cloudAccessUp =  self.TPW_cloud.try_authendication()
 
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
-            self.poly.Notices.clear()     
-            self.TPW_cloud.cloud_initialilze(self.region)
-            PowerWalls = self.TPW_cloud.tesla_get_products()
+            #self.poly.Notices.clear()     
+            self.TPW.init_cloud(self.region)
+            PowerWalls = self.TPW.tesla_get_products()
             logging.debug('PowerWalls: {}'.format(PowerWalls))
             if self.GW:
                 for site in PowerWalls:
