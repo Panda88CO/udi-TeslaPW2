@@ -150,7 +150,7 @@ class teslaAccess(udi_interface.OAuth):
     
 
                 
-    def cloud_initialilze(self, region):
+    def cloud_initialize(self, region):
         #self.customParameters.load(userParams)
         #logging.debug('customParamsHandler called {}'.format(userParams))
 
