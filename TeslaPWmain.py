@@ -224,7 +224,7 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = tesla_info(self.TPW_cloud)
 
         if self.local_access_enabled: 
-            self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
+            self.localAccessUp = self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
             #self.TPW_local.loginLocal()
             #self.Gateway= self.TPW.get_GWserial_number()
             #logging.debug('local GW {}'.format(self.GW))
@@ -248,7 +248,7 @@ class TeslaPWController(udi_interface.Node):
 
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
             #self.poly.Notices.clear()     
-            self.TPW.init_cloud(self.region)
+            self.cloudAccessUp = self.TPW.init_cloud(self.region)
 
         self.PowerWalls = self.TPW.tesla_get_products()
         for PW_site in self.PowerWalls:
@@ -269,11 +269,9 @@ class TeslaPWController(udi_interface.Node):
             #self.TPW.init_cloud()
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, PW_site, self.TPW)
 
-
         logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))
 
-        if self.cloudAccessUp or self.localAccessUp:
-            
+        if self.cloudAccessUp or self.localAccessUp:            
             #logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
             self.tesla_initialize()
         else:

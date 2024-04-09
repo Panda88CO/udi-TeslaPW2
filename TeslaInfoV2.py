@@ -55,7 +55,7 @@ class tesla_info():
     #    return(self.TPWcloud.cloud_access())
     
 
-    def init_cloud(self, region) -> None:
+    def init_cloud(self, region) -> bool:
         logging.debug('init_cloud')
         self.TPWcloud.cloud_initialize(region)
         self.teslaCloudConnect()
@@ -64,7 +64,8 @@ class tesla_info():
             time.sleep(5)       
         self.TPWcloudAccess = True
         self.cloudAccessUp = True
-
+        return(self.cloudAccessUp)
+    
     def tesla_get_products(self) -> dict:
         logging.debug('tesla_get_products')
         PowerWalls = {}
@@ -103,10 +104,10 @@ class tesla_info():
         logging.debug('Cloud data retrieved tesla_info')
         
 
-    def init_local(self, email, password, ip_address):
+    def init_local(self, email, password, ip_address) -> bool:
         logging.debug('init_local')
         self.TPWlocal = tesla_local(email, password, ip_address)
-        self.TPWlocal.loginLocal()
+        self.localAccessUp = self.TPWlocal.loginLocal()
         self.Gateway= self.TPWlocal.get_GWserial_number()
         logging.debug('local GW {}'.format(self.Gateway))
         self.local_site_string = str(self.Gateway)
@@ -163,7 +164,8 @@ class tesla_info():
         self.DSsiteMeter = self.metersDayStart.get_meter(MeterType.SITE)
         if self.generatorInstalled:
             self.DSgeneratorMeter = self.metersDayStart.get_meter(MeterType.GENERATOR)
-
+        
+        return(self.localAccessUp)
 
     
 
@@ -202,7 +204,7 @@ class tesla_info():
             self.daysTotalSite_imp = 0
 
         else:
-            self.TPWcloud.teslaUpdateCloudData(site_id,'all')
+            self.init_cloud_data (site_id)
             self.daysTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(site_id, 'today')
             self.daysTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'today' )
             self.daysTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'today')
