@@ -68,7 +68,7 @@ class tesla_info():
     def tesla_get_products(self) -> dict:
         logging.debug('tesla_get_products')
         PowerWalls = {}
-        if self.localAccessUp():
+        if self.localAccessUp:
             self.local_gateway= self.TPWlocal.get_GWserial_number()
             self.localSite = self.TPWlocal.get_site_name()
             
