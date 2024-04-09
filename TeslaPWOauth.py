@@ -99,7 +99,7 @@ class teslaPWAccess(teslaAccess):
                         self.total_pack_energy[str(site['energy_site_id' ])] = site['total_pack_energy' ] 
         return(power_walls)
     
-    def tesla_get_live_status(self, site_id):
+    def tesla_get_live_status(self, site_id) -> None:
         logging.debug('tesla_get_live_status ')
         if site_id not in self.total_pack_energy:
             self.total_pack_energy[site_id] = self.NaN
@@ -112,7 +112,7 @@ class teslaPWAccess(teslaAccess):
     
             return(self.site_live_info[site_id])
 
-    def tesla_get_site_info(self, site_id):
+    def tesla_get_site_info(self, site_id) -> None:
         logging.debug('tesla_get_site_info ')
         if site_id not in self.installation_tz:
             self.installation_tz[site_id] = None
@@ -127,7 +127,7 @@ class teslaPWAccess(teslaAccess):
             logging.debug('Timezone {}'.format(self.installation_tz))
             return(self.site_info)
 
-    def tesla_set_backup_percent(self, site_id, reserve_pct):
+    def tesla_set_backup_percent(self, site_id, reserve_pct) -> None:
         logging.debug('tesla_set_backup_percent : {}'.format(reserve_pct))
         reserve = int(reserve_pct)
         body = {'backup_reserve_percent': reserve}
@@ -135,7 +135,7 @@ class teslaPWAccess(teslaAccess):
         logging.debug('backup_percent: {} '.format(temp))   
 
 
-    def tesla_set_off_grid_vehicle_charging(self, site_id, reserve_pct ):
+    def tesla_set_off_grid_vehicle_charging(self, site_id, reserve_pct ) -> None:
         logging.debug('tesla_set_off_grid_vehicle_charging : {}'.format(reserve_pct))
         reserve = int(reserve_pct)
         body = {'off_grid_vehicle_charging_reserve_percent': reserve}
@@ -151,7 +151,7 @@ class teslaPWAccess(teslaAccess):
             logging.debug('operation: {} '.format(temp))               
 
 
-    def tesla_set_operation(self, site_id, mode):
+    def tesla_set_operation(self, site_id, mode) -> None:
         logging.debug('tesla_set_operation : {}'.format(mode))
         if mode in self.OPERATING_MODES:
             body = {'default_real_mode' : mode}
@@ -159,13 +159,13 @@ class teslaPWAccess(teslaAccess):
             logging.debug('operation: {} '.format(temp))               
 
 
-    def tesla_set_storm_mode(self, site_id, mode):
+    def tesla_set_storm_mode(self, site_id, mode) -> None:
         logging.debug('tesla_set_storm_mode : {}'.format(mode))
         body = {'enabled' : mode}
         temp = self._callApi('POST','/energy_sites/'+site_id +'/storm_mode', body )
         logging.debug('storm_mode: {} '.format(temp))               
 
-    def update_date_time(self, site_id):
+    def update_date_time(self, site_id) -> None:
         t_now = datetime.now(get_localzone())
         today_date_str = t_now.strftime('%Y-%m-%d')
         self.date_changed = (today_date_str != self.previous_date_str)
@@ -189,7 +189,7 @@ class teslaPWAccess(teslaAccess):
         #self.today_date = self.t_now.strftime('%Y-%m-%d')
 
 
-    def tesla_get_today_history(self, site_id, type):
+    def tesla_get_today_history(self, site_id, type) -> None:
         logging.debug('tesla_get_today_history : {}'.format(type))
         self.update_date_time(site_id)
         if type in self.HISTORY_TYPES:
@@ -219,7 +219,7 @@ class teslaPWAccess(teslaAccess):
                 else:
                     logging.info ('No data obtained')
 
-    def tesla_get_yesterday_history(self, site_id, type):
+    def tesla_get_yesterday_history(self, site_id, type) -> None:
         logging.debug('tesla_get_yesterday_history : {}'.format(type))
         self.update_date_time(site_id)
         if type in self.HISTORY_TYPES:
@@ -252,7 +252,7 @@ class teslaPWAccess(teslaAccess):
                     logging.info ('No data obtained')
 
 
-    def tesla_get_2day_history(self, site_id, type):
+    def tesla_get_2day_history(self, site_id, type) -> None:
         logging.debug('tesla_get_2day_history : {}'.format(type))
         self.update_date_time(site_id)
         if type in self.HISTORY_TYPES:
@@ -286,7 +286,7 @@ class teslaPWAccess(teslaAccess):
 
 
 
-    def process_energy_data(self, site_id, hist_data):
+    def process_energy_data(self, site_id, hist_data) -> None:
         logging.debug('process_energy_data: {}'.format(hist_data))
     
         for indx in range(0,len(hist_data['time_series'])):
@@ -303,7 +303,7 @@ class teslaPWAccess(teslaAccess):
             if date_key != 'unknown':
                 self.history_data[site_id]['energy'][date_key] = energy_data
 
-    def process_backup_data(self, site_id, hist_data):
+    def process_backup_data(self, site_id, hist_data) -> None:
         logging.debug('process_backup_data: {}'.format(hist_data))
         backup_data = hist_data
         total_duration = 0
@@ -331,7 +331,7 @@ class teslaPWAccess(teslaAccess):
             
 
 
-    def process_charge_data(self, site_id, hist_data):
+    def process_charge_data(self, site_id, hist_data) -> None:
         logging.debug('process_charge_data: {}'.format(hist_data))
         charge_data = hist_data
         total_duration = 0
@@ -364,7 +364,7 @@ class teslaPWAccess(teslaAccess):
 
 
 
-    def process_history_data(self, site_id, type, hist_data):
+    def process_history_data(self, site_id, type, hist_data) -> None:
         logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
         self.update_date_time(site_id)
         if site_id not in self.history_data:
@@ -386,7 +386,7 @@ class teslaPWAccess(teslaAccess):
 
 
 
-    def teslaUpdateCloudData(self, site_id, mode):
+    def teslaUpdateCloudData(self, site_id, mode) -> None:
         logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
         access = False
         self.update_date_time(site_id)
@@ -442,19 +442,19 @@ class teslaPWAccess(teslaAccess):
         return(access)
 
 
-    def supportedOperatingModes(self):
+    def supportedOperatingModes(self) -> List:
         return( self.OPERATING_MODES )
  
 
-    def isConnectedToPW(self):
+    def isConnectedToPW(self) -> bool:
         return( self.authendicated())
 
 
    
-    def teslaSolarInstalled(self, site_id):
+    def teslaSolarInstalled(self, site_id) -> bool:
         return(self.site_info[site_id]['components']['solar'])
 
-    def tesla_get_pw_name(self, site_id):
+    def tesla_get_pw_name(self, site_id) -> str:
         return(self.site_info[site_id]['site_name'])
 
     def teslaExtractOperationMode(self, site_id):
