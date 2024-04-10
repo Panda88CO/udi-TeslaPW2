@@ -22,7 +22,7 @@ except ImportError:
 
 VERSION = '0.1.8'
 class TeslaPWController(udi_interface.Node):
-    from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat
+    from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
     def __init__(self, polyglot, primary, address, name, TPW_cloud):
         super(TeslaPWController, self).__init__(polyglot, primary, address, name)
@@ -233,7 +233,10 @@ class TeslaPWController(udi_interface.Node):
 
         if self.cloud_access_enabled:
             logging.debug('Attempting to log in via cloud auth')
-
+            if not self.TPW.cloud_authenticated():
+                logging.info('Waiting to authenticate to complete - press authenticate button')
+                self.poly.Notices['auth'] = 'Please initiate authentication'
+                time.sleep(5)
             #if self.TPW_cloud.authendicated():
             #    self.cloudAccessUp = True
             #else:
@@ -364,16 +367,17 @@ class TeslaPWController(udi_interface.Node):
         #   self.longPollCountMissed = self.longPollCountMissed + 1
         #else:
         #   self.longPollCountMissed = 0
-        #self.node.setDriver('GV2', value)
+        self.PW_setDriver('ST', self.bool2ISY( self.cloudAccessUp  or self.localAccessUp ))
+        self.PW_setDriver('GV2', self.bool2ISY(self.TPW.getTPW_onLine()))
         #self.node.setDriver('GV3', self.longPollCountMissed)     
-        if self.cloudAccessUp == False and self.localAccessUp == False:
-            self.node.setDriver('GV4', 0)
-        elif self.cloudAccessUp == True and self.localAccessUp == False:
-            self.node.setDriver('GV4', 1)
-        elif self.cloudAccessUp == False and self.localAccessUp == True:
-            self.node.setDriver('GV4', 2)
-        elif self.cloudAccessUp == True and self.localAccessUp == True:
-            self.node.setDriver('GV4', 3)
+        if self.cloud_access_enabled == False and self.local_access_enabled == False:
+            self.PW_setDriver('GV4', 0)
+        elif self.cloud_access_enabled == True and self.local_access_enabled == False:
+            self.PW_setDriver('GV4', 1)
+        elif self.cloud_access_enabled == False and self.local_access_enabled == True:
+            self.PW_setDriver('GV4', 2)
+        elif self.cloud_access_enabled == True and self.local_access_enabled == True:
+            self.PW_setDriver('GV4', 3)
 
         #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
         #logging.debug('CTRL Update ISY drivers : GV3  value:' + str(self.longPollCountMissed) )

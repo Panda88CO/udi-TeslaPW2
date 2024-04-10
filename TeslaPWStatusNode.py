@@ -80,7 +80,7 @@ class teslaPWStatusNode(udi_interface.Node):
         logging.debug('StatusNode updateISYdrivers')
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
-        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine(self.site_id)))
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
         self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_chargeLevel(self.site_id),1), 51)
         self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_solarSupply(self.site_id),2), 33)
         self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_batterySupply(self.site_id),2), 33)

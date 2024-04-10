@@ -10,7 +10,7 @@ except ImportError:
     import logging
     logging.basicConfig(level=30)
 
-from TeslaInfo import tesla_info
+from OLD.TeslaInfo import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
 from OLD.TeslaPWSolarNode import teslaPWSolarNode
 from OLD.TeslaPWGenNode import teslaPWGenNode
@@ -62,7 +62,7 @@ class teslaPWHistoryNode(udi_interface.Node):
     def updateISYdrivers(self):
         logging.debug('HistoryNode updateISYdrivers')
         
-        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine(self.site_id)))
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
 
         self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
         self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
