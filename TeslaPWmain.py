@@ -105,7 +105,9 @@ class TeslaPWController(udi_interface.Node):
         self.configDoneHandler()
 
     def check_config(self):
+        self.nodes_in_db = self.poly.getNodesFromDb()
         self.config_done= True
+
 
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
@@ -258,6 +260,7 @@ class TeslaPWController(udi_interface.Node):
 
         self.PowerWalls = self.TPW.tesla_get_products()
         self.PWs_installed = {}
+        assigned_addresses =[] 
         for PW_site in self.PowerWalls:
             pw_string = self.PowerWalls[PW_site]['energy_site_id']
             site_string = pw_string[-14:]
@@ -275,7 +278,7 @@ class TeslaPWController(udi_interface.Node):
             #self.TPW.init_local()
             #self.TPW.init_cloud()
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, PW_site, self.TPW)
-
+            assigned_addresses.append(node_address)
         logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))
 
         if self.cloudAccessUp or self.localAccessUp:            
@@ -284,6 +287,16 @@ class TeslaPWController(udi_interface.Node):
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
+        while not self.config_done:
+            time.sleep(1)
+        
+        for nde in range(0, len(self.nodes_in_db)):
+            node = self.nodes_in_db[nde]
+            logging.debug('Scanning db for extra nodes : {}'.format(node))
+            if node['primaryNode'] not in assigned_addresses:
+                logging.debug('Removing node : {} {}'.format(node['name'], node))
+                self.poly.delNode(node['address'])
+        time.sleep(1)
     #def handleNotices(self):
     #    logging.debug('handleNotices')
 
