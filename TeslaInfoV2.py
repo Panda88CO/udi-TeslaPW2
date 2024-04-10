@@ -59,8 +59,8 @@ class tesla_info():
     def init_cloud(self, region) -> bool:
         logging.debug('init_cloud')
         self.TPWcloud.cloud_set_region(region)
-        if not self.TPWcloud.initial_cloud_authentication():
-            
+        self.TPWcloud.initial_cloud_authentication()
+
         time.sleep(1)
         #self.teslaCloudConnect()
         while not self.TPWcloud.authendicated():
