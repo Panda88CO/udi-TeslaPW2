@@ -260,7 +260,7 @@ class TeslaPWController(udi_interface.Node):
 
         self.PowerWalls = self.TPW.tesla_get_products()
         self.PWs_installed = {}
-        assigned_addresses =[] 
+        assigned_addresses =['controller'] 
         for PW_site in self.PowerWalls:
             pw_string = self.PowerWalls[PW_site]['energy_site_id']
             site_string = pw_string[-14:]
