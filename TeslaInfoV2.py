@@ -58,8 +58,11 @@ class tesla_info():
 
     def init_cloud(self, region) -> bool:
         logging.debug('init_cloud')
-        self.TPWcloud.cloud_initialize(region)
-        self.teslaCloudConnect()
+        self.TPWcloud.cloud_set_region(region)
+        if not self.TPWcloud.initial_cloud_authentication():
+            
+        time.sleep(1)
+        #self.teslaCloudConnect()
         while not self.TPWcloud.authendicated():
             logging.info('Waiting for cloud access')
             time.sleep(5)       
@@ -71,7 +74,7 @@ class tesla_info():
         self.TPWcloud.initial_cloud_authentication()
 
 
-        
+
     def tesla_get_products(self) -> dict:
         logging.debug('tesla_get_products')
         PowerWalls = {}

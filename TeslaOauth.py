@@ -150,7 +150,7 @@ class teslaAccess(udi_interface.OAuth):
     
 
                 
-    def cloud_initialize(self, region):
+    def cloud_set_region(self, region):
         #self.customParameters.load(userParams)
         #logging.debug('customParamsHandler called {}'.format(userParams))
 
@@ -183,10 +183,9 @@ class teslaAccess(udi_interface.OAuth):
         time.sleep(0.1)
         logging.debug('getOauthSettings: {}'.format(self.getOauthSettings()))
         #logging.debug('Updated oAuth config 2: {}'.format(temp))
-        
         #self.handleCustomParamsDone = True
         #self.poly.Notices.clear()
-    
+
         '''
     def add_to_parameters(self,  key, value):
         #add_to_parameters
@@ -286,6 +285,7 @@ class teslaAccess(udi_interface.OAuth):
         if self._oauthTokens.get('expires_in') != None and  self._oauthTokens.get('refresh_token' != None) :
             return(self._oAuthTokensRefresh() != None)
         else:
+            self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
             return(False)
 
 
