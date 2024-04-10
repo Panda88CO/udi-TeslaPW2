@@ -253,13 +253,14 @@ class TeslaPWController(udi_interface.Node):
             #self.poly.Notices.clear()     
             self.cloudAccessUp = self.TPW.init_cloud(self.region)
 
-        self.PowerWalls = self.TPW.tesla_get_products()
+        PowerWalls = self.TPW.tesla_get_products()
+        self.PWs_installed = {}
         for PW_site in self.PowerWalls:
-            site_string = self.PowerWalls[PW_site]['energy_site_id']
-            site_string = site_string[-14:]
+            pw_string = self.PowerWalls[PW_site]['energy_site_id']
+            site_string = pw_string[-14:]
             logging.debug(site_string)
             node_address =  self.poly.getValidAddress(site_string)
-
+            self.PWs_installed[PW_site]= node_address
             site_name = self.PowerWalls[PW_site]['site_name']
             logging.debug(site_name)
             node_name = self.poly.getValidName(site_name)
@@ -336,21 +337,24 @@ class TeslaPWController(udi_interface.Node):
         self.heartbeat()    
         #if self.TPW.pollSystemData('critical'):
         #should make short loop local long pool cloud 
+        for site_id in self.PWs_installed:
+            self.TPW.pollSystemData(site_id, 'critical')
         for node in self.poly.nodes():
             if node.node_ready():
                 logging.debug('short poll node loop {} - {}'.format(node.name, node.node_ready()))
-                node.update_PW_data('critical')
+                #node.update_PW_data('all')
                 node.updateISYdrivers()
             else:
                 logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
 
     def longPoll(self):
         logging.info('Tesla Power Wall Controller longPoll')
-       
+        for site_id in self.PWs_installed:
+            self.TPW.pollSystemData(site_id, 'all')
         for node in self.poly.nodes():
             logging.debug('long poll node loop {} - {}'.format(node.name, node.node_ready()))
             if node.node_ready():
-                node.update_PW_data('all')
+                #node.update_PW_data('all')
                 node.updateISYdrivers()
             else:
                 logging.info('Problem polling data from Tesla system - {} may not be ready yet'.format(node.name))
@@ -387,7 +391,7 @@ class TeslaPWController(udi_interface.Node):
         #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
 
 
-    def update_PW_data(self, level):
+    def update_PW_data(self, site_id, level):
         pass   
 
     def ISYupdate (self, command):

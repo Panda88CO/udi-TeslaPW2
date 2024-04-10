@@ -714,7 +714,7 @@ class tesla_info():
         logging.debug('getTPW_daysBattery ' + str(Pwr))
         return(round(Pwr/1000,2))
 
-    def getTPW_yesterdasBattery_import(self, site_id): 
+    def getTPW_yesterdayBattery_import(self, site_id): 
         if self.cloudAccessUp:
             Pwr = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday') 
         elif  self.localAccessUp and self.firstPollCompleted:

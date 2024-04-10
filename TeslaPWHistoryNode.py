@@ -90,8 +90,8 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(self.site_id),0), 33)
         self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(self.site_id),0), 58)
 
-    def update_PW_data(self, level):
-        pass
+    #def update_PW_data(self, level):
+    #    pass
 
 
     def ISYupdate (self, command):

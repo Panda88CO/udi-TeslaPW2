@@ -94,7 +94,7 @@ class teslaPWSetupNode(udi_interface.Node):
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called  Setup Node')
-        #if self.TPW.pollSystemData():
+        self.TPW.pollSystemData(self.site_id, 'all')
         self.updateISYdrivers()
             #self.reportDrivers()
  
@@ -107,8 +107,6 @@ class teslaPWSetupNode(udi_interface.Node):
                 ,'TOU_MODE'     :setTOUmode
                 ,'GRID_MODE'    : set_grid_mode
                 ,'EV_CHRG_MODE' : set_EV_charge_reserve
-
-
                 }
 
     drivers = [
