@@ -196,6 +196,7 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV13', 'value': 0, 'uom': 33}, 
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
             {'driver': 'GV15', 'value': 0, 'uom': 33},
+            {'driver': 'CPW', 'value': 0, 'uom': 33},
             
             #{'driver': 'GV16', 'value': 0, 'uom': 33}, 
             #{'driver': 'GV17', 'value': 0, 'uom': 33}, 

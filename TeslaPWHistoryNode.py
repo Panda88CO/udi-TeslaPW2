@@ -163,7 +163,8 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 33},
             {'driver': 'GV13', 'value': 0, 'uom': 33}, 
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV15', 'value': 0, 'uom': 33},
+            {'driver': 'GV15', 'value': 0, 'uom': 33},             
+            {'driver': 'CPW', 'value': 0, 'uom': 33},
             
             {'driver': 'GV16', 'value': 0, 'uom': 33}, 
             {'driver': 'GV17', 'value': 0, 'uom': 33}, 
@@ -171,6 +172,8 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV19', 'value': 0, 'uom': 33}, 
             {'driver': 'GV20', 'value': 0, 'uom': 33}, 
             {'driver': 'GV21', 'value': 0, 'uom': 33},
+            {'driver': 'TPW', 'value': 0, 'uom': 33},
+
             {'driver': 'GV22', 'value': 0, 'uom': 0},
             {'driver': 'GV23', 'value': 0, 'uom': 58},
             {'driver': 'GV24', 'value': 0, 'uom': 0}, 
@@ -178,7 +181,8 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV26', 'value': 99, 'uom': 33},
             {'driver': 'GV27', 'value': 99, 'uom': 58}, 
             {'driver': 'GV28', 'value': 99, 'uom': 33},
-            {'driver': 'GV28', 'value': 99, 'uom': 58},                      
+            {'driver': 'GV29', 'value': 99, 'uom': 58},
+                      
             ]          
            
             
