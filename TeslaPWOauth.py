@@ -442,7 +442,7 @@ class teslaPWAccess(teslaAccess):
         return(access)
 
 
-    def supportedOperatingModes(self) -> List:
+    def supportedOperatingModes(self) -> list:
         return( self.OPERATING_MODES )
  
 
