@@ -67,6 +67,11 @@ class tesla_info():
         self.cloudAccessUp = True
         return(self.cloudAccessUp)
     
+    def initial_cloud_authentication(self):
+        self.TPWcloud.initial_cloud_authentication()
+
+
+        
     def tesla_get_products(self) -> dict:
         logging.debug('tesla_get_products')
         PowerWalls = {}

@@ -233,9 +233,12 @@ class TeslaPWController(udi_interface.Node):
 
         if self.cloud_access_enabled:
             logging.debug('Attempting to log in via cloud auth')
+            if self.TPW.initial_cloud_authentication():
+                self.poly.Notices['auth'] = 'Please initiate authentication'                
+            time.sleep(5)
             if not self.TPW.cloud_authenticated():
                 logging.info('Waiting to authenticate to complete - press authenticate button')
-                self.poly.Notices['auth'] = 'Please initiate authentication'
+                #self.poly.Notices['auth'] = 'Please initiate authentication'
                 time.sleep(5)
             #if self.TPW_cloud.authendicated():
             #    self.cloudAccessUp = True
@@ -253,7 +256,7 @@ class TeslaPWController(udi_interface.Node):
             #self.poly.Notices.clear()     
             self.cloudAccessUp = self.TPW.init_cloud(self.region)
 
-        PowerWalls = self.TPW.tesla_get_products()
+        self.PowerWalls = self.TPW.tesla_get_products()
         self.PWs_installed = {}
         for PW_site in self.PowerWalls:
             pw_string = self.PowerWalls[PW_site]['energy_site_id']
@@ -337,7 +340,7 @@ class TeslaPWController(udi_interface.Node):
         self.heartbeat()    
         #if self.TPW.pollSystemData('critical'):
         #should make short loop local long pool cloud 
-        for site_id in self.PWs_installed:
+        for site_id in self.PowerWalls:
             self.TPW.pollSystemData(site_id, 'critical')
         for node in self.poly.nodes():
             if node.node_ready():
@@ -349,7 +352,7 @@ class TeslaPWController(udi_interface.Node):
 
     def longPoll(self):
         logging.info('Tesla Power Wall Controller longPoll')
-        for site_id in self.PWs_installed:
+        for site_id in self.PowerWalls:
             self.TPW.pollSystemData(site_id, 'all')
         for node in self.poly.nodes():
             logging.debug('long poll node loop {} - {}'.format(node.name, node.node_ready()))
