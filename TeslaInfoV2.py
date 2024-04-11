@@ -55,6 +55,7 @@ class tesla_info():
     #    return(self.TPWcloud.cloud_access())
     def cloud_authenticated(self):
         logging.debug('cloud_authenticated')
+        return(self.TPWcloud.authendicated())
 
     def init_cloud(self, region) -> bool:
         logging.debug('init_cloud')
