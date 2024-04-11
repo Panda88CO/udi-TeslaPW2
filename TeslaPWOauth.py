@@ -270,7 +270,7 @@ class teslaPWAccess(teslaAccess):
                     'kind'          : type,
                     'start_date'    : t_start_str,
                     'end_date'      : t_end_str,
-                    'period'        : 'day',
+                    'period'        : 'week',
                     'time_zone'     : self.tz_str
                     #'time_zone'     : 'America/Los_Angeles'
                     }
