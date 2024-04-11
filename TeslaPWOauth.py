@@ -298,7 +298,6 @@ class teslaPWAccess(teslaAccess):
             time_str = energy_data['timestamp']
             dt_object = datetime.fromisoformat(time_str)
             date_str = dt_object.strftime('%Y-%m-%d')
-            time_str = dt_object.strgtime('%H:%M:%S')
             if date_str == self.t_now_date:
                 #date_key = 'today'
                 for key in energy_data:
