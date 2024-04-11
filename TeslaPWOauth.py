@@ -292,6 +292,10 @@ class teslaPWAccess(teslaAccess):
         #yesterday_list = []
         today_energy = {}
         yesterday_energy = {}
+        if self.history_data[site_id]['energy'] == {}:
+            self.history_data[site_id]['energy']['today'] = {}
+            self.history_data[site_id]['energy']['yesterday'] = {}
+
         today_first_data  =  True
         yesterday_first_data = True
         for indx in range(0,len(hist_data['time_series'])):
@@ -324,7 +328,7 @@ class teslaPWAccess(teslaAccess):
             logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
             logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
 
-            
+
     def process_backup_data(self, site_id, hist_data) -> None:
         logging.debug('process_backup_data: {}'.format(hist_data))
         backup_data = hist_data
@@ -386,20 +390,20 @@ class teslaPWAccess(teslaAccess):
 
 
 
-    def process_history_data(self, site_id, type, hist_data) -> None:
-        logging.debug('process_history_data - {} {} {}'.format(site_id, type, hist_data))
+    def process_history_data(self, site_id, type, pw_data) -> None:
+        logging.debug('process_history_data - {} {} {}'.format(site_id, type, pw`_data))
         self.update_date_time(site_id)
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
         if type not in self.history_data[site_id]:
-            self.history_data[site_id][type] = {}
+            self.history_data[site_id][str(type)] = {}
 
         if type == 'energy':
-            self.process_energy_data(site_id, hist_data)
+            self.process_energy_data(site_id, pw_data)
         elif type == 'backup':
-            self.process_backup_data(site_id, hist_data)
+            self.process_backup_data(site_id, pw_data)
         elif type == 'charge':
-            self.process_charge_data(site_id, hist_data)
+            self.process_charge_data(site_id, pw_data)
         else:
             logging.error('Unknown type provided: {}'.format(type))
 
