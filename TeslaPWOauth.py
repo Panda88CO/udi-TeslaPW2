@@ -391,7 +391,7 @@ class teslaPWAccess(teslaAccess):
 
 
     def process_history_data(self, site_id, type, pw_data) -> None:
-        logging.debug('process_history_data - {} {} {}'.format(site_id, type, pw`_data))
+        logging.debug('process_history_data - {} {} {}'.format(site_id, type, pw_data))
         self.update_date_time(site_id)
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
