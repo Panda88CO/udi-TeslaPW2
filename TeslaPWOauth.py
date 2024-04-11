@@ -298,7 +298,7 @@ class teslaPWAccess(teslaAccess):
             if date_str == self.t_now_date:
                 self.history_data[site_id]['energy']['today'] = {}
             if date_str == self.t_yesterday_date:
-                self.history_data[site_id]['energy']['yesterday'] = {}                
+                self.history_data[site_id]['energy']['yesterday'] = {}           
 
         for indx in range(0,len(hist_data['time_series'])):        
             energy_data = hist_data['time_series'][indx]
