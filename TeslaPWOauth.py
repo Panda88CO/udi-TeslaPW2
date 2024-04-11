@@ -292,6 +292,8 @@ class teslaPWAccess(teslaAccess):
         #yesterday_list = []
         today_energy = {}
         yesterday_energy = {}
+        today_first_data  =  True
+        yesterday_first_data = True
         for indx in range(0,len(hist_data['time_series'])):
         
             energy_data = hist_data['time_series'][indx]
@@ -303,25 +305,23 @@ class teslaPWAccess(teslaAccess):
                 for key in energy_data:
                     logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
                     if isinstance(energy_data[key], numbers.Number): # only process numbers 
-                        if key not in today_energy:
-                            today_energy[key] = energy_data[key]
+                        if today_first_data:
+                            self.history_data[site_id]['energy']['today'][key] = energy_data[key]
+                            today_first_data = False
                         else:
-                            today_energy[key] = today_energy[key] + energy_data[key]
+                            self.history_data[site_id]['energy']['today'][key] += energy_data[key]
 
             elif date_str == self.t_yesterday_date:
                 #date_key = 'yesterday'
                 for key in energy_data:
                     logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
                     if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
-                        if key not in yesterday_energy:
-                            yesterday_energy[key] = energy_data[key]
+                        if yesterday_first_data:
+                            self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
+                            yesterday_first_data = False
                         else:
-                            yesterday_energy[key] = yesterday_energy[key] + energy_data[key]
+                            self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
 
-            else:
-                date_key = 'unknown'
-            self.history_data[site_id]['energy']['today'] = today_energy
-            self.history_data[site_id]['energy']['yesterday'] = yesterday_energy
 
     def process_backup_data(self, site_id, hist_data) -> None:
         logging.debug('process_backup_data: {}'.format(hist_data))
