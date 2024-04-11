@@ -62,7 +62,7 @@ class teslaPWStatusNode(udi_interface.Node):
         teslaPWHistoryNode(self.poly, self.primary, 'hist_'+sub_adr, 'Usage History', self.site_id, self.TPW)
 
 
-        self.updateISYdrivers(self.site_id)
+        self.updateISYdrivers()
         self.node_ok = True
 
     def stop(self):
@@ -74,7 +74,7 @@ class teslaPWStatusNode(udi_interface.Node):
 
 
 
-    def updateISYdrivers(self, site_id):
+    def updateISYdrivers(self):
 
 
         logging.debug('StatusNode updateISYdrivers')
@@ -130,7 +130,7 @@ class teslaPWStatusNode(udi_interface.Node):
         logging.debug('ISY-update called')
         #self.update_PW_data(self.site_id, 'all')
         self.TPW.pollSystemData(self.site_id, 'sll') 
-        self.updateISYdrivers(self.site_id)
+        self.updateISYdrivers()
 
  
 
