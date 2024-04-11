@@ -323,11 +323,11 @@ class teslaPWAccess(teslaAccess):
                             self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
                         else:
                             self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
-
+        try:
             logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
             logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
-
-
+        except Exception as e:
+            logging.debug('Parsing energy data exception : {}'.format(e))
     def process_backup_data(self, site_id, hist_data) -> None:
         logging.debug('process_backup_data: {}'.format(hist_data))
         backup_data = hist_data
