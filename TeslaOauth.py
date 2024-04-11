@@ -278,15 +278,15 @@ class teslaAccess(udi_interface.OAuth):
 
     def authendicated(self):
         logging.debug('authendicated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
-        if self._oauthTokens.get('expiry') == None:
+        if 'expiry' not in self._oauthTokens:
             self.initial_cloud_authentication()
             time.sleep(2)
-        return(self._oauthTokens.get('expiry') != None)
+        return('expiry' in self._oauthTokens)
  
 
     def initial_cloud_authentication(self):
         logging.debug('initial_cloud_authentication: {}'.format(self._oauthTokens))
-        if self._oauthTokens.get('refresh_token' != None) :
+        if 'refresh_token' in self._oauthTokens and 'expires_in' in self._oauthTokens:
             logging.debug('Performing initial token refresh')
             tmp = self._oAuthTokensRefresh()
             logging.debug('result {}'.format(tmp))
