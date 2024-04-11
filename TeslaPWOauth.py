@@ -307,7 +307,7 @@ class teslaPWAccess(teslaAccess):
             if date_str == self.t_now_date:
                 #date_key = 'today'
                 for key in energy_data:
-                    #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                    logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
                     if isinstance(energy_data[key], numbers.Number): # only process numbers 
                         if today_first_data:
                             self.history_data[site_id]['energy']['today'][key] = energy_data[key]
@@ -377,7 +377,7 @@ class teslaPWAccess(teslaAccess):
                     date_key = 'unknown'
                 total_events = len(charge_data['charge_history'])
                 for indx in range(0,len(charge_data['charge_history'])):                    
-                    event = charge_data['charge_history'][indx]
+                    #event = charge_data['charge_history'][indx]
                     total_duration = total_duration + charge_data['charge_history'][indx]['charge_duration']['seconds']
                     total_energy = total_energy + charge_data['charge_history'][indx]['energy_added_wh']
         temp = {}
@@ -396,7 +396,7 @@ class teslaPWAccess(teslaAccess):
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
         if type not in self.history_data[site_id]:
-            self.history_data[site_id][str(type)] = {}
+            self.history_data[site_id][type] = {}
 
         if type == 'energy':
             self.process_energy_data(site_id, pw_data)
