@@ -285,8 +285,11 @@ class teslaAccess(udi_interface.OAuth):
  
 
     def initial_cloud_authentication(self):
-        if self._oauthTokens.get('expires_in') != None and  self._oauthTokens.get('refresh_token' != None) :
-            return(self._oAuthTokensRefresh() != None)
+        if self._oauthTokens.get('refresh_token' != None) :
+            logging.debug('Performing initial token refresh')
+            tmp = self._oAuthTokensRefresh()
+            logging.debug('result {}'.format(tmp))
+            return(tmp != None)
         else:
             self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
             return(False)
