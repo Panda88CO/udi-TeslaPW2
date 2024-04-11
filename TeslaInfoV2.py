@@ -133,7 +133,7 @@ class tesla_info():
             installed_dev = meters.meters
             logging.debug('installed dev {}'.format(installed_dev))
             for tmp_meter in installed_dev:
-                logging.debug('meter: {} '.format(tmp_meter))
+                #logging.debug('meter: {} '.format(tmp_meter))
                 if 'generator' in str(tmp_meter).lower():
                     self.generatorInstalled = True
                 if 'solar' in str(tmp_meter).lower():

@@ -285,6 +285,7 @@ class teslaAccess(udi_interface.OAuth):
  
 
     def initial_cloud_authentication(self):
+        logging.debug('initial_cloud_authentication: {}'.format(self._oauthTokens))
         if self._oauthTokens.get('refresh_token' != None) :
             logging.debug('Performing initial token refresh')
             tmp = self._oAuthTokensRefresh()
