@@ -314,17 +314,17 @@ class teslaPWAccess(teslaAccess):
                             
                         else:
                             self.history_data[site_id]['energy']['today'][key] += energy_data[key]
-                today_first_data = False
+                today_first_data = False # done with first set of torday data
             elif date_str == self.t_yesterday_date:
                 #date_key = 'yesterday'
                 for key in energy_data:
                     #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
                     if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
                         if yesterday_first_data:
-                            
+                            self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
                         else:
                             self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
-                yesterday_first_data = False
+                yesterday_first_data = False # done with first set of yesterday data
             logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
             logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
 
