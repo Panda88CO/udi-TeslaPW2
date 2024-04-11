@@ -297,7 +297,7 @@ class teslaAccess(udi_interface.OAuth):
     def _callApi(self, method='GET', url=None, body=''):
         # When calling an API, get the access token (it will be refreshed if necessary)
         try:
-            self._oAuthTokensRefresh()  #force refresh
+            #self._oAuthTokensRefresh()  #force refresh
             accessToken = self.getAccessToken()
             refresh_token = self._oauthTokens.get('refresh_token')
             logging.debug('call api tokens: {} {}'.format(refresh_token, accessToken))
