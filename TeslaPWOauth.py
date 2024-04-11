@@ -303,7 +303,7 @@ class teslaPWAccess(teslaAccess):
             if date_str == self.t_now_date:
                 #date_key = 'today'
                 for key in energy_data:
-                    logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                    #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
                     if isinstance(energy_data[key], numbers.Number): # only process numbers 
                         if today_first_data:
                             self.history_data[site_id]['energy']['today'][key] = energy_data[key]
@@ -314,15 +314,17 @@ class teslaPWAccess(teslaAccess):
             elif date_str == self.t_yesterday_date:
                 #date_key = 'yesterday'
                 for key in energy_data:
-                    logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                    #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
                     if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
                         if yesterday_first_data:
                             self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
                             yesterday_first_data = False
                         else:
                             self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
+            logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
+            logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
 
-
+            
     def process_backup_data(self, site_id, hist_data) -> None:
         logging.debug('process_backup_data: {}'.format(hist_data))
         backup_data = hist_data
