@@ -54,6 +54,7 @@ class tesla_info():
     #def cloud_access_enabled(self):
     #    return(self.TPWcloud.cloud_access())
     def cloud_authenticated(self):
+        
         logging.debug('cloud_authenticated')
         return(self.TPWcloud.authendicated())
 
@@ -64,7 +65,7 @@ class tesla_info():
 
         time.sleep(1)
         #self.teslaCloudConnect()
-        while not self.TPWcloud.authendicated():
+        while not self.cloud_authenticated():
             logging.info('Waiting for cloud access')
             time.sleep(5)       
         self.TPWcloudAccess = True

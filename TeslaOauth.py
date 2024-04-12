@@ -127,6 +127,7 @@ class teslaAccess(udi_interface.OAuth):
         #self.customOauthHandlerDone = True
         #while not self.authendication_done :
         time.sleep(2)
+        '''
         try:
             accessToken = self.getAccessToken()
             logging.debug('oauthHandler {} '.format(accessToken))
@@ -137,6 +138,7 @@ class teslaAccess(udi_interface.OAuth):
             self.authendication_done = False
 
         logging.debug('oauthHandler Finished')
+        '''
         return(True)
 
     def customNsDone(self):
@@ -265,6 +267,7 @@ class teslaAccess(udi_interface.OAuth):
             # NOTE: If refresh tokens fails, we keep the existing tokens available.
                 
         '''
+        '''
     def try_authendication(self):
         if (self._oauthTokens):  # has been authenticated before 
             try:               
@@ -282,12 +285,15 @@ class teslaAccess(udi_interface.OAuth):
             self.poly.Notices['auth'] = 'Please initiate authentication - press authenticate'
             return (False)
         
+        '''
 
     def authendicated(self):
+        self.apiLock.acquire()
         logging.debug('authendicated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
         if 'expiry' not in self._oauthTokens:
             self.getAccessToken()
             time.sleep(2)
+        self.apiLock.release()
         return('expiry' in self._oauthTokens)
  
     '''
