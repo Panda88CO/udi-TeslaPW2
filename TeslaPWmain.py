@@ -43,6 +43,7 @@ class TeslaPWController(udi_interface.Node):
         self.localAccessUp = False
         self.cloudAccessUp = False
         self.customParam_done = False
+        self.auth_executed = False
         #self.Rtoken = None
         self.n_queue = []
         self.TPW = None
