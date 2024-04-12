@@ -22,8 +22,8 @@ from tzlocal import get_localzone
 #from udi_interface import logging, Custom
 #from oauth import OAuth
 #try:
-##    import udi_interface
-#   logging = udi_interface.LOGGER
+import udi_interface
+logging = udi_interface.LOGGER
 #    Custom = udi_interface.Custom
 #    ISY = udi_interface.ISY
 #except ImportError:

@@ -19,7 +19,8 @@ import time
 from threading import Lock
 from datetime import timedelta, datetime
 from tzlocal import get_localzone
-#from udi_interface import logging, Custom
+import udi_interface
+logging = udi_interface.LOGGER
 #from oauth import OAuth
 #try:
 #    import udi_interface
