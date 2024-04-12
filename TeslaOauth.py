@@ -286,11 +286,11 @@ class teslaAccess(udi_interface.OAuth):
     def authendicated(self):
         logging.debug('authendicated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
         if 'expiry' not in self._oauthTokens:
-            self.initial_cloud_authentication()
+            self.getAccessToken()
             time.sleep(2)
         return('expiry' in self._oauthTokens)
  
-
+    '''
     def initial_cloud_authentication(self):
         logging.debug('initial_cloud_authentication: {}'.format(self._oauthTokens))
         if 'refresh_token' in self._oauthTokens and 'expires_in' in self._oauthTokens:
@@ -301,7 +301,7 @@ class teslaAccess(udi_interface.OAuth):
         else:
             self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
             return(False)
-
+    '''
 
 
     # Call your external service API
