@@ -84,6 +84,7 @@ class teslaAccess(udi_interface.OAuth):
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customDataHandler to complete')
         #    time.sleep(1)       
+        super().customDataHandler(data)
         self.customDataHandlerDone = True
         logging.debug('customDataHandler Finished')
     '''    
