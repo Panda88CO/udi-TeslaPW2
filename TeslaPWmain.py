@@ -108,7 +108,9 @@ class TeslaPWController(udi_interface.Node):
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
         self.poly.Notices.clear()
-
+        while not self.TPW_cloud.authendication_done:
+            logging.debug('waiting for authendication')
+            time.sleep(1)
         # First check if user has authenticated
         try:
             self.TPW_cloud.getAccessToken()
