@@ -21,14 +21,14 @@ from datetime import timedelta, datetime
 from tzlocal import get_localzone
 #from udi_interface import logging, Custom
 #from oauth import OAuth
-try:
-    import udi_interface
-    logging = udi_interface.LOGGER
-    Custom = udi_interface.Custom
-    ISY = udi_interface.ISY
-except ImportError:
-    import logging
-    logging.basicConfig(level=30)
+#try:
+#    import udi_interface
+#    logging = udi_interface.LOGGER
+#    Custom = udi_interface.Custom
+#    ISY = udi_interface.ISY
+#except ImportError:
+#    import logging
+#    logging.basicConfig(level=30)
 
 
 #from udi_interface import logging, Custom, OAuth, ISY
@@ -48,7 +48,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.info('OAuth initializing')
         self.poly = polyglot
         self.scope = scope
-        self.customParameters = Custom(self.poly, 'customparams')
+        #self.customParameters = Custom(self.poly, 'customparams')
         #self.scope_str = None
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
