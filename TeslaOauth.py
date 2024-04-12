@@ -16,6 +16,7 @@ import json
 import requests
 import time
 #import urllib
+from threading import Lock
 from datetime import timedelta, datetime
 from tzlocal import get_localzone
 #from udi_interface import logging, Custom
@@ -63,6 +64,7 @@ class teslaAccess(udi_interface.OAuth):
         self.customOauthHandlerDone = False
         self.customDataHandlerDone = False
         self.authendication_done = False
+        self.apiLock = Lock()
         self.temp_unit = 'C'
         #self.poly.subscribe(self.poly.CUSTOMNS, self.customNsHandler)
         #self.poly.subscribe(self.poly.OAUTH, self.oauthHandler)
@@ -304,6 +306,7 @@ class teslaAccess(udi_interface.OAuth):
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=''):
         # When calling an API, get the access token (it will be refreshed if necessary)
+        self.apiLock.acquire()
         try:
             #self._oAuthTokensRefresh()  #force refresh
             accessToken = self.getAccessToken()
@@ -348,6 +351,8 @@ class teslaAccess(udi_interface.OAuth):
                 response = requests.put(completeUrl, headers=headers)
 
             response.raise_for_status()
+            self.apiLock.release()
+            
             try:
                 return response.json()
             except requests.exceptions.JSONDecodeError:
@@ -355,5 +360,6 @@ class teslaAccess(udi_interface.OAuth):
 
         except requests.exceptions.HTTPError as error:
             logging.error(f"Call { method } { completeUrl } failed: { error }")
+            self.apiLock.release()
             return None
-
+        
