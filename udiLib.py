@@ -131,10 +131,10 @@ def PW_setDriver(self, key, value, Unit=None):
     logging.debug('PW_setDriver : {} {} {}'.format(key, value, Unit))
     if value == None:
         logging.debug('None value passed = seting 99, UOM 25')
-        self.node.setDriver(key, 99, False, False, 25)
+        self.node.setDriver(key, 99, True, True, 25)
     else:
         if Unit:
-            self.node.setDriver(key, value, False, False, Unit)
+            self.node.setDriver(key, value, True, True, Unit)
         else:
             self.node.setDriver(key, value)
 
