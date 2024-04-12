@@ -88,7 +88,7 @@ class TeslaPWController(udi_interface.Node):
        
         self.poly.addNode(self, conn_status='ST')
         self.wait_for_node_done()
-        self.poly.updateProfile()
+        #self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
@@ -445,8 +445,8 @@ if __name__ == "__main__":
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
         #polyglot.addNode(TPW)
         
-        polyglot.subscribe(polyglot.STOP, TPW.stopHandler)
-        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.parameterHandler)
+        polyglot.subscribe(polyglot.STOP, TPW.stop)
+        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.customParamsHandler)
         polyglot.subscribe(polyglot.CUSTOMDATA, None) # ytService.customDataHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW.oauthHandler)
         polyglot.subscribe(polyglot.CONFIGDONE, TPW.configDoneHandler)
