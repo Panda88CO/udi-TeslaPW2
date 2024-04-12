@@ -110,7 +110,8 @@ class teslaAccess(udi_interface.OAuth):
         #    time.sleep(1)
         #self.updateOauthConfig()
         logging.debug('customerNSHandler results: {}'.format(super().customNsHandler(key, data)))
-        self.customNsHandlerDone = True
+        if key == 'oauthTokens': # stored oauthToken values processed
+            self.customNsHandlerDone = True
         logging.debug('customNsHandler Finished')
 
     def oauthHandler(self, token):
