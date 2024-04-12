@@ -446,7 +446,7 @@ if __name__ == "__main__":
         logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
         #polyglot.addNode(TPW)
-        
+        logging.debug('before subscribe')
         polyglot.subscribe(polyglot.STOP, TPW.stop)
         polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.customParamsHandler)
         polyglot.subscribe(polyglot.CUSTOMDATA, None) # ytService.customDataHandler)
@@ -456,9 +456,9 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
         polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
-        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)       
+        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)
         polyglot.subscribe(polyglot.START, TPW.start, 'controller')
-
+        logging.debug('after subscribe')
         polyglot.ready()
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
