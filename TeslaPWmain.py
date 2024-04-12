@@ -222,6 +222,8 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone, self.TPW_cloud.customDataHandlerDone))
             time.sleep(5)
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
+        
+        
         self.TPW = tesla_info(self.TPW_cloud)
 
         if self.local_access_enabled: 
@@ -454,9 +456,8 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
         polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
-        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)   
-       
-        #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
+        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)       
+        polyglot.subscribe(polyglot.START, TPW.start, 'controller')
 
         polyglot.ready()
         polyglot.runForever()
