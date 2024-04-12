@@ -110,9 +110,9 @@ class TeslaPWController(udi_interface.Node):
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
         self.poly.Notices.clear()
-        while not self.auth_executed:
-            logging.debug('waiting for authendication')
-            time.sleep(1)
+       #while not self.auth_executed:
+            #logging.debug('waiting for authendication')
+            #time.sleep(1)
         # First check if user has authenticated
         try:
             self.TPW_cloud.getAccessToken()
@@ -194,15 +194,12 @@ class TeslaPWController(udi_interface.Node):
             logging.warning('No LOCAL_IP_ADDRESS found')
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
             self.LOCAL_IP_ADDRESS = None
-        logging.debug('customParamsHandler fnish ')
+        logging.debug('customParamsHandler finish ')
         self.customParam_done = True
 
 
     
     '''
-
-
-
     def main_module_enabled(self, node_name):
         logging.debug('main_module_enabled called {}'.format(node_name))
         if node_name in self.customParameters :           
@@ -330,7 +327,7 @@ class TeslaPWController(udi_interface.Node):
         logging.info('New log level: {}'.format(level))
 
     def handleNotices(self, level):
-        logging.info('handleNoticesl:')
+        logging.info('handleNotices:')
 
 
     def addNodeDoneHandler(self, node):

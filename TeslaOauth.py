@@ -104,12 +104,12 @@ class teslaAccess(udi_interface.OAuth):
     '''
         
     def customNsHandler(self, key, data):
-        logging.debug('customNsHandler called')
+        logging.debug('customNsHandler called {} {}'.format(key, data))
         #while not self.customParamsDone():
         #    logging.debug('Waiting for customNsHandler to complete')
         #    time.sleep(1)
         #self.updateOauthConfig()
-        logging.debug('customerNSHandler results: []'.format(super().customNsHandler(key, data)))
+        logging.debug('customerNSHandler results: {}'.format(super().customNsHandler(key, data)))
         self.customNsHandlerDone = True
         logging.debug('customNsHandler Finished')
 
