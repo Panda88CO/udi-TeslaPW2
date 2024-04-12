@@ -448,7 +448,7 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.STOP, TPW.stop)
         polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.customParamsHandler)
         polyglot.subscribe(polyglot.CUSTOMDATA, None) # ytService.customDataHandler)
-        polyglot.subscribe(polyglot.OAUTH, TPW.oauthHandler)
+        polyglot.subscribe(polyglot.OAUTH, TPW_cloud.oauthHandler)
         polyglot.subscribe(polyglot.CONFIGDONE, TPW.configDoneHandler)
         polyglot.subscribe(polyglot.ADDNODEDONE, TPW.addNodeDoneHandler)
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
