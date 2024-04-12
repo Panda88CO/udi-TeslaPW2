@@ -47,7 +47,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.info('OAuth initializing')
         self.poly = polyglot
         self.scope = scope
-        #self.customParameters = Custom(self.poly, 'customparams')
+        self.customParameters = Custom(self.poly, 'customparams')
         #self.scope_str = None
         self.EndpointNA= 'https://fleet-api.prd.na.vn.cloud.tesla.com'
         self.EndpointEU= 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
@@ -84,7 +84,7 @@ class teslaAccess(udi_interface.OAuth):
         #while not self.handleCustomParamsDone:
         #    logging.debug('Waiting for customDataHandler to complete')
         #    time.sleep(1)       
-        super().customDataHandler(data)
+        logging.debug('customDataHandler result: {}'.format(super().customDataHandler(data)))
         self.customDataHandlerDone = True
         logging.debug('customDataHandler Finished')
     '''    
@@ -109,7 +109,7 @@ class teslaAccess(udi_interface.OAuth):
         #    logging.debug('Waiting for customNsHandler to complete')
         #    time.sleep(1)
         #self.updateOauthConfig()
-        super().customNsHandler(key, data)
+        logging.debug('customerNSHandler results: []'.format(super().customNsHandler(key, data)))
         self.customNsHandlerDone = True
         logging.debug('customNsHandler Finished')
 
@@ -119,7 +119,7 @@ class teslaAccess(udi_interface.OAuth):
         #    logging.debug('Waiting for initilization to complete before oAuth')
         #    time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
-        super().oauthHandler(token)
+        logging.debug('oauthHandler result: {}'.format(super().oauthHandler(token)))
         #self.customOauthHandlerDone = True
         #while not self.authendication_done :
         time.sleep(2)
