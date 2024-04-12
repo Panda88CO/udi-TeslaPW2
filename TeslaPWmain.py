@@ -50,8 +50,8 @@ class TeslaPWController(udi_interface.Node):
         self.Gateway= None
         self.site_id = None
         #self.Parameters = Custom(polyglot, 'customParams')
-        #self.customParameters = Custom(self.poly, 'customparams')
-        self.customParameters = self.TPW_cloud.customParameters
+        self.customParameters = Custom(self.poly, 'customparams')
+        #self.customParameters = self.TPW_cloud.customParameters
         self.Notices = Custom(self.poly, 'notices')
         #self.poly.subscribe(self.poly.START, self.start, address)
         #self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
