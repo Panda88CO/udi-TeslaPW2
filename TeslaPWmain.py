@@ -40,7 +40,6 @@ class TeslaPWController(udi_interface.Node):
         #self.localAccess = False
         self.config_done = False
         self.initialized = False
-
         self.localAccessUp = False
         self.cloudAccessUp = False
         self.customParam_done = False
@@ -91,9 +90,6 @@ class TeslaPWController(udi_interface.Node):
         self.wait_for_node_done()
         self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
-        
-
-
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
 
@@ -219,7 +215,6 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
         #logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.poly.updateProfile()
-   
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
         while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone:
@@ -443,9 +438,9 @@ if __name__ == "__main__":
         polyglot.setCustomParamsDoc()
 
         TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
-        while not TPW_cloud.PWiniitalized:
-            logging.debug('Waiting for PWservice to initialize')
-            time.sleep(1)
+        #while not TPW_cloud.PWiniitalized:
+        #    logging.debug('Waiting for PWservice to initialize')
+        #    time.sleep(1)
         logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
         #polyglot.addNode(TPW)
@@ -458,8 +453,8 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.ADDNODEDONE, TPW.addNodeDoneHandler)
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
-        polyglot.subscribe(polyglot.poly.NOTICES, TPW.handleNotices)
-        polyglot.subscribe(polyglot.poly.POLL, TPW.systemPoll)        
+        polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
+        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)   
        
         #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
 
