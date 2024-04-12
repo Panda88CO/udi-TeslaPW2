@@ -108,7 +108,7 @@ class TeslaPWController(udi_interface.Node):
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
         self.poly.Notices.clear()
-        while not self.TPW_cloud.authendication_done:
+        while not self.auth_executed:
             logging.debug('waiting for authendication')
             time.sleep(1)
         # First check if user has authenticated
@@ -125,7 +125,7 @@ class TeslaPWController(udi_interface.Node):
         #controller.discoverDevices()
     
     def oauthHandler(self, token):
-        self.TPW_cloud.oauthHandler(token)
+        self.auth_executed = self.TPW_cloud.oauthHandler(token)
 
     def customParamsHandler(self, userParams):
         #logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))

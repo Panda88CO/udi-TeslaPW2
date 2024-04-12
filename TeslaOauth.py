@@ -133,6 +133,7 @@ class teslaAccess(udi_interface.OAuth):
             self.authendication_done = False
 
         logging.debug('oauthHandler Finished')
+        return(True)
 
     def customNsDone(self):
         return(self.customNsHandlerDone)
