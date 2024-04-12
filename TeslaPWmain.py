@@ -455,7 +455,7 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
         polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
         polyglot.subscribe(polyglot.POLL, TPW.systemPoll)
-        polyglot.subscribe(polyglot.START, TPW.start, 'controller')
+        #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
 
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW_cloud.oauthHandler)
