@@ -238,7 +238,7 @@ class TeslaPWController(udi_interface.Node):
 
         if self.cloud_access_enabled:
             logging.debug('Attempting to log in via cloud auth')
-            if self.TPW.initial_cloud_authentication():
+            if not self.TPW_cloud.try_authendication():
                 self.poly.Notices['auth'] = 'Please initiate authentication - press authenticate button'                
             time.sleep(5)
             if not self.TPW.cloud_authenticated():
