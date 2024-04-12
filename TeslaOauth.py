@@ -115,13 +115,14 @@ class teslaAccess(udi_interface.OAuth):
 
     def oauthHandler(self, token):
         logging.debug('oauthHandler called')
-        while not self.customNsDone():
-            logging.debug('Waiting for initilization to complete before oAuth')
-            time.sleep(5)
+        #while not self.customNsDone():
+        #    logging.debug('Waiting for initilization to complete before oAuth')
+        #    time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         super().oauthHandler(token)
         #self.customOauthHandlerDone = True
         #while not self.authendication_done :
+        time.sleep(2)
         try:
             accessToken = self.getAccessToken()
             logging.debug('oauthHandler {} '.format(accessToken))

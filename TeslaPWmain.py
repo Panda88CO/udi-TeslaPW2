@@ -52,16 +52,16 @@ class TeslaPWController(udi_interface.Node):
         #self.Parameters = Custom(polyglot, 'customParams')
         self.customParameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
-        self.poly.subscribe(self.poly.START, self.start, address)
-        self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
-        self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
-        self.poly.subscribe(self.poly.POLL, self.systemPoll)
-        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
+        #self.poly.subscribe(self.poly.START, self.start, address)
+        #self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
+        #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
+        #self.poly.subscribe(self.poly.POLL, self.systemPoll)
+        #self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
+        #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         #self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
-        self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
+        #self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
+        #self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
         '''
         polyglot.subscribe(polyglot.STOP, TPW.stop)
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
@@ -97,12 +97,12 @@ class TeslaPWController(udi_interface.Node):
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
 
-    def oauthHandler(self, token):
-        # When user just authorized, pass this to your service, which will pass it to the OAuth handler
-        self.TPW_cloud.oauthHandler(token)
+    #def oauthHandler(self, token):
+        #When user just authorized, pass this to your service, which will pass it to the OAuth handler
+        #self.TPW_cloud.oauthHandler(token)#
 
         # Then proceed with device discovery
-        self.configDoneHandler()
+        #self.configDoneHandler()
 
     def check_config(self):
         self.nodes_in_db = self.poly.getNodesFromDb()
@@ -122,9 +122,12 @@ class TeslaPWController(udi_interface.Node):
             self.poly.Notices['auth'] = 'Please initiate authentication'
             return
 
+        self.start()
         # If getAccessToken did raise an exception, then proceed with device discovery
         #controller.discoverDevices()
-
+    
+    def oauthHandler(self, token):
+        self.TPW_cloud.oauthHandler(token)
 
     def customParamsHandler(self, userParams):
         #logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
@@ -328,6 +331,12 @@ class TeslaPWController(udi_interface.Node):
         logging.info('handleNoticesl:')
 
 
+    def addNodeDoneHandler(self, node):
+        pass
+        # We will automatically query the device after discovery
+        #controller.addNodeDoneHandler(node)
+
+
     def stop(self):
         #self.removeNoticesAll()
         self.poly.Notices.clear()
@@ -430,7 +439,7 @@ if __name__ == "__main__":
         #logging.info('Starting Tesla Power Wall Controller')
         polyglot = udi_interface.Interface([])
         polyglot.start(VERSION)
-        polyglot.updateProfile()
+        #polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
 
         TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
@@ -439,6 +448,19 @@ if __name__ == "__main__":
             time.sleep(1)
         logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
+        polyglot.addNode(TPW)
+        
+        polyglot.subscribe(polyglot.STOP, TPW.stopHandler)
+        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.parameterHandler)
+        polyglot.subscribe(polyglot.CUSTOMDATA, None) # ytService.customDataHandler)
+        polyglot.subscribe(polyglot.OAUTH, TPW.oauthHandler)
+        polyglot.subscribe(polyglot.CONFIGDONE, TPW.configDoneHandler)
+        polyglot.subscribe(polyglot.ADDNODEDONE, TPW.addNodeDoneHandler)
+        polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
+        polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
+        polyglot.subscribe(polyglot.poly.NOTICES, TPW.handleNotices)
+        polyglot.subscribe(polyglot.poly.POLL, TPW.systemPoll)        
+       
         #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
 
         polyglot.ready()
