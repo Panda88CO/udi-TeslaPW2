@@ -13,7 +13,7 @@ try:
     logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
     Interface = udi_interface.Interface
-    ISY = udi_interface.ISY
+#    ISY = udi_interface.ISY
 
 except ImportError:
     import logging
@@ -291,7 +291,7 @@ class TeslaPWController(udi_interface.Node):
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
         while not self.config_done:
-            time.sleep(1)
+            time.sleep(5)
         
         for nde in range(0, len(self.nodes_in_db)):
             node = self.nodes_in_db[nde]

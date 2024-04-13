@@ -19,17 +19,17 @@ import time
 from threading import Lock
 from datetime import timedelta, datetime
 from tzlocal import get_localzone
-import udi_interface
-logging = udi_interface.LOGGER
+#import udi_interface
+#logging = udi_interface.LOGGER
 #from oauth import OAuth
-#try:
-#    import udi_interface
-#    logging = udi_interface.LOGGER
+try:
+    import udi_interface
+    logging = udi_interface.LOGGER
 #    Custom = udi_interface.Custom
 #    ISY = udi_interface.ISY
-#except ImportError:
-#    import logging
-#    logging.basicConfig(level=30)
+except ImportError:
+    import logging
+    logging.basicConfig(level=30)
 
 
 #from udi_interface import logging, Custom, OAuth, ISY

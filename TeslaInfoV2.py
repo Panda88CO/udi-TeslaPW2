@@ -54,7 +54,7 @@ class tesla_info():
     #def cloud_access_enabled(self):
     #    return(self.TPWcloud.cloud_access())
     def cloud_authenticated(self):
-        
+
         logging.debug('cloud_authenticated')
         return(self.TPWcloud.authendicated())
 
@@ -98,7 +98,10 @@ class tesla_info():
                         PowerWalls[site]['site_name'] = str(products[site]['site_name'])
         if PowerWalls == {}:
             PowerWalls['local'] = {}
-            PowerWalls['local']['site_name'] = str(self.localSite)
+            if self.localAccessUp:
+                PowerWalls['local']['site_name'] = str(self.localSite)
+            else:
+                PowerWalls['local']['site_name'] = 'PowerWall'
             PowerWalls['local']['energy_site_id'] = 'local'
         logging.debug('Powerwalls {}'.format(PowerWalls))
         return(PowerWalls)
