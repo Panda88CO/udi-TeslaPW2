@@ -295,7 +295,8 @@ class teslaAccess(udi_interface.OAuth):
         #    self.getAccessToken()
         #    #time.sleep(2)
         #self.apiLock.release()
-        return('expiry' in self._oauthTokens)
+        return(self._oauthTokens)
+        #return('expiry' in self._oauthTokens)
  
     '''
     def initial_cloud_authentication(self):
