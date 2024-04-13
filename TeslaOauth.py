@@ -126,7 +126,7 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('oauthHandler result: {}'.format(super().oauthHandler(token)))
         self.oauthHandlerCalled = True
         #while not self.authendication_done :
-        time.sleep(2)
+        #time.sleep(2)
         '''
         try:
             accessToken = self.getAccessToken()
@@ -190,7 +190,7 @@ class teslaAccess(udi_interface.OAuth):
         self.yourApiEndpoint = endpoint+self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = endpoint
         self.updateOauthSettings(oauthSettingsUpdate)
-        time.sleep(0.1)
+        #time.sleep(0.1)
         logging.debug('getOauthSettings: {}'.format(self.getOauthSettings()))
         #logging.debug('Updated oAuth config 2: {}'.format(temp))
         #self.handleCustomParamsDone = True
@@ -289,12 +289,12 @@ class teslaAccess(udi_interface.OAuth):
         '''
 
     def authendicated(self):
-        self.apiLock.acquire()
+        #self.apiLock.acquire()
         logging.debug('authendicated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
         if 'expiry' not in self._oauthTokens:
             self.getAccessToken()
-            time.sleep(2)
-        self.apiLock.release()
+            #time.sleep(2)
+        #self.apiLock.release()
         return('expiry' in self._oauthTokens)
  
     '''
@@ -314,7 +314,7 @@ class teslaAccess(udi_interface.OAuth):
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=''):
         # When calling an API, get the access token (it will be refreshed if necessary)
-        self.apiLock.acquire()
+        #self.apiLock.acquire()
         try:
             #self._oAuthTokensRefresh()  #force refresh
             accessToken = self.getAccessToken()
@@ -359,7 +359,7 @@ class teslaAccess(udi_interface.OAuth):
                 response = requests.put(completeUrl, headers=headers)
 
             response.raise_for_status()
-            self.apiLock.release()
+            #self.apiLock.release()
             
             try:
                 return response.json()
@@ -368,6 +368,6 @@ class teslaAccess(udi_interface.OAuth):
 
         except requests.exceptions.HTTPError as error:
             logging.error(f"Call { method } { completeUrl } failed: { error }")
-            self.apiLock.release()
+            #self.apiLock.release()
             return None
         

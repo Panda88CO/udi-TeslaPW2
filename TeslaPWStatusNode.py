@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import time
+#import time
 
 try:
     import udi_interface

@@ -112,7 +112,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.Notices.clear()
         while not self.TPW_cloud.customNsDone() and not self.TPW_cloud.oauthHandlerCallled():
             logging.debug('waiting for authendication')
-            time.sleep(1)
+            time.sleep(5)
         # First check if user has authenticated
         #try:
         #    self.TPW_cloud.getAccessToken()
@@ -241,7 +241,7 @@ class TeslaPWController(udi_interface.Node):
             #if not self.TPW_cloud.try_authendication():
             #    self.poly.Notices['auth'] = 'Please initiate authentication - press authenticate button'                
             #time.sleep(5)
-            if not self.TPW.cloud_authenticated():
+            while not self.TPW.cloud_authenticated():
                 logging.info('Waiting to authenticate to complete - press authenticate button')
                 #self.poly.Notices['auth'] = 'Please initiate authentication'
                 time.sleep(5)
@@ -299,7 +299,7 @@ class TeslaPWController(udi_interface.Node):
             if node['primaryNode'] not in assigned_addresses:
                 logging.debug('Removing node : {} {}'.format(node['name'], node))
                 self.poly.delNode(node['address'])
-        time.sleep(1)
+        #time.sleep(1)
     #def handleNotices(self):
     #    logging.debug('handleNotices')
 
