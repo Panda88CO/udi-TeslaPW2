@@ -62,7 +62,7 @@ class teslaAccess(udi_interface.OAuth):
         #self.handleCustomParamsDone = False
         #self.customerDataHandlerDone = False
         self.customNsHandlerDone = False
-        self.customOauthHandlerDone = False
+        self.oauthHandlerCalled = False
         self.customDataHandlerDone = False
         self.authendication_done = False
         self.apiLock = Lock()
@@ -124,7 +124,7 @@ class teslaAccess(udi_interface.OAuth):
         #    time.sleep(5)
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         logging.debug('oauthHandler result: {}'.format(super().oauthHandler(token)))
-        #self.customOauthHandlerDone = True
+        self.oauthHandlerCalled = True
         #while not self.authendication_done :
         time.sleep(2)
         '''
@@ -140,7 +140,8 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('oauthHandler Finished')
         '''
         return(True)
-
+    def oauthHandlerCallled(self):
+        return(self.oauthHandlerCalled)
     def customNsDone(self):
         return(self.customNsHandlerDone)
     

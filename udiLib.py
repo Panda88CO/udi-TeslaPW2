@@ -22,7 +22,7 @@ import math
 import numbers 
 
 def node_queue(self, data):
-    logging.debug('node_queue {}'.format(data))
+    #logging.debug('node_queue {}'.format(data))
     self.n_queue.append(data['address'])
 
 def wait_for_node_done(self):

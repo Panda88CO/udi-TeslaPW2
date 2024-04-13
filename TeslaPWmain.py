@@ -110,17 +110,17 @@ class TeslaPWController(udi_interface.Node):
     def configDoneHandler(self):
         # We use this to discover devices, or ask to authenticate if user has not already done so
         self.poly.Notices.clear()
-        while not self.TPW_cloud.customNsDone():
+        while not self.TPW_cloud.customNsDone() and not self.TPW_cloud.oauthHandlerCallled():
             logging.debug('waiting for authendication')
             time.sleep(1)
         # First check if user has authenticated
-        try:
-            self.TPW_cloud.getAccessToken()
-        except ValueError as err:
-            logging.warning('Access token is not yet available. Please authenticate.')
-            logging.debug('Error: {}'.format(err))
-            self.poly.Notices['auth'] = 'Please initiate authentication'
-            return
+        #try:
+        #    self.TPW_cloud.getAccessToken()
+        #except ValueError as err:
+        #    logging.warning('Access token is not yet available. Please authenticate.')
+        #    logging.debug('Error: {}'.format(err))
+        #    self.poly.Notices['auth'] = 'Please initiate authentication'
+        #    return
 
         self.start()
         # If getAccessToken did raise an exception, then proceed with device discovery
