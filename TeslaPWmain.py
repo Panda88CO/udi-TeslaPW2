@@ -20,7 +20,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.10'
+VERSION = '0.1.11'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -280,13 +280,17 @@ class TeslaPWController(udi_interface.Node):
             #self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
             #self.TPW.init_local()
             #self.TPW.init_cloud()
+            
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, PW_site, self.TPW)
             assigned_addresses.append(node_address)
+            if self.cloud_access_enabled:
+                self.TPW.init_cloud_data(PW_site)
+
         logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))
 
         if self.cloudAccessUp or self.localAccessUp:            
             #logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
-            self.tesla_initialize()
+            self.longPoll()
         else:
             self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
         
@@ -303,6 +307,7 @@ class TeslaPWController(udi_interface.Node):
     #def handleNotices(self):
     #    logging.debug('handleNotices')
 
+    '''
     def tesla_initialize(self):
         logging.debug('starting Login process')
         try:
@@ -311,8 +316,12 @@ class TeslaPWController(udi_interface.Node):
             #logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))             
 
             logging.debug('Node installation complete')
+            
             self.initialized = True
-            self.longPoll()
+            if self.cloud_access_enabled:
+
+            
+            
             self.nodeDefineDone = True
             
             
@@ -322,6 +331,7 @@ class TeslaPWController(udi_interface.Node):
 
         #self.TPW.systemReady = True
         logging.debug ('Controller - initialization done')
+    '''
 
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
