@@ -280,6 +280,8 @@ class TeslaPWController(udi_interface.Node):
             #self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
             #self.TPW.init_local()
             #self.TPW.init_cloud()
+            if self.cloud_access_enabled:
+                self.TPW.init_cloud_data(PW_site)
             
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, PW_site, self.TPW)
             assigned_addresses.append(node_address)
