@@ -920,7 +920,7 @@ class tesla_info():
     def getTPW_tariff_rate_state(self, site_id):
         return(self.TPWcloud.TeslaGet_current_rate_state(site_id))
 
-    def disconnectTPW(self, site_id):
+    def disconnectTPW(self):
         logging.debug('disconnectTPW ')  
         if self.localAccessUp:
             self.TPWlocal.logout()

@@ -114,5 +114,5 @@ class tesla_local:
     def is_grid_services_active(self):
         return(self.PWlocal.is_grid_services_active())
     
-    def close(self):
-        return(self.PWlocal.close())
+    def logout(self):
+        return(self.PWlocal.logout())
