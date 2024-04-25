@@ -112,7 +112,9 @@ class TeslaPWController(udi_interface.Node):
         self.poly.Notices.clear()
         while not self.TPW_cloud.customNsDone() and not self.TPW_cloud.oauthHandlerCallled():
             logging.debug('waiting for authendication')
+            self.poly.Notices['auth'] = 'Please initiate authentication'
             time.sleep(5)
+            
         # First check if user has authenticated
         #try:
         #    self.TPW_cloud.getAccessToken()
@@ -219,11 +221,11 @@ class TeslaPWController(udi_interface.Node):
         self.poly.updateProfile()
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
-        while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone:
-            logging.info('Waiting for node to initialize')
-            logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone, self.TPW_cloud.customDataHandlerDone))
-            time.sleep(5)
-        logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
+        # while not self.customParam_done or not self.TPW_cloud.customNsDone:
+        #    logging.info('Waiting for node to initialize')
+        #    logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone, self.TPW_cloud.customDataHandlerDone))
+        #    time.sleep(5)
+        #logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         
         
         self.TPW = tesla_info(self.TPW_cloud)
@@ -243,7 +245,7 @@ class TeslaPWController(udi_interface.Node):
             #time.sleep(5)
             while not self.TPW.cloud_authenticated():
                 logging.info('Waiting to authenticate to complete - press authenticate button')
-                #self.poly.Notices['auth'] = 'Please initiate authentication'
+                self.poly.Notices['auth'] = 'Please initiate authentication'
                 time.sleep(5)
             #if self.TPW_cloud.authendicated():
             #    self.cloudAccessUp = True
