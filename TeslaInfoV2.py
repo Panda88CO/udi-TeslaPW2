@@ -36,6 +36,11 @@ class tesla_info():
         self.operationModeEnumList = ['backup','self_consumption', 'autonomous', 'site_ctrl']    
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         self.TOU_MODES = ["economics", "balanced"]
+        self.gridstatus = {'on_grid':0, 'islanded_ready':1, 'islanded':2, 'transition ot grid':3}
+        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
+        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
+
+
         #\if not self.local_access_enabled() and not self.cloud_access_enabled():
         #    logging.debug('No connection specified')
         #logging.debug('Tesla_info before retrieving clould data')
@@ -130,8 +135,6 @@ class tesla_info():
         self.local_site_string = str(self.Gateway)
         self.local_site_name = self.TPWlocal.get_site_name()
 
-        self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
-        self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
         self.solarInstalled = False
         self.generatorInstalled = False
         try:
@@ -243,7 +246,7 @@ class tesla_info():
         #self.OPERATING_MODES = ["backup", "self_consumption", "autonomous"]
         #self.TOU_MODES = ["economics", "balanced"]
         self.metersStart = True
-        self.gridstatus = {'on_grid':0, 'islanded_ready':1, 'islanded':2, 'transition ot grid':3}
+
         
         self.ISYgridEnum = {}
         for key in self.gridstatus:
