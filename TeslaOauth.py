@@ -291,11 +291,11 @@ class teslaAccess(udi_interface.OAuth):
     def authendicated(self):
         #self.apiLock.acquire()
         logging.debug('authendicated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
-        #if 'expiry' not in self._oauthTokens:
-        #    self.getAccessToken()
-        #    #time.sleep(2)
+        if 'expiry' not in self._oauthTokens:
+            self.getAccessToken()
+            #time.sleep(2)
         #self.apiLock.release()
-        return(self._oauthTokens)
+        return(self._oauthTokens.get('expiry') != None)
         #return('expiry' in self._oauthTokens)
  
     '''
