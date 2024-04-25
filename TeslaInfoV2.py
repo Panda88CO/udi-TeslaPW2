@@ -923,7 +923,7 @@ class tesla_info():
     def disconnectTPW(self, site_id):
         logging.debug('disconnectTPW ')  
         if self.localAccessUp:
-            self.TPWlocal.close()
+            self.TPWlocal.logout()
 
     def getTPW_days_backup_events(self, site_id):
         try:

@@ -43,7 +43,7 @@ class teslaPWSetupNode(udi_interface.Node):
         self.PW_setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
         self.PW_setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
         self.PW_setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
-        self.PW_setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
+        #self.PW_setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
 
     def node_ready(self):
         return(self.node_ok)
@@ -104,7 +104,7 @@ class teslaPWSetupNode(udi_interface.Node):
                 ,'BACKUP_PCT'   : setBackupPercent
                 ,'STORM_MODE'   :setStormMode
                 ,'OP_MODE'      : setOperatingMode
-                ,'TOU_MODE'     :setTOUmode
+                #,'TOU_MODE'     :setTOUmode
                 ,'GRID_MODE'    : set_grid_mode
                 ,'EV_CHRG_MODE' : set_EV_charge_reserve
                 }
@@ -113,7 +113,7 @@ class teslaPWSetupNode(udi_interface.Node):
             {'driver': 'GV1', 'value': 0, 'uom': 51},  #backup reserve
             {'driver': 'GV2', 'value': 0, 'uom': 25},  #operating mode
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #storm mode
-            {'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
+            #{'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
             {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid import 
             {'driver': 'GV6', 'value': 0, 'uom': 25},  #grid export
             {'driver': 'GV7', 'value': 0, 'uom': 25},  #EV charge limit

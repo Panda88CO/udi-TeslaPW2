@@ -153,7 +153,7 @@
          <st id="GV1" editor="PERCENT" />
          <st id="GV2" editor="OP_MODE" />
          <st id="GV3" editor="TOGGLE" />
-         <st id="GV4" editor="TOU_MODE" />
+         <!--<st id="GV4" editor="TOU_MODE" />-->
          <st id="GV5" editor="GRID_IMP_MODE" />  
          <st id="GV6" editor="GRID_EXP_MODE" />
          <st id="GV7" editor="PERCENT" />                         

@@ -351,8 +351,8 @@ class TeslaPWController(udi_interface.Node):
     def stop(self):
         #self.removeNoticesAll()
         self.poly.Notices.clear()
-        #if self.TPW:
-            #self.TPW.disconnectTPW()
+        if self.TPW:
+            self.TPW.disconnectTPW()
         self.node.setDriver('ST', 0 )
         self.poly.stop()
         logging.debug('stop - Cleaning up')
