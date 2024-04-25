@@ -127,7 +127,7 @@ ST-nlspwstatus-GV11-NAME = Battery Import Today
 ST-nlspwstatus-GV12-NAME = Grid Exportport Today
 ST-nlspwstatus-GV13-NAME = Grid Import Today
 ST-nlspwstatus-GV14-NAME = Grid Service Today
-
+ST-nlspwstatus-CPW-NAME = Generator Today
 ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
 ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
 ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
@@ -135,7 +135,7 @@ ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
 ST-nlspwstatus-GV19-NAME = Grid Export Yesterday
 ST-nlspwstatus-GV20-NAME = Grid Import Yesterday
 ST-nlspwstatus-GV21-NAME = Grid Service Yesterday
-
+ST-nlspwstatus-TPW-NAME = Generator Yesterday
 ST-nlspwstatus-GV22-NAME = Today nbr backup events 
 ST-nlspwstatus-GV23-NAME = Today backup event time
 ST-nlspwstatus-GV24-NAME = Yesterday nbr backup events 
