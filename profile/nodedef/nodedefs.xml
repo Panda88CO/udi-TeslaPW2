@@ -180,9 +180,9 @@
             <cmd id="STORM_MODE" > 
                <p id="" editor="TOGGLE" init="GV3" /> 
             </cmd> 
-            <cmd id="TOU_MODE" > 
+            <!--<cmd id="TOU_MODE" > 
                <p id="" editor="setTOU_MODE" init="GV4" /> 
-            </cmd> 
+            </cmd> -->
             <cmd id="GRID_MODE" > 
                <p id="import" editor="setGRID_IMP_MODE" init="GV5" /> 
                <p id="export" editor="setGRID_EXP_MODE" init="GV6" /> 
