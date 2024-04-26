@@ -269,7 +269,9 @@ class TeslaPWController(udi_interface.Node):
         self.PowerWalls = self.TPW.tesla_get_products()
         self.PWs_installed = {}
         assigned_addresses =['controller'] 
+        logging.debug('PowerWalls before adding nodes {}'.format(self.PowerWalls))
         for PW_site in self.PowerWalls:
+            logging.debug('Adding nodes for {}'.format(PW_site))
             pw_string = self.PowerWalls[PW_site]['energy_site_id']
             site_string = pw_string[-14:]
             logging.debug(site_string)
