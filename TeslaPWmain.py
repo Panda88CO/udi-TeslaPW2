@@ -20,7 +20,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.12'
+VERSION = '0.1.13'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -92,6 +92,7 @@ class TeslaPWController(udi_interface.Node):
         #self.wait_for_node_done()
         #self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
+        logging.debug('Node info: {}'.format(self.node))
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
 
@@ -465,9 +466,7 @@ if __name__ == "__main__":
         polyglot.setCustomParamsDoc()
 
         TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
-        #while not TPW_cloud.PWiniitalized:
-        #    logging.debug('Waiting for PWservice to initialize')
-        #    time.sleep(1)
+
         logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
         polyglot.addNode(TPW)
