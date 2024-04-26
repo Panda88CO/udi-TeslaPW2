@@ -108,12 +108,15 @@ class TeslaPWController(udi_interface.Node):
 
 
     def configDoneHandler(self):
+        logging.debug('configDoneHandler - config_done')
         # We use this to discover devices, or ask to authenticate if user has not already done so
         self.poly.Notices.clear()
-        while not self.TPW_cloud.customNsDone() and not self.TPW_cloud.oauthHandlerCallled():
-            logging.debug('waiting for authendication')
-            self.poly.Notices['auth'] = 'Please initiate authentication'
-            time.sleep(5)
+        self.nodes_in_db = self.poly.getNodesFromDb()
+        self.config_done= True
+        #while not self.TPW_cloud.customNsDone() and not self.TPW_cloud.oauthHandlerCallled():
+        #    logging.debug('waiting for authendication')
+        #    self.poly.Notices['auth'] = 'Please initiate authentication'
+        #    time.sleep(5)
             
         # First check if user has authenticated
         #try:
@@ -124,7 +127,7 @@ class TeslaPWController(udi_interface.Node):
         #    self.poly.Notices['auth'] = 'Please initiate authentication'
         #    return
 
-        self.start()
+        #self.start()
         # If getAccessToken did raise an exception, then proceed with device discovery
         #controller.discoverDevices()
     
@@ -221,7 +224,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.updateProfile()
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
-        while not self.customParam_done or not self.TPW_cloud.customNsDone():
+        while not self.customParam_done or not self.TPW_cloud.customNsDone() and not self.config_done:
             logging.info('Waiting for node to initialize')
         #    logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsHandlerDone, self.TPW_cloud.customDataHandlerDone))
             time.sleep(1)
@@ -306,6 +309,7 @@ class TeslaPWController(udi_interface.Node):
         while not self.config_done:
             time.sleep(5)
         
+        logging.debug('Checking for existing nodes not used anymore: {}'.format(self.nodes_in_db))
         for nde in range(0, len(self.nodes_in_db)):
             node = self.nodes_in_db[nde]
             logging.debug('Scanning db for extra nodes : {}'.format(node))
@@ -477,7 +481,7 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
         polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
         polyglot.subscribe(polyglot.POLL, TPW.systemPoll)
-        #polyglot.subscribe(polyglot.START, TPW.start, 'controller')
+        polyglot.subscribe(polyglot.START, TPW.start, 'controller')
 
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW_cloud.oauthHandler)
