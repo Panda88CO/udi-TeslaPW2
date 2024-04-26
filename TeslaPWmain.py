@@ -218,9 +218,7 @@ class TeslaPWController(udi_interface.Node):
 
     def start(self):
         site_string = ''
-
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
-        self.wait_for_node_done()
         #logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.poly.updateProfile()
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
@@ -481,7 +479,7 @@ if __name__ == "__main__":
         polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
         polyglot.subscribe(polyglot.POLL, TPW.systemPoll)
         polyglot.subscribe(polyglot.START, TPW.start, 'controller')
-        logging.debug('Calling start)')
+        logging.debug('Calling start')
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW_cloud.oauthHandler)
         logging.debug('after subscribe')
