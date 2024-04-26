@@ -88,8 +88,8 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('Controller init DONE')
         
        
-        #self.poly.addNode(self)
-        #self.wait_for_node_done()
+        self.poly.addNode(self)
+        self.wait_for_node_done()
         #self.poly.updateProfile()
         self.node = self.poly.getNode(self.address)
         logging.debug('Node info: {}'.format(self.node))
@@ -218,7 +218,7 @@ class TeslaPWController(udi_interface.Node):
 
     def start(self):
         site_string = ''
-        
+
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
         self.wait_for_node_done()
         #logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
@@ -469,7 +469,7 @@ if __name__ == "__main__":
 
         logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)
-        polyglot.addNode(TPW)
+        #polyglot.addNode(TPW)
         
         logging.debug('before subscribe')
         polyglot.subscribe(polyglot.STOP, TPW.stop)
