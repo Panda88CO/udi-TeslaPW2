@@ -13,17 +13,24 @@ editors>
 
   <editor id = "CTRL_4" > 
      <range  uom="25" subset="0-3" nls="CON_STATE" />
-     <range uom="25" subset="99" nls="error" /> 
+     <range uom="25" subset="98-99" nls="error" /> 
   </editor>
   <editor id = "HOURS" > 
      <range  uom="20" min="0" max="100" prec="2" />
-      <range uom="25" subset="99" nls="error" />
+      <range uom="25" subset="98-99" nls="error" />
   </editor>
   
   <editor id = "PERCENT" > 
      <range  uom="51" min="0" max="100" prec="0" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>
+  <editor id = "TOGGLE" > 
+     <range  uom="25" subset="0-1, 99" nls="EN_TOGGLE" />
+  </editor>
+  <editor id = "setTOGGLE" > 
+     <range  uom="25" subset="0-1" nls="EN_TOGGLE" />
+  </editor>
+
 
   <editor id = "OP_MODE" > 
      <range  uom="25" subset="0-2,99" nls="EN_MODE" />
@@ -32,17 +39,19 @@ editors>
   <editor id = "setOP_MODE" > 
      <range  uom="25" subset="0-2" nls="EN_MODE" />
   </editor>
+
   <editor id = "GRID_ST" > 
      <range  uom="25" subset="0-3,99" nls="EN_GRID_STATUS" />
   </editor>
 
-  <editor id = "TOU_MODE" > 
+  <!--<editor id = "TOU_MODE" > 
      <range  uom="25" subset="0-1,99" nls="EN_TOU_MODE" />
-  </editor>
+  </editor> -->
 
   <editor id = "GRID_IMP_MODE" > 
      <range  uom="25" subset="0-1,99" nls="GRID_IMP_MODE" />
   </editor>
+
   <editor id = "setGRID_IMP_MODE" > 
      <range  uom="25" subset="0-1" nls="GRID_IMP_MODE" />
   </editor>
@@ -67,27 +76,27 @@ editors>
 
   <editor id = "KWH_LOW" > 
      <range  uom="33" min="0" max="20" prec="2" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>
 
   <editor id = "KWH" > 
      <range uom="33" min="-100" max="100" prec="1" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>
 
   <editor id = "KWH_20" > 
      <range  uom="33" min="-20" max="20" prec="2" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>
 
   <editor id = "TIME" > 
      <range  uom="58" min="0" max="86400" prec="0" />
-      <range uom="25" subset="99" nls="TOUTIME" />
+      <range uom="25" subset="98-99" nls="TOUTIME" />
   </editor>
 
   <editor id = "TIMESET" > 
      <range  uom="58" min="0" max="86400" prec="0" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>
   <editor id = "SEASON" > 
      <range  uom="25" subset="0-2,99" nls="SEASON" />
@@ -97,10 +106,10 @@ editors>
   </editor>
   <editor id = "DOLLAR" > 
      <range  uom="103" min="0" max="5" prec="2" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>  
   <editor id = "count" > 
      <range  uom="0" min="0" max="100" prec="0" />
-     <range uom="25" subset="99" nls="error" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>  
 </editors> 

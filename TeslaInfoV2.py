@@ -75,11 +75,11 @@ class tesla_info():
             time.sleep(5)       
         self.TPWcloudAccess = True
         self.cloudAccessUp = True
+
         return(self.cloudAccessUp)
     
     #def initial_cloud_authentication(self):
     #    self.TPWcloud.initial_cloud_authentication()
-
 
 
     def tesla_get_products(self) -> dict:
@@ -101,6 +101,10 @@ class tesla_info():
                             PowerWalls[site]['local'] = self.local_gateway== str(PowerWalls[site]['gateway_id'])
                         PowerWalls[site]['energy_site_id'] = str(products[site]['energy_site_id'])
                         PowerWalls[site]['site_name'] = str(products[site]['site_name'])
+                        if 'components' in  PowerWalls[site]:
+                            if 'solar' in PowerWalls[site]['components']:
+                                self.solarInstalled = PowerWalls[site]['components']['solar']
+
         if PowerWalls == {}:
             PowerWalls['local'] = {}
             if self.localAccessUp:
@@ -496,6 +500,7 @@ class tesla_info():
 
     def getTPW_solarSupply(self, site_id):
         if self.solarInstalled:
+            logging.debug("")
             if self.cloudAccessUp:
                 solarPwr = self.TPWcloud.tesla_live_solar_power(site_id)
             elif  self.localAccessUp and self.firstPollCompleted:

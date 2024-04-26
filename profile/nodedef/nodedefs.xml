@@ -178,7 +178,7 @@
                <p id="" editor="setOP_MODE" init="GV2" /> 
             </cmd> 
             <cmd id="STORM_MODE" > 
-               <p id="" editor="TOGGLE" init="GV3" /> 
+               <p id="" editor="setTOGGLE" init="GV3" /> 
             </cmd> 
             <!--<cmd id="TOU_MODE" > 
                <p id="" editor="setTOU_MODE" init="GV4" /> 
