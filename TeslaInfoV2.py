@@ -818,9 +818,9 @@ class tesla_info():
         logging.debug('getTPW_operationMode ' + str(key)) 
         return( self.operationModeEnumList.index(key))
     
-    def setTPW_operationMode(self, index):
+    def setTPW_operationMode(self, index, site_id):
         logging.debug('setTPW_operationMode ')  
-        return(self.TPWcloud.teslaSetOperationMode(self.operationModeEnumList[index]))
+        return(site_id, self.TPWcloud.tesla_set_operation(self.operationModeEnumList[index]))
 
     ''' 
     def getTPW_running(self):
@@ -869,17 +869,23 @@ class tesla_info():
         else:
             return (0)
 
-    def getTPW_stormMode(self, site_id):
-        logging.debug('getTPW_stormMode ')  
-        if self.TPWcloudAccess:
-            if self.TPWcloud.teslaExtractStormMode(site_id):
-                return (1)
-            else:
-                return(0)
+    #def getTPW_stormMode(self, site_id):
+    #    logging.debug('getTPW_stormMode ')  
+    #    if self.TPWcloudAccess:
+    #        if self.TPWcloud.teslaExtractStormMode(site_id):
+    #            return (1)
+    #        else:
+    #            return(0)
 
-    def tesla_set_storm_mode(self, mode):
+    def tesla_set_storm_mode(self, mode, site_id):
         logging.debug('getTPW_stormMode ')  
-        return(self.TPWcloud.tesla_set_storm_mode(mode==1))
+        return(self.TPWcloud.tesla_set_storm_mode(site_id, mode==1))
+
+
+    def setTPW_grid_import_export(self, imp_mode, exp_mode, site_id):
+        logging.debug('setTPW_grid_import_export ')  
+        return(self.TPWcloud.tesla_set_grid_import_export(site_id, imp_mode == 1, exp_mode))
+
 
     def getTPW_touMode(self, site_id):
         logging.debug('getTPW_touMode ')  
@@ -888,11 +894,18 @@ class tesla_info():
             if self.TOU_MODES[indx] == tmp:
                 return(indx)
         return(99)
+    
 
-    def getTPW_touSchedule(self, site_id):
-        logging.debug('getTPW_touSchedule ')  
+    def setTPW_EV_offgrid_charge_reserve(self, value, site_id):
+        logging.debug('setTPW_EV_offgrid_charge_reserve {} '.format(value))  
         if self.TPWcloudAccess:        
-            return(self.TPWcloud.teslaExtractTouScheduleList(site_id))
+            return(self.TPWcloud.set_EV_charge_reserve( site_id, value))
+
+
+    #def getTPW_touSchedule(self, site_id):
+    #    logging.debug('getTPW_touSchedule ')  
+    #    if self.TPWcloudAccess:        
+    #        return(self.TPWcloud.teslaExtractTouScheduleList(site_id))
 
 
     #def setTPW_touMode(self, index):

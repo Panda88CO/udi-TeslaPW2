@@ -40,7 +40,7 @@
   </editor>
 
   <editor id = "setOP_MODE" > 
-     <range  uom="25" subset="0-2" nls="OP_MODE" />
+     <range  uom="25" subset="1-2" nls="OP_MODE" />
   </editor>
 
   <editor id = "GRID_ST" > 
@@ -59,10 +59,10 @@
      <range  uom="25" subset="0-1" nls="GRID_IMP_MODE" />
   </editor>
   <editor id = "GRID_EXP_MODE" > 
-     <range  uom="25" subset="0-1,99" nls="GRID_EXP_MODE" />
+     <range  uom="25" subset="0-2,99" nls="GRID_EXP_MODE" />
   </editor>
   <editor id = "setGRID_EXP_MODE" > 
-     <range  uom="25" subset="0-1" nls="GRID_EXP_MODE" />
+     <range  uom="25" subset="0-2" nls="GRID_EXP_MODE" />
   </editor>  
 
   <editor id = "setTOU_MODE" > 

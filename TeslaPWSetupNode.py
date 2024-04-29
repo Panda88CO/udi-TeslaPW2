@@ -52,41 +52,41 @@ class teslaPWSetupNode(udi_interface.Node):
         pass 
 
     def setStormMode(self, command):
-        logging.debug('setStormMode')
+        logging.debug('setStormMode : {}'.format(command))
         value = int(command.get('value'))
         self.TPW.setTPW_stormMode(value, self.site_id)
         self.PW_setDriver('GV3', value)
         
     def setOperatingMode(self, command):
-        logging.debug('setOperatingMode')
+        logging.debug('setOperatingMode: {}'.format(command))
         value = int(command.get('value'))
         self.TPW.setTPW_operationMode(value, self.site_id)
         self.PW_setDriver('GV2', value)
     
     def setBackupPercent(self, command):
-        logging.debug('setBackupPercent')
+        logging.debug('setBackupPercent: {}'.format(command))
         value = float(command.get('value'))
         self.TPW.setTPW_backoffLevel(value, self.site_id)
         self.PW_setDriver('GV1', value)
 
-    def setTOUmode(self, command):
-        logging.debug('setTOUmode')
-        value = int(command.get('value'))
-        self.TPW.setTPW_touMode(value)
-        self.PW_setDriver('GV4', value)
+    #def setTOUmode(self, command):
+    #    logging.debug('setTOUmode')
+    #    value = int(command.get('value'))
+    #    self.TPW.setTPW_touMode(value)
+    #   self.PW_setDriver('GV4', value)
     
     def set_grid_mode(self, command):
         logging.info('set_grid_mode{}'.format(command))
         query = command.get("query")
         imp_mode = int(query.get("import.uom25"))
         exp_mode = int(query.get("export.uom25"))
-        self.TPW.setTPW_import_export_op(imp_mode, exp_mode, self.site_id)   
+        self.TPW.setTPW_grid_import_export(imp_mode, exp_mode, self.site_id)   
 
         self.PW_setDriver('GV5', int(query.get("import.uom25")))
         self.PW_setDriver('GV6', exp_mode)
 
     def set_EV_charge_reserve(self, command):
-        logging.debug('set_EV_charge_reserve')
+        logging.debug('set_EV_charge_reserve {}'.format(command))
         value = int(command.get('value'))
         self.TPW.setTPW_EV_charge_limit(value, self.site_id)
         self.PW_setDriver('GV7', value)

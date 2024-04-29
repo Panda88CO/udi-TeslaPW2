@@ -50,12 +50,12 @@ ND-pwsetup-ICON = Electricity
 CMD-nlspwsetup-BACKUP_PCT-NAME =  Backup Reserve (%)
 CMD-nlspwsetup-OP_MODE-NAME = Operating Mode
 CMD-nlspwsetup-STORM_MODE-NAME = Storm Mode
-CMD-nlspwsetup-TOU_MODE-NAME =  Time of Use Mode
+#CMD-nlspwsetup-TOU_MODE-NAME =  Time of Use Mode
 CMD-nlspwsetup-GRID_MODE-NAME = Grid Operation
 
-CMD-nlspwsetup-EV_CHRG_MODE-NAME = EV offgrid charge limit
+CMD-nlspwsetup-EV_CHRG_MODE-NAME = EV offgrid charge reserve
 CMDP-export-NAME = Export mode to grid
-CMDP-import-NAME = Charging from grid
+CMDP-import-NAME = Charging from grid w. solar
 
 CMD-nlspwsetup-UPDATE-NAME = Update System Data
 
@@ -65,7 +65,7 @@ ST-nlspwsetup-GV3-NAME =  Storm Mode
 ST-nlspwsetup-GV4-NAME = Time of Use Mode
 ST-nlspwsetup-GV5-NAME = Grid Import to battery
 ST-nlspwsetup-GV6-NAME = Grid ExportMode
-ST-nlspwsetup-GV7-NAME = Backup Reserve EV Chargeing (%)
+ST-nlspwsetup-GV7-NAME = EV offgrid charge reserve (%)
 #ST-nlspwsetup-GV8-NAME = Weekend Peak Start End (sec)
 #ST-nlspwsetup-GV9-NAME = Weekday Off-peak Start Time (sec)
 #ST-nlspwsetup-GV10-NAME = Weekday Off-peak End Time (sec)
@@ -101,12 +101,13 @@ EN_ONLINE-99 = unknown
 error-98 = NOt defined
 error-99 = Unknown
 
-GRID_IMP_MODE-0 = Enabled
-GRID_IMP_MODE-1 = Disabled
+GRID_IMP_MODE-0 = Allowed   
+GRID_IMP_MODE-1 = Not Allowed
 GRID_IMP_MODE-99 = Unknown
 
 GRID_EXP_MODE-0 = PV-only
 GRID_EXP_MODE-1 = Battery-ok
+GRID_EXP_MODE-2 = Never
 GRID_EXP_MODE-99 = Unknown
 
 
