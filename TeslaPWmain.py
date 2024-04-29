@@ -317,6 +317,7 @@ class TeslaPWController(udi_interface.Node):
                 self.poly.delNode(node['address'])
 
         self.updateISYdrivers()
+        self.initialized = True
         #time.sleep(1)
     #def handleNotices(self):
     #    logging.debug('handleNotices')
