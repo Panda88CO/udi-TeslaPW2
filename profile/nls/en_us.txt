@@ -12,8 +12,8 @@ CON-1 = connected
 ST-nlscontroller-GV3-NAME = Consecutive missed LongPolls
 ST-nlscontroller-GV4-NAME = Connection Status
 CON_STATE-0 = No Connection
-CON_STATE-1 = Cloud
-CON_STATE-2 = Local
+CON_STATE-1 = Cloud only
+CON_STATE-2 = Local only
 CON_STATE-3 = Local and Cloud
 
 
@@ -72,7 +72,10 @@ ST-nlspwsetup-GV7-NAME = EV offgrid charge reserve (%)
 #ST-nlspwsetup-GV11-NAME = Weekday Peak Start Time (sec)
 #ST-nlspwsetup-GV12-NAME = Weekday Peak End Time (sec)
 
-TOUTIME-99 = Not Set
+TOUTIME-99 = No data
+
+NODATA-99 = NO Data 
+NODATA-99 = NO Data 
 
 EN_TOGGLE-0 = Disabled
 EN_TOGGLE-1 = Enabled
@@ -92,7 +95,7 @@ EN_GRID_STATUS-0 = on grid
 EN_GRID_STATUS-1 = islanded ready
 EN_GRID_STATUS-2 = islanded
 EN_GRID_STATUS-3 = transition to grid
-EN_GRID_STATUS-99 = unknown code 
+EN_GRID_STATUS-99 = Unknown code 
 
 EN_ONLINE-0 = offline
 EN_ONLINE-1 = online

@@ -386,6 +386,7 @@ class tesla_info():
         except Exception as e:
             logging.error('Exception PollSystemData: '+  str(e))
             logging.error('problems extracting data from tesla power wall')
+            return(False)
             # NEED To logout and log back in locally
             # Need to retrieve/renew token from cloud
 
@@ -899,7 +900,7 @@ class tesla_info():
     def setTPW_EV_offgrid_charge_reserve(self, value, site_id):
         logging.debug('setTPW_EV_offgrid_charge_reserve {} '.format(value))  
         if self.TPWcloudAccess:        
-            return(self.TPWcloud.set_EV_charge_reserve( site_id, value))
+            return(self.TPWcloud.tesla_set_off_grid_vehicle_charging( site_id, value))
 
 
     #def getTPW_touSchedule(self, site_id):

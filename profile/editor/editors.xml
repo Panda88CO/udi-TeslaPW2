@@ -84,22 +84,22 @@
 
   <editor id = "KWH" > 
      <range uom="33" min="-100" max="100" prec="1" />
-     <range uom="25" subset="98-99" nls="error" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
   <editor id = "KWH_20" > 
      <range  uom="33" min="-20" max="20" prec="2" />
-     <range uom="25" subset="98-99" nls="error" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
   <editor id = "TIME" > 
      <range  uom="58" min="0" max="86400" prec="0" />
-      <range uom="25" subset="98-99" nls="TOUTIME" />
+      <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
   <editor id = "TIMESET" > 
      <range  uom="58" min="0" max="86400" prec="0" />
-     <range uom="25" subset="98-99" nls="error" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
   <editor id = "SEASON" > 
      <range  uom="25" subset="0-2,99" nls="SEASON" />
@@ -113,6 +113,6 @@
   </editor>  
   <editor id = "count" > 
      <range  uom="0" min="0" max="100" prec="0" />
-     <range uom="25" subset="98-99" nls="error" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>  
 </editors> 

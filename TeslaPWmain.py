@@ -400,7 +400,10 @@ class TeslaPWController(udi_interface.Node):
     def longPoll(self):
         logging.info('Tesla Power Wall Controller longPoll')
         for site_id in self.PowerWalls:
-            self.TPW.pollSystemData(site_id, 'all')
+            if not self.TPW.pollSystemData(site_id, 'all'):
+                self.longPollCountMissed += 1
+            else:
+                self.longPollCountMissed = 0
         for node in self.poly.nodes():
             logging.debug('long poll node loop {} - {}'.format(node.name, node.node_ready()))
             if node.node_ready():
@@ -423,7 +426,7 @@ class TeslaPWController(udi_interface.Node):
         #   self.longPollCountMissed = 0
         self.PW_setDriver('ST', self.bool2ISY( self.cloudAccessUp  or self.localAccessUp ))
         self.PW_setDriver('GV2', self.bool2ISY(self.TPW.getTPW_onLine()))
-        self.PW_setDriver('GV3', None)
+        self.PW_setDriver('GV3', self.longPollCountMissed)
         #self.node.setDriver('GV3', self.longPollCountMissed)     
         if self.cloud_access_enabled == False and self.local_access_enabled == False:
             self.PW_setDriver('GV4', 0)
