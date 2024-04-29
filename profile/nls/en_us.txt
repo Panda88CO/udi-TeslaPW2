@@ -55,7 +55,8 @@ CMD-nlspwsetup-GRID_MODE-NAME = Grid Operation
 
 CMD-nlspwsetup-EV_CHRG_MODE-NAME = EV offgrid charge limit
 CMDP-export-NAME = Export mode to grid
-CMMP-nlspwsetup-import-NAME = Charging from grid
+CMDP-import-NAME = Charging from grid
+
 CMD-nlspwsetup-UPDATE-NAME = Update System Data
 
 ST-nlspwsetup-GV1-NAME = Backup Reserve (%)
@@ -77,11 +78,11 @@ EN_TOGGLE-0 = Disabled
 EN_TOGGLE-1 = Enabled
 EN_TOGGLE-99 = Unknown
 
-EN_MODE-0 = backup
-EN_MODE-1 = self consumption
-EN_MODE-2 = autonomous
-EN_MODE-3 = site control
-EN_MODE-99 = Unknown
+OP_MODE-0 = backup
+OP_MODE-1 = self consumption
+OP_MODE-2 = autonomous
+OP_MODE-3 = site control
+OP_MODE-99 = Unknown
 
 EN_TOU_MODE-0 = Economics
 EN_TOU_MODE-1 = Balanced

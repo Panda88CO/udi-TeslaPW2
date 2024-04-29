@@ -12,7 +12,7 @@
       <range uom="25" subset="98-99" nls="error" />
   </editor>     
 
-  <editor id = "CON_TYPR" > 
+  <editor id = "CON_TYPE" > 
      <range  uom="25" subset="0-3, 99" nls="CON_STATE" />
   </editor>
   <editor id = "HOURS" > 
@@ -31,13 +31,16 @@
      <range  uom="25" subset="0-1" nls="EN_TOGGLE" />
   </editor>
 
+  <editor id = "GRID_MODE" > 
+     <range  uom="25" subset="0-1,99" nls="EN_TOGGLE" />
+  </editor>
 
   <editor id = "OP_MODE" > 
-     <range  uom="25" subset="0-2,99" nls="EN_MODE" />
+     <range  uom="25" subset="0-2,99" nls="OP_MODE" />
   </editor>
 
   <editor id = "setOP_MODE" > 
-     <range  uom="25" subset="0-2" nls="EN_MODE" />
+     <range  uom="25" subset="0-2" nls="OP_MODE" />
   </editor>
 
   <editor id = "GRID_ST" > 
