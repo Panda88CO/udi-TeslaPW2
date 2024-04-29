@@ -381,7 +381,7 @@ class TeslaPWController(udi_interface.Node):
 
     def shortPoll(self):
         logging.info('Tesla Power Wall Controller shortPoll')
-        self.heartbeat()    
+        self.heartbeat()
         #if self.TPW.pollSystemData('critical'):
         #should make short loop local long pool cloud 
         for site_id in self.PowerWalls:
@@ -420,6 +420,7 @@ class TeslaPWController(udi_interface.Node):
         #   self.longPollCountMissed = 0
         self.PW_setDriver('ST', self.bool2ISY( self.cloudAccessUp  or self.localAccessUp ))
         self.PW_setDriver('GV2', self.bool2ISY(self.TPW.getTPW_onLine()))
+        self.PW_setDriver('GV3', None)
         #self.node.setDriver('GV3', self.longPollCountMissed)     
         if self.cloud_access_enabled == False and self.local_access_enabled == False:
             self.PW_setDriver('GV4', 0)
@@ -451,7 +452,7 @@ class TeslaPWController(udi_interface.Node):
     drivers = [
             {'driver': 'ST', 'value':0, 'uom':25},
             {'driver': 'GV2', 'value':0, 'uom':25},
-            {'driver': 'GV3', 'value':0, 'uom':55},
+            {'driver': 'GV3', 'value':99, 'uom':25},
             {'driver': 'GV4', 'value':0, 'uom':25},
             ]
 

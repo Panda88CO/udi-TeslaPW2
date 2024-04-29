@@ -2,10 +2,10 @@
    <nodeDef id="controller" nls="nlscontroller">
       <editors />
       <sts>
-         <st id="ST"  editor="CTRL_1" />
-         <st id="GV2" editor="CTRL_2" />
-         <st id="GV3" editor="CTRL_3" />
-         <st id="GV4" editor="CTRL_4" />         
+         <st id="ST"  editor="UPDN" />
+         <st id="GV2" editor="CON" />
+         <st id="GV3" editor="MISS" />
+         <st id="GV4" editor="CON_TYPE" />         
       </sts>
       <cmds>
          <sends>
@@ -171,6 +171,7 @@
          <sends>
          </sends>
          <accepts>
+            <cmd id="UPDATE" /> 
             <cmd id="BACKUP_PCT" > 
                <p id="" editor="PERCENT" init="GV1" /> 
             </cmd> 
@@ -191,32 +192,6 @@
                <p id="" editor="PERCENT" init="GV7" /> 
             </cmd> 
 
-
-            <!--<cmd id="WE_O_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV5" /> 
-            </cmd> 
-            <cmd id="WE_O_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV6" /> 
-            </cmd> 
-            <cmd id="WE_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV7" /> 
-            </cmd> 
-            <cmd id="WE_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV8" /> 
-            </cmd> 
-            <cmd id="WK_O_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV9" /> 
-            </cmd> 
-            <cmd id="WK_O_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV10" /> 
-            </cmd> 
-            <cmd id="WK_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV11" /> 
-            </cmd> 
-            <cmd id="WK_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV12" /> 
-            </cmd>--> 
-            <cmd id="UPDATE" /> 
          </accepts>
       </cmds>
    </nodeDef> 

@@ -31,6 +31,7 @@ PERIOD-0 = Off-peak
 PERIOD-1 = Partial-Peak
 PERIOD-2 = Peak
 PERIOD-99 = Unknown
+
 ND-pwsolar-NAME = Power Wall Solar Status
 ND-pwsolar-ICON = Electricity
 CMD-nlspwsolar-UPDATE-NAME = Update System Data
