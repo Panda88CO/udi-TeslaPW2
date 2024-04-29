@@ -819,8 +819,8 @@ class tesla_info():
         return( self.operationModeEnumList.index(key))
     
     def setTPW_operationMode(self, index, site_id):
-        logging.debug('setTPW_operationMode ')  
-        return(site_id, self.TPWcloud.tesla_set_operation(self.operationModeEnumList[index]))
+        logging.debug('setTPW_operationMode {}'.format(index))  
+        return(site_id, self.TPWcloud.tesla_set_operation(site_id, self.operationModeEnumList[index]))
 
     ''' 
     def getTPW_running(self):

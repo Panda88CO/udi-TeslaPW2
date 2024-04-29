@@ -54,7 +54,7 @@ class teslaPWSetupNode(udi_interface.Node):
     def setStormMode(self, command):
         logging.debug('setStormMode : {}'.format(command))
         value = int(command.get('value'))
-        self.TPW.setTPW_stormMode(value, self.site_id)
+        self.TPW.tesla_set_storm_mode(value, self.site_id)
         self.PW_setDriver('GV3', value)
         
     def setOperatingMode(self, command):
@@ -86,9 +86,9 @@ class teslaPWSetupNode(udi_interface.Node):
         self.PW_setDriver('GV6', exp_mode)
 
     def set_EV_charge_reserve(self, command):
-        logging.debug('set_EV_charge_reserve {}'.format(command))
+        logging.debug('setTPW_EV_offgrid_charge_reserve {}'.format(command))
         value = int(command.get('value'))
-        self.TPW.setTPW_EV_charge_limit(value, self.site_id)
+        self.TPW.setTPW_EV_offgrid_charge_reserve(value, self.site_id)
         self.PW_setDriver('GV7', value)
 
 
