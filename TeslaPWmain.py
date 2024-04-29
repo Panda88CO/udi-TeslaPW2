@@ -315,6 +315,8 @@ class TeslaPWController(udi_interface.Node):
             if node['primaryNode'] not in assigned_addresses:
                 logging.debug('Removing node : {} {}'.format(node['name'], node))
                 self.poly.delNode(node['address'])
+
+        self.updateISYdrivers()
         #time.sleep(1)
     #def handleNotices(self):
     #    logging.debug('handleNotices')
