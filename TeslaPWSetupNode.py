@@ -89,7 +89,7 @@ class teslaPWSetupNode(udi_interface.Node):
         logging.debug('setTPW_EV_offgrid_charge_reserve {}'.format(command))
         value = int(command.get('value'))
         self.TPW.setTPW_EV_offgrid_charge_reserve(value, self.site_id)
-        self.PW_setDriver('GV7', value)
+        self.PW_setDriver('GV7', value, 51)
 
 
     def ISYupdate (self, command):
@@ -116,7 +116,7 @@ class teslaPWSetupNode(udi_interface.Node):
             #{'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
             {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid import 
             {'driver': 'GV6', 'value': 0, 'uom': 25},  #grid export
-            {'driver': 'GV7', 'value': 0, 'uom': 25},  #EV charge limit
+            {'driver': 'GV7', 'value': 0, 'uom': 51},  #EV charge limit
             ]
 
         

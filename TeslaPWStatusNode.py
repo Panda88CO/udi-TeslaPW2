@@ -55,10 +55,6 @@ class teslaPWStatusNode(udi_interface.Node):
         
   
         teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.site_id, self.TPW)
-        #if self.TPW.solarInstalled:
-        #    teslaPWSolarNode(self.poly, self.primary, 'solar_'+sub_adr, 'Solar Status', self.TPW)
-        #if self.TPW.generatorInstalled:
-        #    teslaPWGenNode(self.poly, self.primary, 'extpwr'+sub_adr, 'Generator Status', self.TPW)
         teslaPWHistoryNode(self.poly, self.primary, 'hist_'+sub_adr, 'Usage History', self.site_id, self.TPW)
 
 
@@ -99,23 +95,7 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id),2), 33)
         self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(self.site_id),2), 33)
         self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
-        '''
-        self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(),2), 33)
-        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesyerdayBattery_export(),2), 33)       
-        self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(),2), 33)
-        self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(),2), 33) 
-        self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(),2), 33)
-        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGridServicesUse(),2), 33)
 
-        self.PW_setDriver('GV22', self.TPW.getTPW_days_backup_events())
-        self.PW_setDriver('GV23', self.round2ISY(self.TPW.getTPW_days_backup_time(),0), 58)
-        self.PW_setDriver('GV24', self.TPW.getTPW_yesterday_backup_events())
-        self.PW_setDriver('GV25', self.round2ISY(self.TPW.getTPW_yesterday_backup_time(),0), 58)
-        self.PW_setDriver('GV26', self.round2ISY(self.TPW.getTPW_days_evcharge_power(),0), 33)
-        self.PW_setDriver('GV27', self.round2ISY(self.TPW.getTPW_days_evcharge_time(),0), 58)
-        self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(),0), 33)
-        self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(),0), 58)
-        '''
 
 
 

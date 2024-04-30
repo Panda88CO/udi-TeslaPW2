@@ -20,7 +20,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.13'
+VERSION = '0.1.14'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -49,32 +49,12 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Gateway= None
         self.site_id = None
-        #self.Parameters = Custom(polyglot, 'customParams')
+
         self.customParameters = Custom(self.poly, 'customparams')
-        #self.customParameters = self.TPW_cloud.customParameters
+
         self.Notices = Custom(self.poly, 'notices')
-        #self.poly.subscribe(self.poly.START, self.start, address)
-        #self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
-        #self.poly.subscribe(self.poly.NOTICES, self.handleNotices)
-        #self.poly.subscribe(self.poly.POLL, self.systemPoll)
+
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        #self.poly.subscribe(self.poly.CONFIGDONE, self.check_config)
-        #self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
-        #self.poly.subscribe(self.poly.CUSTOMDATA, self.TPW_cloud.customDataHandler)
-        #self.poly.subscribe(self.poly.CUSTOMNS, self.TPW_cloud.customNsHandler)
-        #self.poly.subscribe(self.poly.OAUTH, self.TPW_cloud.oauthHandler)
-        '''
-        polyglot.subscribe(polyglot.STOP, TPW.stop)
-        polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)
-        polyglot.subscribe(polyglot.NOTICES, TPW.handleNotices)
-        polyglot.subscribe(polyglot.POLL, TPW.systemPoll)
-        polyglot.subscribe(polyglot.ADDNODEDONE, TPW.node_queue)
-        polyglot.subscribe(polyglot.CONFIGDONE, TPW.check_config)
-        polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.customParamsHandler)
-        polyglot.subscribe(polyglot.CUSTOMDATA, TPW_cloud.TPW_cloud.customDataHandler)
-        polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.TPW_cloud.customNsHandler)
-        polyglot.subscribe(polyglot.OAUTH, TPW_cloud.TPW_cloud.oauthHandler)
-        '''
 
 
         logging.debug('self.address : ' + str(self.address))
@@ -96,12 +76,7 @@ class TeslaPWController(udi_interface.Node):
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
 
-    #def oauthHandler(self, token):
-        #When user just authorized, pass this to your service, which will pass it to the OAuth handler
-        #self.TPW_cloud.oauthHandler(token)#
 
-        # Then proceed with device discovery
-        #self.configDoneHandler()
 
     def check_config(self):
         self.nodes_in_db = self.poly.getNodesFromDb()
@@ -204,18 +179,6 @@ class TeslaPWController(udi_interface.Node):
         self.customParam_done = True
 
 
-    
-    '''
-    def main_module_enabled(self, node_name):
-        logging.debug('main_module_enabled called {}'.format(node_name))
-        if node_name in self.customParameters :           
-            return(int(self.customParameters[node_name]) == 1)
-        else:
-            self.customParameters[node_name] = 1 #add and enable by default
-            self.poly.Notices['home_id'] = 'Check config to select which home/modules should be used (1 - used, 0 - not used) - then restart'
-            return(True)
-    '''
-
     def start(self):
         site_string = ''
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
@@ -283,12 +246,7 @@ class TeslaPWController(udi_interface.Node):
             logging.debug(site_name)
             node_name = self.poly.getValidName(site_name)
             logging.debug('node_address and name: {} {}'.format(node_address, node_name))
-            #logging.debug(self.TPW_local)
-            #logging.debug(self.TPW_cloud)
-            #logging.debug(self.site_id )
-            #self.TPW = tesla_info(self.TPW_local, self.TPW_cloud, self.site_id)
-            #self.TPW.init_local()
-            #self.TPW.init_cloud()
+
             if self.cloud_access_enabled:
                 self.TPW.init_cloud_data(PW_site)
             
@@ -322,31 +280,6 @@ class TeslaPWController(udi_interface.Node):
     #def handleNotices(self):
     #    logging.debug('handleNotices')
 
-    '''
-    def tesla_initialize(self):
-        logging.debug('starting Login process')
-        try:
-            logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccessUp, self.cloudAccessUp))
-            
-            #logging.debug('tesla_initialize 1 : {}'.format(self.TPW_cloud._oauthTokens))             
-
-            logging.debug('Node installation complete')
-            
-            self.initialized = True
-            if self.cloud_access_enabled:
-
-            
-            
-            self.nodeDefineDone = True
-            
-            
-        except Exception as e:
-            logging.error('Exception Controller start: '+ str(e))
-            logging.info('Did not connect to power wall')
-
-        #self.TPW.systemReady = True
-        logging.debug ('Controller - initialization done')
-    '''
 
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))

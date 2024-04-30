@@ -870,13 +870,13 @@ class tesla_info():
         else:
             return (0)
 
-    #def getTPW_stormMode(self, site_id):
-    #    logging.debug('getTPW_stormMode ')  
-    #    if self.TPWcloudAccess:
-    #        if self.TPWcloud.teslaExtractStormMode(site_id):
-    #            return (1)
-    #        else:
-    #            return(0)
+    def getTPW_stormMode(self, site_id):
+        logging.debug('getTPW_stormMode ')  
+        if self.TPWcloudAccess:
+            if self.TPWcloud.teslaExtractStormMode(site_id):
+                return (1)
+            else:
+                return(0)
 
     def tesla_set_storm_mode(self, mode, site_id):
         logging.debug('getTPW_stormMode ')  

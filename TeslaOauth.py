@@ -196,97 +196,7 @@ class teslaAccess(udi_interface.OAuth):
         #self.handleCustomParamsDone = True
         #self.poly.Notices.clear()
 
-        '''
-    def add_to_parameters(self,  key, value):
-        #add_to_parameters
-        self.customParameters[key] = value
 
-    def check_parameters(self, key, value):
-        #check_parameters
-        if key in self.customParameters:
-            return(self.customParameters[key]  == value)
-        else:
-            return(False)
-        
-    
-    def getAccessToken(self):
-        # Make sure we have received tokens before attempting to renew
-        logging.debug('self.getAccessToken: {}'.format(self._oauthTokens))
-        if self._oauthTokens is not None and self._oauthTokens.get('refresh_token'):
-            expiry = self._oauthTokens.get('expiry')
-
-            # If expired or expiring in less than 60 seconds, refresh
-            if ((expiry is None or datetime.fromisoformat(expiry) - timedelta(seconds=60) < datetime.now())) or True:
-                logging.info(f"Access tokens: Token is expired since { expiry }. Initiating refresh.")
-                self._oAuthTokensRefresh()
-            else:
-                logging.info(f"Access tokens: Token is still valid until { expiry }, no need to refresh")
-
-            return self._oauthTokens.get('access_token')
-        else:
-            raise ValueError('Access token is not available')
-    
-    
-    
-    def _oAuthTokensRefresh(self):
-        logging.debug(f"Refresh token before: { self._oauthTokens }")
-        data = {
-            'grant_type': 'refresh_token',
-            'refresh_token': self._oauthTokens['refresh_token'],
-            'client_id': self._oauthConfig['client_id'],
-            'client_secret': self._oauthConfig['client_secret']
-        }
-
-        if self._oauthConfig['addRedirect']:
-            data['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
-
-        if self._oauthConfig['scope']:
-            data['scope'] = self._oauthConfig['scope']
-
-        if self._oauthConfig['token_parameters'] and isinstance(self._oauthConfig['token_parameters'], dict):
-            for key, value in self._oauthConfig['token_parameters'].items():
-                data[key] = value
-
-        logging.debug(f"Token refresh body { json.dumps(data) }")
-
-        try:
-            response = requests.post(self._oauthConfig['token_endpoint'], data=data)
-            response.raise_for_status()
-            token = response.json()
-            logging.info('Refreshing oAuth tokens successfully')
-            logging.debug(f"Token refresh result [{ type(token) }]: { token }")
-            self._setExpiry(token)
-            self._oauthTokens.load(token)
-            self.authendication_done = True
-            self.poly.Notices.clear()
-
-        except requests.exceptions.HTTPError as error:
-            logging.warning(f"Failed to refresh oAuth token: { error } - try Authenticating again")
-            self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
-            raise ValueError('Access token is not available')
-
-            # NOTE: If refresh tokens fails, we keep the existing tokens available.
-                
-        '''
-        '''
-    def try_authendication(self):
-        if (self._oauthTokens):  # has been authenticated before 
-            try:               
-                accessToken = self.getAccessToken()
-                logging.debug('try_authendication - accesstoken {}'.format(accessToken))
-                self.poly.Notices.clear()
-                logging.debug('access token (try auth {})'.format(self._oauthTokens))
-                return(self._oauthTokens.get('expiry') != None)
-            except ValueError as err:
-                logging.warning('Access token is not yet available. Please authenticate.')
-                self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
-                logging.debug('try_authendication oauth error: {}'.format(err))
-                return (False)
-        else:
-            self.poly.Notices['auth'] = 'Please initiate authentication - press authenticate'
-            return (False)
-        
-        '''
 
     def authendicated(self):
         #self.apiLock.acquire()
@@ -294,26 +204,15 @@ class teslaAccess(udi_interface.OAuth):
         while not self._oauthTokens:
             time.sleep(1)
             logging.debug('Waiting for system to initialize')
-        if 'expiry' not in self._oauthTokens:
-            
+            #self.poly.Notices['auth'] = 'Please initiate authentication'
+        if 'expiry' not in self._oauthTokens:            
             self.getAccessToken()
             #time.sleep(2)
         #self.apiLock.release()
         return(self._oauthTokens.get('expiry') != None)
         #return('expiry' in self._oauthTokens)
  
-    '''
-    def initial_cloud_authentication(self):
-        logging.debug('initial_cloud_authentication: {}'.format(self._oauthTokens))
-        if 'refresh_token' in self._oauthTokens and 'expires_in' in self._oauthTokens:
-            logging.debug('Performing initial token refresh')
-            tmp = self._oAuthTokensRefresh()
-            logging.debug('result {}'.format(tmp))
-            return(tmp != None)
-        else:
-            self.poly.Notices['auth'] = 'Please initiate authentication  - press authenticate'
-            return(False)
-    '''
+
 
 
     # Call your external service API
