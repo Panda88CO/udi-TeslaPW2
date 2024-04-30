@@ -17,8 +17,7 @@ import numbers
 from datetime import timedelta, datetime
 from TeslaOauth import teslaAccess
 from tzlocal import get_localzone
-#from udi_interface import logging, Custom
-#from oauth import OAuth
+
 try:
     import udi_interface
     logging = udi_interface.LOGGER

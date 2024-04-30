@@ -12,16 +12,12 @@ Copyright (C) 2023 Universal Devices
 MIT License
 '''
 
-import json
 import requests
 import time
-#import urllib
 from threading import Lock
 from datetime import timedelta, datetime
 from tzlocal import get_localzone
-#import udi_interface
-#logging = udi_interface.LOGGER
-#from oauth import OAuth
+
 try:
     import udi_interface
     logging = udi_interface.LOGGER

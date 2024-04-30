@@ -10,10 +10,8 @@ except ImportError:
     import logging
     logging.basicConfig(level=30)
 
-#from TeslaInfoV2 import tesla_info
+
 from TeslaPWSetupNode import teslaPWSetupNode
-#from TeslaPWSolarNode import teslaPWSolarNode
-#from TeslaPWGenNode import teslaPWGenNode
 from TeslaPWHistoryNode import teslaPWHistoryNode
 
 

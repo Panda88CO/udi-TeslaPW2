@@ -13,7 +13,7 @@ try:
     logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
     Interface = udi_interface.Interface
-#    ISY = udi_interface.ISY
+
 
 except ImportError:
     import logging

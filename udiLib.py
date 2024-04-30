@@ -15,8 +15,6 @@ except ImportError:
     logging.basicConfig(level=logging.INFO)
 
 from os import truncate
-#import udi_interface
-#import sys
 import time
 import math
 import numbers 

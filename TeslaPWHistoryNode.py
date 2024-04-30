@@ -10,11 +10,6 @@ except ImportError:
     import logging
     logging.basicConfig(level=30)
 
-from OLD.TeslaInfo import tesla_info
-from TeslaPWSetupNode import teslaPWSetupNode
-from OLD.TeslaPWSolarNode import teslaPWSolarNode
-from OLD.TeslaPWGenNode import teslaPWGenNode
-
 
 class teslaPWHistoryNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
