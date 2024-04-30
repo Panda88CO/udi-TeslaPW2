@@ -12,9 +12,7 @@ Copyright (C) 2023 Universal Devices
 MIT License
 '''
 
-import json
-import requests
-import time
+
 import numbers
 from datetime import timedelta, datetime
 from TeslaOauth import teslaAccess
@@ -24,8 +22,7 @@ from tzlocal import get_localzone
 try:
     import udi_interface
     logging = udi_interface.LOGGER
-#    Custom = udi_interface.Custom
-#    ISY = udi_interface.ISY
+    Custom = udi_interface.Custom
 except ImportError:
     import logging
     logging.basicConfig(level=30)
