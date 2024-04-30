@@ -47,10 +47,10 @@ ST-nlspwgen-GV2-NAME = Generator Power Yesterday
 
 ND-pwsetup-NAME = Power Wall Control Parameters
 ND-pwsetup-ICON = Electricity
-CMD-nlspwsetup-BACKUP_PCT-NAME =  Backup Reserve (%)
+CMD-nlspwsetup-BACKUP_PCT-NAME = Backup Reserve (%)
 CMD-nlspwsetup-OP_MODE-NAME = Operating Mode
 CMD-nlspwsetup-STORM_MODE-NAME = Storm Mode
-#CMD-nlspwsetup-TOU_MODE-NAME =  Time of Use Mode
+#CMD-nlspwsetup-TOU_MODE-NAME = Time of Use Mode
 CMD-nlspwsetup-GRID_MODE-NAME = Grid Operation
 
 CMD-nlspwsetup-EV_CHRG_MODE-NAME = EV offgrid charge reserve
@@ -60,8 +60,8 @@ CMDP-import-NAME = Charging from grid w. solar
 CMD-nlspwsetup-UPDATE-NAME = Update System Data
 
 ST-nlspwsetup-GV1-NAME = Backup Reserve (%)
-ST-nlspwsetup-GV2-NAME =  Operating Mode
-ST-nlspwsetup-GV3-NAME =  Storm Mode
+ST-nlspwsetup-GV2-NAME = Operating Mode
+ST-nlspwsetup-GV3-NAME = Storm Mode
 ST-nlspwsetup-GV4-NAME = Time of Use Mode
 ST-nlspwsetup-GV5-NAME = Grid Import to battery
 ST-nlspwsetup-GV6-NAME = Grid ExportMode
@@ -74,8 +74,8 @@ ST-nlspwsetup-GV7-NAME = EV offgrid charge reserve (%)
 
 TOUTIME-99 = No data
 
-NODATA-99 = NO Data 
-NODATA-99 = NO Data 
+NODATA-99 = No Data 
+NODATA-99 = No Data 
 
 EN_TOGGLE-0 = Disabled
 EN_TOGGLE-1 = Enabled
