@@ -12,47 +12,26 @@ CON-1 = connected
 ST-nlscontroller-GV3-NAME = Consecutive missed LongPolls
 ST-nlscontroller-GV4-NAME = Connection Status
 CON_STATE-0 = No Connection
-CON_STATE-1 = Cloud
-CON_STATE-2 = Local
+CON_STATE-1 = Cloud only
+CON_STATE-2 = Local only
 CON_STATE-3 = Local and Cloud
 
+
+#new node define
 ND-pwstatus-NAME = Power Wall Status
 ND-pwstatus-ICON = Electricity
-CMD-nlspwstatus-UPDATE-NAME = Update System Data
-ST-nlspwstatus-GV0-NAME = Estimated backup Time
-ST-nlspwstatus-GV1-NAME = Battery Charge Level
-ST-nlspwstatus-GV2-NAME = Operation Mode
-ST-nlspwstatus-GV3-NAME = Grid Status
-ST-nlspwstatus-GV4-NAME = Connected to Tesla
-ST-nlspwstatus-GV5-NAME = Grid Services Active
-ST-nlspwstatus-GV6-NAME = Current Battery Supply
-ST-nlspwstatus-GV7-NAME = Battery Power Today
-ST-nlspwstatus-GV8-NAME = Battery Power Yesterday
-ST-nlspwstatus-GV9-NAME = Current Grid Supply
-ST-nlspwstatus-GV10-NAME = Power Consumed Today
-ST-nlspwstatus-GV11-NAME = Power Consumed Yesterday
-ST-nlspwstatus-GV12-NAME = Current Load
-ST-nlspwstatus-GV13-NAME = Total Power Today
-ST-nlspwstatus-GV14-NAME = Total Power Yesterday
-ST-nlspwstatus-GV15-NAME = Generated Power Today
-ST-nlspwstatus-GV16-NAME = Generated Power Yesterday
-ST-nlspwstatus-GV17-NAME = Grid Service Power Today
-ST-nlspwstatus-GV18-NAME = Grid Service Power Yesterday
-ST-nlspwstatus-GV19-NAME = Solar Power Today
-ST-nlspwstatus-GV20-NAME = Solar Power Yesterday
-ST-nlspwstatus-GV21-NAME = Utility Electricy cost (/kWh)
-ST-nlspwstatus-GV23-NAME = Utility Period
-ST-nlspwstatus-GV24-NAME = Utility Season
+
 
 SEASON-0 = Winter
-SEASON-1 = SUMMER
-SEASON-2 = BETWEEN SUmmer and Winter
+SEASON-1 = Summer
+SEASON-2 = Between SUmmer and Winter
 SEASON-99 = Unknown
 
 PERIOD-0 = Off-peak
 PERIOD-1 = Partial-Peak
 PERIOD-2 = Peak
 PERIOD-99 = Unknown
+
 ND-pwsolar-NAME = Power Wall Solar Status
 ND-pwsolar-ICON = Electricity
 CMD-nlspwsolar-UPDATE-NAME = Update System Data
@@ -68,52 +47,109 @@ ST-nlspwgen-GV2-NAME = Generator Power Yesterday
 
 ND-pwsetup-NAME = Power Wall Control Parameters
 ND-pwsetup-ICON = Electricity
-CMD-nlspwsetup-BACKUP_PCT-NAME =  Backup Reserve (%)
+CMD-nlspwsetup-BACKUP_PCT-NAME = Backup Reserve (%)
 CMD-nlspwsetup-OP_MODE-NAME = Operating Mode
 CMD-nlspwsetup-STORM_MODE-NAME = Storm Mode
-CMD-nlspwsetup-TOU_MODE-NAME =  Time of Use Mode
-CMD-nlspwsetup-WE_O_PEAK_START-NAME = Weekend Off-peak Start time (sec)
-CMD-nlspwsetup-WE_O_PEAK_END-NAME = Weekend Off-peak End time (sec)
-CMD-nlspwsetup-WE_PEAK_START-NAME = Weekend Peak Start time (sec)
-CMD-nlspwsetup-WE_PEAK_END-NAME = Weekend Peak End time (sec)
-CMD-nlspwsetup-WK_O_PEAK_START-NAME = Weekday Off-peak Start time (sec)
-CMD-nlspwsetup-WK_O_PEAK_END-NAME = Weekday Off-peak End time (sec)
-CMD-nlspwsetup-WK_PEAK_START-NAME = Weekday Peak Start time (sec)
-CMD-nlspwsetup-WK_PEAK_END-NAME = Weekday Peak End time (sec)
+#CMD-nlspwsetup-TOU_MODE-NAME = Time of Use Mode
+CMD-nlspwsetup-GRID_MODE-NAME = Grid Operation
+
+CMD-nlspwsetup-EV_CHRG_MODE-NAME = EV offgrid charge reserve
+CMDP-export-NAME = Export mode to grid
+CMDP-import-NAME = Charging from grid w. solar
+
 CMD-nlspwsetup-UPDATE-NAME = Update System Data
 
 ST-nlspwsetup-GV1-NAME = Backup Reserve (%)
-ST-nlspwsetup-GV2-NAME =  Operating Mode
-ST-nlspwsetup-GV3-NAME =  Storm Mode
+ST-nlspwsetup-GV2-NAME = Operating Mode
+ST-nlspwsetup-GV3-NAME = Storm Mode
 ST-nlspwsetup-GV4-NAME = Time of Use Mode
-ST-nlspwsetup-GV5-NAME = Weekend Off-peak Start Time (sec)
-ST-nlspwsetup-GV6-NAME = Weekend Off-peak End Time (sec)
-ST-nlspwsetup-GV7-NAME = Weekend Peak Start Time (sec)
-ST-nlspwsetup-GV8-NAME = Weekend Peak Start End (sec)
-ST-nlspwsetup-GV9-NAME = Weekday Off-peak Start Time (sec)
-ST-nlspwsetup-GV10-NAME = Weekday Off-peak End Time (sec)
-ST-nlspwsetup-GV11-NAME = Weekday Peak Start Time (sec)
-ST-nlspwsetup-GV12-NAME = Weekday Peak End Time (sec)
+ST-nlspwsetup-GV5-NAME = Grid Import to battery
+ST-nlspwsetup-GV6-NAME = Grid ExportMode
+ST-nlspwsetup-GV7-NAME = EV offgrid charge reserve (%)
+#ST-nlspwsetup-GV8-NAME = Weekend Peak Start End (sec)
+#ST-nlspwsetup-GV9-NAME = Weekday Off-peak Start Time (sec)
+#ST-nlspwsetup-GV10-NAME = Weekday Off-peak End Time (sec)
+#ST-nlspwsetup-GV11-NAME = Weekday Peak Start Time (sec)
+#ST-nlspwsetup-GV12-NAME = Weekday Peak End Time (sec)
 
-TOUTIME-99 = Not Set
+TOUTIME-99 = No data
+
+NODATA-99 = No Data 
+NODATA-99 = No Data 
 
 EN_TOGGLE-0 = Disabled
 EN_TOGGLE-1 = Enabled
+EN_TOGGLE-99 = Unknown
 
-EN_MODE-0 = backup
-EN_MODE-1 = self consumption
-EN_MODE-2 = autonomous
-EN_MODE-3 = site control
+OP_MODE-0 = backup
+OP_MODE-1 = self consumption
+OP_MODE-2 = autonomous
+OP_MODE-3 = site control
+OP_MODE-99 = Unknown
 
-EN_TOU_MODE-0 = economics
-EN_TOU_MODE-1 = balanced
+EN_TOU_MODE-0 = Economics
+EN_TOU_MODE-1 = Balanced
+EN_TOU_MODE-99 = Unknown
 
 EN_GRID_STATUS-0 = on grid
 EN_GRID_STATUS-1 = islanded ready
 EN_GRID_STATUS-2 = islanded
 EN_GRID_STATUS-3 = transition to grid
-EN_GRID_STATUS-99 = unknown code 
+EN_GRID_STATUS-99 = Unknown code 
 
 EN_ONLINE-0 = offline
 EN_ONLINE-1 = online
-EN_ONLINE-2 = unknown
+EN_ONLINE-99 = unknown
+
+error-98 = NOt defined
+error-99 = Unknown
+
+GRID_IMP_MODE-0 = Allowed   
+GRID_IMP_MODE-1 = Not Allowed
+GRID_IMP_MODE-99 = Unknown
+
+GRID_EXP_MODE-0 = PV-only
+GRID_EXP_MODE-1 = Battery-ok
+GRID_EXP_MODE-2 = Never
+GRID_EXP_MODE-99 = Unknown
+
+
+ND-pwstatus-NAME = Power Wall Status
+ND-pwstatus-ICON = Electricity
+CMD-nlspwstatus-UPDATE-NAME = Update System Data
+ST-nlspwstatus-ST-NAME = Connected to Tesla
+ST-nlspwstatus-GV0-NAME = Remaining Battery 
+ST-nlspwstatus-GV1-NAME = Inst Solar Export
+ST-nlspwstatus-GV2-NAME = Inst Battery Export
+ST-nlspwstatus-GV3-NAME = Inst Home Load
+ST-nlspwstatus-GV4-NAME = Inst Grid Import
+
+ST-nlspwstatus-GV5-NAME = Operation Mode
+ST-nlspwstatus-GV6-NAME = Grid Status
+ST-nlspwstatus-GV7-NAME = Grid Services Active
+
+ST-nlspwstatus-GV8-NAME = Home Total Use Today
+ST-nlspwstatus-GV9-NAME = Solar Export Today
+ST-nlspwstatus-GV10-NAME = Battery Export Today
+ST-nlspwstatus-GV11-NAME = Battery Import Today
+ST-nlspwstatus-GV12-NAME = Grid Exportport Today
+ST-nlspwstatus-GV13-NAME = Grid Import Today
+ST-nlspwstatus-GV14-NAME = Grid Service Today
+ST-nlspwstatus-CPW-NAME = Generator Today
+ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
+ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
+ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
+ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
+ST-nlspwstatus-GV19-NAME = Grid Export Yesterday
+ST-nlspwstatus-GV20-NAME = Grid Import Yesterday
+ST-nlspwstatus-GV21-NAME = Grid Service Yesterday
+ST-nlspwstatus-TPW-NAME = Generator Yesterday
+ST-nlspwstatus-GV22-NAME = Today nbr backup events 
+ST-nlspwstatus-GV23-NAME = Today backup event time
+ST-nlspwstatus-GV24-NAME = Yesterday nbr backup events 
+ST-nlspwstatus-GV25-NAME = Yesterday backup event time
+ST-nlspwstatus-GV26-NAME = Today charge power
+ST-nlspwstatus-GV27-NAME = Today charge time
+ST-nlspwstatus-GV28-NAME = Yesterday charge power
+ST-nlspwstatus-GV29-NAME = Yesterday charge time
+

@@ -1,40 +1,41 @@
 # udi-TeslaPW  -  for Polyglot v3 
 
 ## Tesla PW Node server
-# udi-TeslaPW  -  for Polyglot v3 
+# udi-TeslaPW  -  for Polyglot PG3x
 ## Power wall Node server
-The main node displays node status
-Setup node allows configuration of different parameters  (requires cloud access)
-Status node gives a firewall status 
-Solar Node gives Solar info (if solar is detected)
-Generator node gives generator info (if generator is installed - not tested)
 
-For the setup node to show one need to connect to the cloud (Tesla only allows changes via cloud)
-Note - there is a discrepancy between local and cloud back-off limt.  Local power wall reports about 3% higher than the value specified perventage in the cloud (one can only change back-f value via the cloud or Tesla App)
+This is a updated version of the Tesla Powerwall Node Server.  It utilizes the official Tela API now.  At this time there is no cost to use the API but users may be throttled if the poll too often.  Note, there could be a charge to use the API in the future.
+
+The server should be able to support multiple power walls when using cloud (same credentials) - local can only be 1 server at the time.  This has only been tester witha  single powerwall setup as 
+
+This node server requires PG3x to run - it will not run on PG3
+
+To install one must configure the region of the server (NA,EU or CN).  If local access is also desired, the relevant parameters must be specified as well 
+The following limits exist:
+
+5 call to power wall control per day
+100K data requests per power wall system per day 
+
+Once starting the server will requests authentication and the user must follow the login request in the web page (from Tesla) and then allow access to data.  
+
+There is one main node with overall info 
+Each power wall system has it own node with setup and history sub-nodes.
+Most of parameters are the same as previous node, but there have been some updates to allow the use of official API
 
 ## Code
-Code uses API (local power wall) from https://github.com/jrester/tesla_powerwall API - not official Tesla API 
-Some info on the clould API can be found at https://www.teslaapi.io/powerwalls/commands
-as wellas at https://tesla-api.timdorr.com/ (this is an unofficial API)
+The cloud portion of the server uses the official Tesla API (https://developer.tesla.com/docs/fleet-api#energy-endpoints)
+The local data is based on API (not officeial) https://github.com/jrester/tesla_powerwall API - not official Tesla API 
 
-## Refresh Token 
-An initial refresh token is required for first install (and perhaps if token somehow expires)
-It can be obtained e.g. using 
-Auth for Tesla iPhone app 
-https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613 
-or 
-Tesla Tokens https://play.google.com/store/apps/details?id=net.leveugle.teslatokens
-
-Input refresh token into configuration 
-The node server keep a copy of the token (file) and will try use this if node server is restarted.  It will also refresh before token expires
 
 ## Installation
-To run node server user must first select data source - from Local Power Wall and/or Tesla Cloud.  Enter IP address and user_eamil/password for local and user_email/password for cloud access along with refresh token
+To run node server user must first select data source - from Local Power Wall and/or Tesla Cloud. 
+For local access:
+Enter IP address and user_eamil/password for local and user_email/password as well as set local_sccess to True
+
+For cloud access:
+Enter region for the power wall (NA, EU or CN) and set cloud_access to True. Save and press Authentication. Follow inpt procesure and allow access to data 
 
 ## Notes 
-Using cloud access user can set all parameters mobile app currently supports (except car charging limit)
-
-Generator support is not tested (I do not have one) and I have not tested without solar connected.
 
 shortPoll updates critical parameters (and issues a heartbeat)
 longPoll updates all parameters

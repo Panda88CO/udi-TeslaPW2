@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#import time
+import time
 
 try:
     import udi_interface
@@ -10,14 +10,13 @@ except ImportError:
     import logging
     logging.basicConfig(level=30)
 
-#from TeslaInfoV2 import tesla_info
+from OLD.TeslaInfo import tesla_info
 from TeslaPWSetupNode import teslaPWSetupNode
-#from TeslaPWSolarNode import teslaPWSolarNode
-#from TeslaPWGenNode import teslaPWGenNode
-from TeslaPWHistoryNode import teslaPWHistoryNode
+from OLD.TeslaPWSolarNode import teslaPWSolarNode
+from OLD.TeslaPWGenNode import teslaPWGenNode
 
 
-class teslaPWStatusNode(udi_interface.Node):
+class teslaPWHistoryNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
 
     def __init__(self, polyglot, primary, address, name, site_id, TPW):
@@ -46,46 +45,24 @@ class teslaPWStatusNode(udi_interface.Node):
         #polyglot.subscribe(polyglot.START, self.start, address)
         
     def start(self):   
-        logging.debug('Start Tesla Power Wall Status Node')
-        #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
-        logging.info('Adding power wall sub-nodes')
-
-        sub_adr = self.primary[-8:]
-        #if self.TPW.cloud_access_enabled():
+        logging.debug('Start')
         
-  
-        teslaPWSetupNode(self.poly, self.primary, 'setup_'+sub_adr, 'Setup PW Parameters', self.site_id, self.TPW)
-        teslaPWHistoryNode(self.poly, self.primary, 'hist_'+sub_adr, 'Usage History', self.site_id, self.TPW)
-
-
+        #self.TPW.teslaInitializeData()
         self.updateISYdrivers()
         self.node_ok = True
 
     def stop(self):
         logging.debug('stop - Cleaning up')
     
+
     def node_ready(self):
         return(self.node_ok)
 
 
-
-
     def updateISYdrivers(self):
-
-
-        logging.debug('StatusNode updateISYdrivers')
-        #tmp = self.TPW.getTPW_backup_time_remaining()
-        #logging.debug('GV0: {}'.format(tmp))
+        logging.debug('HistoryNode updateISYdrivers')
+        
         self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
-        self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_chargeLevel(self.site_id),1), 51)
-        self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_solarSupply(self.site_id),2), 33)
-        self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_batterySupply(self.site_id),2), 33)
-        self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_load(self.site_id),2), 33)
-        self.PW_setDriver('GV4', self.round2ISY(self.TPW.getTPW_gridSupply(self.site_id),2), 33)
-                
-        self.PW_setDriver('GV5', self.TPW.getTPW_operationMode(self.site_id))
-        self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus(self.site_id))
-        self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive(self.site_id))
 
         self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
         self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
@@ -96,23 +73,36 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(self.site_id),2), 33)
         self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
 
+        self.PW_setDriver('GV15', self.round2ISY(self.TPW.getTPW_yesterdayConsumption(self.site_id),2), 33)
+        self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(self.site_id),2), 33)
+        self.PW_setDriver('GV17', self.round2ISY(self.TPW.getTPW_yesterdayBattery_export(self.site_id),2), 33)       
+        self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(self.site_id),2), 33)
+        self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33) 
+        self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id),2), 33)
+        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGridServicesUse(self.site_id),2), 33)
+        self.PW_setDriver('TPW', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(self.site_id),2), 33)
 
+        self.PW_setDriver('GV22', self.TPW.getTPW_days_backup_events(self.site_id))
+        self.PW_setDriver('GV23', self.round2ISY(self.TPW.getTPW_days_backup_time(self.site_id),0), 58)
+        self.PW_setDriver('GV24', self.TPW.getTPW_yesterday_backup_events(self.site_id))
+        self.PW_setDriver('GV25', self.round2ISY(self.TPW.getTPW_yesterday_backup_time(self.site_id),0), 58)
+        self.PW_setDriver('GV26', self.round2ISY(self.TPW.getTPW_days_evcharge_power(self.site_id),0), 33)
+        self.PW_setDriver('GV27', self.round2ISY(self.TPW.getTPW_days_evcharge_time(self.site_id),0), 58)
+        self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_power(self.site_id),0), 33)
+        self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_yesterday_evcharge_time(self.site_id),0), 58)
 
+    #def update_PW_data(self, level):
+    #    pass
 
-    '''
-    def update_PW_data(self, site_id, level):
-        self.TPW.pollSystemData(site_id, level) 
-    '''
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        #self.update_PW_data(self.site_id, 'all')
-        self.TPW.pollSystemData(self.site_id, 'sll') 
+        self.TPW.pollSystemData(self.site_id, 'all')
         self.updateISYdrivers()
 
  
 
-    id = 'pwstatus'
+    id = 'pwhistory'
     commands = { 'UPDATE': ISYupdate, 
                 }
     '''
@@ -122,7 +112,7 @@ class teslaPWStatusNode(udi_interface.Node):
     ST-nlspwstatus-GV2-NAME = Inst Battery Export
     ST-nlspwstatus-GV3-NAME = Inst Home Load
     ST-nlspwstatus-GV4-NAME = Inst Grid Import
-
+    
     ST-nlspwstatus-GV5-NAME = Operation Mode
     ST-nlspwstatus-GV6-NAME = Grid Status
     ST-nlspwstatus-GV7-NAME = Grid Services Active
@@ -132,8 +122,9 @@ class teslaPWStatusNode(udi_interface.Node):
     ST-nlspwstatus-GV10-NAME = Battery Export Today
     ST-nlspwstatus-GV11-NAME = Battery Import Today
     ST-nlspwstatus-GV12-NAME = Grid Import Today
-    ST-nlspwstatus-GV13-NAME = Grid Export Today
+    ST-nlspwstatus-GV13-NAME= Grid Export Today
     ST-nlspwstatus-GV14-NAME = Grid Service Today
+    ST-nlspwstatus-CPW-NAME = Generator Today
 
     ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
     ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
@@ -151,21 +142,21 @@ class teslaPWStatusNode(udi_interface.Node):
     ST-nlspwstatus-GV27-NAME = Today charge time
     ST-nlspwstatus-GV28-NAME = Yesterday charge power
     ST-nlspwstatus-GV29-NAME = Yesterday charge time
-
+    ST-nlspwstatus-TPW-NAME = Generator Yesterday
     '''
 
     drivers = [
             {'driver': 'ST', 'value': 99, 'uom': 25},  #online         
-            {'driver': 'GV0', 'value': 0, 'uom': 51},       
-            {'driver': 'GV1', 'value': 0, 'uom': 33},
-            {'driver': 'GV2', 'value': 0, 'uom': 33},  
-            {'driver': 'GV3', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV4', 'value': 0, 'uom': 33},  
-
-            {'driver': 'GV5', 'value': 99, 'uom': 25},  
-            {'driver': 'GV6', 'value': 99, 'uom': 25},  
-            {'driver': 'GV7', 'value': 99, 'uom': 25},  
-
+            
+            #{'driver': 'GV0', 'value': 0, 'uom': 51},       
+            #{'driver': 'GV1', 'value': 0, 'uom': 33},
+            #{'driver': 'GV2', 'value': 0, 'uom': 33},  
+            #{'driver': 'GV3', 'value': 0, 'uom': 33}, 
+            #{'driver': 'GV4', 'value': 0, 'uom': 33},  
+            #{'driver': 'GV5', 'value': 99, 'uom': 25},  
+            #{'driver': 'GV6', 'value': 99, 'uom': 25},  
+            #{'driver': 'GV7', 'value': 99, 'uom': 25},  
+    
             {'driver': 'GV8', 'value': 99, 'uom': 25}, 
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
             {'driver': 'GV10', 'value': 0, 'uom': 33},  
@@ -173,24 +164,28 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 33},
             {'driver': 'GV13', 'value': 0, 'uom': 33}, 
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV15', 'value': 0, 'uom': 33},
+            {'driver': 'GV15', 'value': 0, 'uom': 33},             
             {'driver': 'CPW', 'value': 0, 'uom': 33},
             
-            #{'driver': 'GV16', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV17', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV18', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV19', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV20', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV21', 'value': 0, 'uom': 33},
-            #{'driver': 'GV22', 'value': 0, 'uom': 0},
-            #{'driver': 'GV23', 'value': 0, 'uom': 58},
-            #{'driver': 'GV24', 'value': 0, 'uom': 0}, 
-            #{'driver': 'GV25', 'value': 0, 'uom': 58}, 
-            #{'driver': 'GV26', 'value': 99, 'uom': 33},
-            #{'driver': 'GV27', 'value': 99, 'uom': 58}, 
-            #{'driver': 'GV28', 'value': 99, 'uom': 33},
-            #{'driver': 'GV28', 'value': 99, 'uom': 58},    
-                     
-            ]
+            {'driver': 'GV16', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV17', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV18', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV19', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV20', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV21', 'value': 0, 'uom': 33},
+            {'driver': 'TPW', 'value': 0, 'uom': 33},
 
-    
+            {'driver': 'GV22', 'value': 0, 'uom': 0},
+            {'driver': 'GV23', 'value': 0, 'uom': 58},
+            {'driver': 'GV24', 'value': 0, 'uom': 0}, 
+            {'driver': 'GV25', 'value': 0, 'uom': 58}, 
+            {'driver': 'GV26', 'value': 99, 'uom': 33},
+            {'driver': 'GV27', 'value': 99, 'uom': 58}, 
+            {'driver': 'GV28', 'value': 99, 'uom': 33},
+            {'driver': 'GV29', 'value': 99, 'uom': 58},
+                      
+            ]          
+           
+            
+
+

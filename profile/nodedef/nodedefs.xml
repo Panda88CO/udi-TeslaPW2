@@ -2,10 +2,10 @@
    <nodeDef id="controller" nls="nlscontroller">
       <editors />
       <sts>
-         <st id="ST"  editor="CTRL_1" />
-         <st id="GV2" editor="CTRL_2" />
-         <st id="GV3" editor="CTRL_3" />
-         <st id="GV4" editor="CTRL_4" />         
+         <st id="ST"  editor="UPDN" />
+         <st id="GV2" editor="CON" />
+         <st id="GV3" editor="MISS" />
+         <st id="GV4" editor="CON_TYPE" />         
       </sts>
       <cmds>
          <sends>
@@ -21,14 +21,15 @@
    <nodeDef id="pwstatus" nls="nlspwstatus">
       <editors />
       <sts>
-         <st id="GV0" editor="HOURS" />
-         <st id="GV1" editor="PERCENT" />
-         <st id="GV2" editor="OP_MODE" />
-         <st id="GV3" editor="GRID_ST" />
-         <st id="GV4" editor="ON_LINE" />
-         <st id="GV5" editor="TOGGLE" />
-         <st id="GV6" editor="KWH_20" />
-         <st id="GV7" editor="KWH" />
+         <st id="ST" editor="ON_LINE" />      
+         <st id="GV0" editor="KWH" />
+         <st id="GV1" editor="KWH" />
+         <st id="GV2" editor="KWH" />
+         <st id="GV3" editor="KWH" />
+         <st id="GV4" editor="KWH" />
+         <st id="GV5" editor="OP_MODE" />
+         <st id="GV6" editor="GRID_ST" />
+         <st id="GV7" editor="GRID_MODE" />
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
@@ -37,14 +38,73 @@
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
          <st id="GV15" editor="KWH" />
+         <st id="CPW" editor="KWH" />
+         <!--
          <st id="GV16" editor="KWH" />
          <st id="GV17" editor="KWH" />
          <st id="GV18" editor="KWH" />
          <st id="GV19" editor="KWH" />
          <st id="GV20" editor="KWH" />
-         <st id="GV21" editor="DOLLAR" />
-         <st id="GV23" editor="PERIOD" />
-         <st id="GV24" editor="SEASON" />
+         <st id="GV21" editor="KWH" />
+         <st id="GV22" editor="count" />    
+         <st id="GV23" editor="TIME" />
+         <st id="GV24" editor="count" />
+         <st id="GV25" editor="TIME" />
+         <st id="GV26" editor="KWH" />
+         <st id="GV27" editor="TIME" />
+         <st id="GV28" editor="KWH" />
+         <st id="GV29" editor="TIME" />
+         -->
+
+      </sts>
+      <cmds>
+         <sends>
+         </sends>
+         <accepts>
+            <cmd id="UPDATE" /> 
+         </accepts>
+      </cmds>
+   </nodeDef> 
+
+
+      <nodeDef id="pwhistory" nls="nlspwstatus">
+      <editors />
+      <sts>
+         <st id="ST" editor="ON_LINE" />     
+         <!--      
+         <st id="GV0" editor="KWH" />
+         <st id="GV1" editor="KWH" />
+         <st id="GV2" editor="KWH" />
+         <st id="GV3" editor="KWH" />
+         <st id="GV4" editor="KWH" />
+         <st id="GV5" editor="OP_MODE" />
+         <st id="GV6" editor="GRID_ST" />
+         <st id="GV7" editor="EN_MODE" />
+         -->
+         <st id="GV8" editor="KWH" />
+         <st id="GV9" editor="KWH" />
+         <st id="GV10" editor="KWH" />
+         <st id="GV11" editor="KWH" />
+         <st id="GV12" editor="KWH" />
+         <st id="GV13" editor="KWH" />
+         <st id="GV14" editor="KWH" />
+         <st id="GV15" editor="KWH" />
+         <st id="CPW" editor="KWH" />
+         <st id="GV16" editor="KWH" />
+         <st id="GV17" editor="KWH" />
+         <st id="GV18" editor="KWH" />
+         <st id="GV19" editor="KWH" />
+         <st id="GV20" editor="KWH" />
+         <st id="GV21" editor="KWH" />
+         <st id="TPW" editor="KWH" />
+         <st id="GV22" editor="count" />    
+         <st id="GV23" editor="TIME" />
+         <st id="GV24" editor="count" />
+         <st id="GV25" editor="TIME" />
+         <st id="GV26" editor="KWH" />
+         <st id="GV27" editor="TIME" />
+         <st id="GV28" editor="KWH" />
+         <st id="GV29" editor="TIME" />
 
       </sts>
       <cmds>
@@ -93,7 +153,11 @@
          <st id="GV1" editor="PERCENT" />
          <st id="GV2" editor="OP_MODE" />
          <st id="GV3" editor="TOGGLE" />
-         <st id="GV4" editor="TOU_MODE" />
+         <!--<st id="GV4" editor="TOU_MODE" />-->
+         <st id="GV5" editor="GRID_IMP_MODE" />  
+         <st id="GV6" editor="GRID_EXP_MODE" />
+         <st id="GV7" editor="PERCENT" />                         
+         <!--<st id="GV4" editor="TOU_MODE" />
          <st id="GV5" editor="TIME" />
          <st id="GV6" editor="TIME" />
          <st id="GV7" editor="TIME" />
@@ -101,49 +165,33 @@
          <st id="GV9" editor="TIME" />
          <st id="GV10" editor="TIME" />
          <st id="GV11" editor="TIME" />
-         <st id="GV12" editor="TIME" />
+         <st id="GV12" editor="TIME" /> -->
       </sts>
       <cmds>
          <sends>
          </sends>
          <accepts>
+            <cmd id="UPDATE" /> 
             <cmd id="BACKUP_PCT" > 
                <p id="" editor="PERCENT" init="GV1" /> 
             </cmd> 
             <cmd id="OP_MODE" > 
-               <p id="" editor="OP_MODE" init="GV2" /> 
+               <p id="" editor="setOP_MODE" init="GV2" /> 
             </cmd> 
             <cmd id="STORM_MODE" > 
-               <p id="" editor="TOGGLE" init="GV3" /> 
+               <p id="" editor="setTOGGLE" init="GV3" /> 
             </cmd> 
-            <cmd id="TOU_MODE" > 
-               <p id="" editor="TOU_MODE" init="GV4" /> 
+            <!--<cmd id="TOU_MODE" > 
+               <p id="" editor="setTOU_MODE" init="GV4" /> 
+            </cmd> -->
+            <cmd id="GRID_MODE" > 
+               <p id="import" editor="setGRID_IMP_MODE" init="GV5" /> 
+               <p id="export" editor="setGRID_EXP_MODE" init="GV6" /> 
             </cmd> 
-            <cmd id="WE_O_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV5" /> 
+            <cmd id="EV_CHRG_MODE" > 
+               <p id="" editor="PERCENT" init="GV7" /> 
             </cmd> 
-            <cmd id="WE_O_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV6" /> 
-            </cmd> 
-            <cmd id="WE_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV7" /> 
-            </cmd> 
-            <cmd id="WE_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV8" /> 
-            </cmd> 
-            <cmd id="WK_O_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV9" /> 
-            </cmd> 
-            <cmd id="WK_O_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV10" /> 
-            </cmd> 
-            <cmd id="WK_PEAK_START" > 
-               <p id="" editor="TIMESET" init="GV11" /> 
-            </cmd> 
-            <cmd id="WK_PEAK_END" > 
-               <p id="" editor="TIMESET" init="GV12" /> 
-            </cmd> 
-            <cmd id="UPDATE" /> 
+
          </accepts>
       </cmds>
    </nodeDef> 

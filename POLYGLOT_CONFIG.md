@@ -3,18 +3,14 @@
 ## Installation
 For local access to PowerWall the local IP address (LOCAL_IP_ADDRESS) along with login  (LOCAL_USER_EMAIL) and password (LOCAL_USER_PASSWORD) must be added in configuration
 
-It may be necesary to power cycle (turn power wall on and off using the switch on the local power wall) - the node server will try to login for 5 min so it has to be done within those 5 min.  Often it is sufficient to login using the web interface before starting the node server 
+It may be necesary to power cycle (turn power wall on and off using the switch on the local power wall) - 
 
-For cloud access through Tesla cloud service one must provide a "refresh token" (REFRESH_TOKEN).  
-It can be obtained e.g. using 
-Auth for Tesla iPhone app 
-https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613 
-or 
+Cloud access is now accessible through the node server directly by clicking authentication button (after config).  The login will appear similar to the tesla website.  User must grant node server access to data.  The following scopes are used granted access:
 
-Tesla Tokens 
-https://play.google.com/store/apps/details?id=net.leveugle.teslatokens
-
-Once the token is accepted the node server will try to keep the token refreshed. 
+energy_device_data 
+energy_cmds 
+open_id 
+offline_access
 
 Once installed a status node for each EV registered in the user account is created with sub-nodes for each EV addressing charging and climate control.
 

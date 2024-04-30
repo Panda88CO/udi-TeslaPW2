@@ -1,41 +1,76 @@
 <editors> 
-  <editor id = "CTRL_1" > 
+  <editor id = "UPDN" > 
      <range  uom="25" subset="0-1" nls="UPDN" />
   </editor>
 
-  <editor id = "CTRL_2" > 
+  <editor id = "CON" > 
      <range  uom="25" subset="0-1" nls="CON" />
   </editor>
 
-  <editor id = "CTRL_3" > 
-     <range  uom="55" min="0" max="255" prec="0" />
+  <editor id = "MISS" > 
+      <range  uom="55" min="0" max="255" prec="0" />
+      <range uom="25" subset="98-99" nls="error" />
   </editor>     
 
-  <editor id = "CTRL_4" > 
-     <range  uom="25" subset="0-3" nls="CON_STATE" />     
+  <editor id = "CON_TYPE" > 
+     <range  uom="25" subset="0-3, 99" nls="CON_STATE" />
   </editor>
   <editor id = "HOURS" > 
      <range  uom="20" min="0" max="100" prec="2" />
+      <range uom="25" subset="98-99" nls="error" />
   </editor>
   
   <editor id = "PERCENT" > 
-     <range  uom="51" min="0" max="100" prec="2" />
+     <range  uom="51" min="0" max="100" prec="0" />
+     <range uom="25" subset="98-99" nls="error" />
+  </editor>
+  <editor id = "TOGGLE" > 
+     <range  uom="25" subset="0-1, 99" nls="EN_TOGGLE" />
+  </editor>
+  <editor id = "setTOGGLE" > 
+     <range  uom="25" subset="0-1" nls="EN_TOGGLE" />
+  </editor>
+
+  <editor id = "GRID_MODE" > 
+     <range  uom="25" subset="0-1,99" nls="EN_TOGGLE" />
   </editor>
 
   <editor id = "OP_MODE" > 
-     <range  uom="25" subset="0-3" nls="EN_MODE" />
+     <range  uom="25" subset="0-2,99" nls="OP_MODE" />
+  </editor>
+
+  <editor id = "setOP_MODE" > 
+     <range  uom="25" subset="1-2" nls="OP_MODE" />
   </editor>
 
   <editor id = "GRID_ST" > 
      <range  uom="25" subset="0-3,99" nls="EN_GRID_STATUS" />
   </editor>
 
-  <editor id = "TOU_MODE" > 
+  <!--<editor id = "TOU_MODE" > 
+     <range  uom="25" subset="0-1,99" nls="EN_TOU_MODE" />
+  </editor> -->
+
+  <editor id = "GRID_IMP_MODE" > 
+     <range  uom="25" subset="0-1,99" nls="GRID_IMP_MODE" />
+  </editor>
+
+  <editor id = "setGRID_IMP_MODE" > 
+     <range  uom="25" subset="0-1" nls="GRID_IMP_MODE" />
+  </editor>
+  <editor id = "GRID_EXP_MODE" > 
+     <range  uom="25" subset="0-2,99" nls="GRID_EXP_MODE" />
+  </editor>
+  <editor id = "setGRID_EXP_MODE" > 
+     <range  uom="25" subset="0-2" nls="GRID_EXP_MODE" />
+  </editor>  
+
+  <editor id = "setTOU_MODE" > 
      <range  uom="25" subset="0-1" nls="EN_TOU_MODE" />
   </editor>
 
   <editor id = "ON_LINE" > 
-     <range  uom="25" subset="0-1" nls="EN_ONLINE" />
+     <range  uom="25" subset="0-1,99" nls="EN_ONLINE" />
   </editor>
 
   <editor id = "TOGGLE" > 
@@ -44,23 +79,27 @@
 
   <editor id = "KWH_LOW" > 
      <range  uom="33" min="0" max="20" prec="2" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>
 
   <editor id = "KWH" > 
-     <range  uom="33" min="-100" max="100" prec="1" />
+     <range uom="33" min="-100" max="100" prec="1" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
   <editor id = "KWH_20" > 
      <range  uom="33" min="-20" max="20" prec="2" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
   <editor id = "TIME" > 
      <range  uom="58" min="0" max="86400" prec="0" />
-      <range uom="25" subset="99" nls="TOUTIME" />
+      <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
   <editor id = "TIMESET" > 
      <range  uom="58" min="0" max="86400" prec="0" />
+     <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
   <editor id = "SEASON" > 
      <range  uom="25" subset="0-2,99" nls="SEASON" />
@@ -70,6 +109,10 @@
   </editor>
   <editor id = "DOLLAR" > 
      <range  uom="103" min="0" max="5" prec="2" />
+     <range uom="25" subset="98-99" nls="error" />
   </editor>  
-
+  <editor id = "count" > 
+     <range  uom="0" min="0" max="100" prec="0" />
+     <range uom="25" subset="98-99" nls="NODATA" />
+  </editor>  
 </editors> 
