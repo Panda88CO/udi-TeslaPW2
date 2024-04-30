@@ -11,6 +11,10 @@ The server should be able to support multiple power walls when using cloud (same
 This node server requires PG3x to run - it will not run on PG3
 
 To install one must configure the region of the server (NA,EU or CN).  If local access is also desired, the relevant parameters must be specified as well 
+The following limits exist:
+
+5 call to power wall control per day
+100K data requests per power wall system per day 
 
 Once starting the server will requests authentication and the user must follow the login request in the web page (from Tesla) and then allow access to data.  
 
