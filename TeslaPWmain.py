@@ -296,9 +296,13 @@ class TeslaPWController(udi_interface.Node):
 
     def stop(self):
         #self.removeNoticesAll()
+
         self.poly.Notices.clear()
-        if self.TPW:
-            self.TPW.disconnectTPW()
+        try:
+            if self.TPW:
+                self.TPW.disconnectTPW()
+        except Exception as e:
+            logging.debug('Local logout failed {}'.format(e))
         self.node.setDriver('ST', 0 )
         self.poly.stop()
         logging.debug('stop - Cleaning up')
