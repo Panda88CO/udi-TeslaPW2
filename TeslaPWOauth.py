@@ -96,7 +96,7 @@ class teslaPWAccess(teslaAccess):
                             self.total_pack_energy[str(site['energy_site_id' ])] = site['total_pack_energy' ] 
             return(power_walls)
         except Exception as e:
-            logging.error('tesla_get_live_status Exception : {}'.format(e))
+            logging.error('tesla_get_products Exception : {}'.format(e))
 
 
     def tesla_get_live_status(self, site_id) -> None:
