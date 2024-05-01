@@ -100,10 +100,10 @@ class tesla_local:
         return(self.PWlocal.get_charge())
 
     def get_grid_status(self):
-        return(self.get_grid_status())
+        return(self.PWlocal.get_grid_status())
     
     def get_operation_mode(self):
-        return(self.get_operation_mode())
+        return(self.PWlocal.get_operation_mode())
 
     #def running(self):
     #    if  (self.PWlocal.running()):  
