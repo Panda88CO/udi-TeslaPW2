@@ -59,7 +59,7 @@ class tesla_info():
     def cloud_authenticated(self):
 
         logging.debug('cloud_authenticated')
-        return(self.TPWcloud.authendicated())
+        return(self.TPWcloud.authenticated())
 
     def init_cloud(self, region) -> bool:
         logging.debug('init_cloud')
@@ -195,7 +195,7 @@ class tesla_info():
         logging.debug('teslaCloudConnect {}'.format(self.TPWcloud))
         
         self.TPWcloudAccess = True
-        if not(self.TPWcloud.authendicated()):
+        if not(self.TPWcloud.authenticated()):
             logging.debug('Error connecting to Tesla Cloud - check refresh key')
             self.cloudAccessUp=False
             self.TPWcloudAccess = False

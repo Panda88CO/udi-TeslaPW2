@@ -54,7 +54,7 @@ class tesla_local:
         logging.debug('self.TPWlocal ')
         loginAttempts = 0
         #temp = self.TPWlocal.is_authenticated()
-        #logging.debug('authendicated = {} '.format(temp))
+        #logging.debug('authenticated = {} '.format(temp))
         while not(self.PWlocal.is_authenticated()) and loginAttempts < 10:            
             logging.info('Trying to log into Tesla Power Wall') 
             time.sleep(30)

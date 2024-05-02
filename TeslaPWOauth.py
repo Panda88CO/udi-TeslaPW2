@@ -449,7 +449,7 @@ class teslaPWAccess(teslaAccess):
         logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
         access = False
         self.update_date_time(site_id)
-        #while not self.authendicated():
+        #while not self.authenticated():
         #    self.try_authendication()
         #    logging.info('Cloud Access not Authenticated yet - press Autenticate button')
         #    time.sleep(5)
@@ -506,7 +506,7 @@ class teslaPWAccess(teslaAccess):
  
 
     def isConnectedToPW(self) -> bool:
-        return( self.authendicated())
+        return( self.authenticated())
 
 
    

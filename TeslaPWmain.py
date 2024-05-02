@@ -215,7 +215,7 @@ class TeslaPWController(udi_interface.Node):
                 logging.info('Waiting to authenticate to complete - press authenticate button')
                 self.poly.Notices['auth'] = 'Please initiate authentication'
                 time.sleep(5)
-            #if self.TPW_cloud.authendicated():
+            #if self.TPW_cloud.authenticated():
             #    self.cloudAccessUp = True
             #else:
             #    self.cloudAccessUp =  self.TPW_cloud.try_authendication()
@@ -356,7 +356,7 @@ class TeslaPWController(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('System updateISYdrivers - ')       
-        #value = self.TPW_cloud.authendicated()
+        #value = self.TPW_cloud.authenticated()
         #if value == 0:
         #   self.longPollCountMissed = self.longPollCountMissed + 1
         #else:
