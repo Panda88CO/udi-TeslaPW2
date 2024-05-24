@@ -82,6 +82,7 @@
          <st id="GV6" editor="GRID_ST" />
          <st id="GV7" editor="EN_MODE" />
          -->
+         <st id="GPV" editor="KWH" />         
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
@@ -91,6 +92,7 @@
          <st id="GV14" editor="KWH" />
          <st id="GV15" editor="KWH" />
          <st id="CPW" editor="KWH" />
+         <st id="GV30" editor="KWH" />     
          <st id="GV16" editor="KWH" />
          <st id="GV17" editor="KWH" />
          <st id="GV18" editor="KWH" />
