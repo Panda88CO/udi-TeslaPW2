@@ -280,8 +280,6 @@ class TeslaPWController(udi_interface.Node):
     #def handleNotices(self):
     #    logging.debug('handleNotices')
 
-<<<<<<< Updated upstream
-=======
     def tesla_initialize(self):
         logging.debug('starting Login process')
         try:
@@ -412,7 +410,6 @@ class TeslaPWController(udi_interface.Node):
 
         #self.TPW.systemReady = True
         logging.debug ('Controller - initialization done')
->>>>>>> Stashed changes
 
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
