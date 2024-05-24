@@ -280,6 +280,139 @@ class TeslaPWController(udi_interface.Node):
     #def handleNotices(self):
     #    logging.debug('handleNotices')
 
+<<<<<<< Updated upstream
+=======
+    def tesla_initialize(self):
+        logging.debug('starting Login process')
+        try:
+            logging.debug('localAccess:{}, cloudAccess:{}'.format(self.localAccess, self.cloudAccess))
+
+            #self.TPW = tesla_info(self.my_Tesla_PW )
+            #self.TPW = teslaAccess() #self.name, self.address, self.localAccess, self.cloudAccess)
+            #self.localAccess = self.TPW.localAccess()
+            #self.cloudAccess = self.TPW.cloudAccess()
+            logging.debug('tesla_initialize 1 : {}'.format(self.my_Tesla_PW._oauthTokens))
+            if self.cloudAccess:
+                logging.debug('Attempting to log in via cloud auth')
+
+                if self.my_Tesla_PW.authendicated():
+                    self.cloudAccessUp = True
+                else:
+                    self.cloudAccessUp =  self.my_Tesla_PW.test_authendication()
+
+                while  not  self.cloudAccessUp:
+                    time.sleep(5)
+                    logging.info('Waiting to authenticate to complete - press authenticate button')   
+                    self.cloudAccessUp =  self.my_Tesla_PW.test_authendication()
+    
+                #logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
+                self.poly.Notices.clear()
+
+                logging.debug('finished login procedures' )
+                logging.info('Creating Nodes')
+            
+                self.PWs = self.my_Tesla_PW.tesla_get_products()
+                logging.debug('self.PWs {}'.format(self.PWs))
+                logging.debug('tesla_initialize 2 : {}'.format(self.my_Tesla_PW._oauthTokens))
+                for site_id in self.PWs:
+                    string = str(self.PWs[site_id]['energy_site_id'])
+                    #logging.debug(string)
+                    string = string[-14:]
+                    #logging.debug(string)
+                    node_address =  self.poly.getValidAddress(string)
+                    #logging.debug(string)
+                    string = self.PWs[site_id]['site_name']
+                    #logging.debug(string)
+                    node_name = self.poly.getValidName(string)
+                    #logging.debug(string)
+                    logging.debug('tesla_initialize 3 : {}'.format(self.my_Tesla_PW._oauthTokens))
+                    self.TPW = tesla_info()
+                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
+                    logging.debug('tesla_initialize 4 : {}'.format(self.my_Tesla_PW._oauthTokens))
+                    #self.wait_for_node_done()
+
+            else:
+                logging.info('Cloud Acces not enabled')
+            '''
+            if self.localAccess:
+                logging.debug('Attempting to log in via local auth')
+                try:
+                    self.poly.Notices['localPW'] = 'Tesla PowerWall may need to be turned OFF and back ON to allow loacal access'
+                    #self.localAccessUp  = self.TPW.loginLocal(local_email, local_password, local_ip)
+                    self.localAccessUp  = self.TPW.loginLocal()
+                    count = 1
+                    while not self.localAccessUp and count < 5:
+                        time.sleep(1)
+                        self.localAccessUp  = self.TPW.loginLocal()
+                        count = count +1
+                        logging.info('Waiting for local system access to be established')
+                    if not  self.localAccessUp:
+                        logging.error('Failed to establish local access - check email, password and IP address')   
+                        return
+                    logging.debug('local loging - accessUP {}'.format(self.localAccessUp ))
+
+                except:
+                    logging.error('local authenticated failed.')
+                    self.localAccess = False
+            '''
+                
+ 
+            
+            '''
+            node addresses:
+               setup node:            pwsetup 'Control Parameters'
+               main status node:      pwstatus 'Power Wall Status'
+               generator status node: genstatus 'Generator Status'
+               
+            
+
+            if not self.poly.getNode('pwstatus'):
+                node = teslaPWNode(self.poly, self.address, 'pwstatus', 'Power Wall Status', self.TPW, site_id)
+                self.poly.addNode(node)
+                self.wait_for_node_done()
+
+            if self.TPW.solarInstalled:
+                if not self.poly.getNode('solarstatus'):
+                    node = teslaPWSolarNode(self.poly, self.address, 'solarstatus', 'Solar Status', self.TPW)
+                    self.poly.addNode(node)
+                    self.wait_for_node_done()
+            else:
+                temp = self.poly.getNode('solarstatus')
+                if temp:
+                    self.poly.delNode(temp)
+
+
+            if self.TPW.generatorInstalled:
+                if not self.poly.getNode('genstatus'):
+                    node = teslaPWGenNode(self.poly, self.address, 'genstatus', 'Generator Status', self.TPW)
+                    self.poly.addNode(node)
+                    self.wait_for_node_done()
+            else:
+                temp = self.poly.getNode('genstatus')
+                if temp:
+                    self.poly.delNode(temp)
+        
+            if self.cloudAccess:
+                if not self.poly.getNode('pwsetup'):
+                    node = teslaPWSetupNode(self.poly, self.address, 'pwsetup', 'Control Parameters', self.TPW)
+                    self.poly.addNode(node)
+                    self.wait_for_node_done()
+            else:
+                self.poly.delNode('pwsetup')
+            '''
+            logging.debug('Node installation complete')
+            self.initialized = True
+            self.longPoll()
+            self.nodeDefineDone = True
+            
+            
+        except Exception as e:
+            logging.error('Exception Controller start: '+ str(e))
+            logging.info('Did not connect to power wall')
+
+        #self.TPW.systemReady = True
+        logging.debug ('Controller - initialization done')
+>>>>>>> Stashed changes
 
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
