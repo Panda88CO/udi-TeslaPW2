@@ -163,7 +163,7 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV5', 'value': 99, 'uom': 25},  
             {'driver': 'GV6', 'value': 99, 'uom': 25},  
             {'driver': 'GV7', 'value': 99, 'uom': 25},  
-
+            {'driver': 'GPV', 'value': 99, 'uom': 25}, 
             {'driver': 'GV8', 'value': 99, 'uom': 25}, 
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
             {'driver': 'GV10', 'value': 0, 'uom': 33},  
@@ -171,7 +171,7 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 33},
             {'driver': 'GV13', 'value': 0, 'uom': 33}, 
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV15', 'value': 0, 'uom': 33},
+            #{'driver': 'GV15', 'value': 0, 'uom': 33},
             {'driver': 'CPW', 'value': 0, 'uom': 33},
             
             #{'driver': 'GV16', 'value': 0, 'uom': 33}, 
