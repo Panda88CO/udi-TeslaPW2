@@ -66,7 +66,7 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(self.site_id),2), 33)
         self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id),2), 33) 
         self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id),2), 33)
-        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGridServicesUse(self.site_id),2), 33)
+        self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id)- self.TPW.getTPW_daysGrid_import(self.site_id) ,2), 33)
         self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
         #self.PW_setDriver('GV30', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id)-self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33)
         self.PW_setDriver('GV15', self.round2ISY(self.TPW.getTPW_yesterdayConsumption(self.site_id),2), 33)
@@ -75,7 +75,7 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.PW_setDriver('GV18', self.round2ISY(self.TPW.getTPW_yesterdayBattery_import(self.site_id),2), 33)
         self.PW_setDriver('GV19', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33) 
         self.PW_setDriver('GV20', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id),2), 33)
-        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGridServicesUse(self.site_id),2), 33)
+        self.PW_setDriver('GV21', self.round2ISY(self.TPW.getTPW_yesterdayGrid_export(self.site_id)- self.TPW.getTPW_yesterdayGrid_import(self.site_id) ,2), 33)
         self.PW_setDriver('TPW', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(self.site_id),2), 33)
 
         self.PW_setDriver('GV22', self.TPW.getTPW_days_backup_events(self.site_id))
