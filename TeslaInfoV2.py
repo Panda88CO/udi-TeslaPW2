@@ -130,8 +130,16 @@ class tesla_info():
 
     def init_local(self, email, password, ip_address) -> bool:
         logging.debug('init_local')
-        self.TPWlocal = tesla_local(email, password, ip_address)
-        self.localAccessUp = self.TPWlocal.loginLocal()
+
+        try:
+            self.TPWlocal = tesla_local(email, password, ip_address)
+            logging.debug('local login return: {}'.format(self.TPWlocal ))
+            self.localAccessUp = self.TPWlocal.loginLocal()
+        except Exception as e:
+            logging.error('Exception - Failed to login to local power wall: {}'.format(e))
+            self.localAccessUp = False
+
+            return(self.localAccessUp)
         self.Gateway= self.TPWlocal.get_GWserial_number()
         logging.debug('local GW {}'.format(self.Gateway))
         self.local_site_string = str(self.Gateway)

@@ -42,6 +42,8 @@ class TeslaPWController(udi_interface.Node):
         self.initialized = False
         self.localAccessUp = False
         self.cloudAccessUp = False
+        self.local_access_enabled = False
+        self.cloud_access_enabled = False
         self.customParam_done = False
         self.auth_executed = False
         #self.Rtoken = None
@@ -49,7 +51,7 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Gateway= None
         self.site_id = None
-
+        
         self.customParameters = Custom(self.poly, 'customparams')
 
         self.Notices = Custom(self.poly, 'notices')
@@ -192,11 +194,22 @@ class TeslaPWController(udi_interface.Node):
             time.sleep(1)
         #logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         
-        
-        self.TPW = tesla_info(self.TPW_cloud)
 
-        if self.local_access_enabled: 
+        self.TPW = tesla_info(self.TPW_cloud)
+    
+        if self.local_access_enabled:
+            count = 1
             self.localAccessUp = self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
+            while not self.localAccessUp and count <= 10:
+                logging.error('local access not available - keep trying for 5 min')
+                time.sleep(30)
+                count += 1
+                self.localAccessUp = self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
+            if count >= 10:
+                self.local_access_enabled = False
+                logging.error('Local access not possible - disabling it')
+                self.poly.Notices['local']  = 'local access fails - disabling local access'
+
             #self.TPW_local.loginLocal()
             #self.Gateway= self.TPW.get_GWserial_number()
             #logging.debug('local GW {}'.format(self.GW))
