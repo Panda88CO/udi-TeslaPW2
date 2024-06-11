@@ -128,16 +128,18 @@ ST-nlspwstatus-GV5-NAME = Operation Mode
 ST-nlspwstatus-GV6-NAME = Grid Status
 ST-nlspwstatus-GV7-NAME = Grid Services Active
 
-ST-nlspwstatus-GPV-NAME = Grid Net Use Today
+ST-nlspwstatus-GPV-NAME = Home Net Power Use Today
+
 ST-nlspwstatus-GV8-NAME = Home Total Use Today
 ST-nlspwstatus-GV9-NAME = Solar Export Today
 ST-nlspwstatus-GV10-NAME = Battery Export Today
 ST-nlspwstatus-GV11-NAME = Battery Import Today
-ST-nlspwstatus-GV12-NAME = Grid Exportport Today
+ST-nlspwstatus-GV12-NAME = Grid Export Today
 ST-nlspwstatus-GV13-NAME = Grid Import Today
 ST-nlspwstatus-GV14-NAME = Grid Net Use Today
 ST-nlspwstatus-CPW-NAME = Generator Today
-ST-nlspwstatus-GV30-NAME = Grid Net Use Yesterday
+ST-nlspwstatus-GV30-NAME = Home Net Power Use Yesterday
+
 ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
 ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
 ST-nlspwstatus-GV17-NAME = Battery Export Yesterday

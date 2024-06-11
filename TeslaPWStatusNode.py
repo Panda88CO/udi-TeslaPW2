@@ -84,7 +84,9 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV5', self.TPW.getTPW_operationMode(self.site_id))
         self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus(self.site_id))
         self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive(self.site_id))
-        #self.PW_setDriver('GPV', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id)-self.TPW.getTPW_daysGrid_export(self.site_id),2), 33)
+
+        self.PW_setDriver('GPV', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id) - self.TPW.getTPW_daysGrid_export(self.site_id),2), 33)
+
         self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
         self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
         self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(self.site_id),2), 33)       
@@ -163,8 +165,10 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV5', 'value': 99, 'uom': 25},  
             {'driver': 'GV6', 'value': 99, 'uom': 25},  
             {'driver': 'GV7', 'value': 99, 'uom': 25},  
-            {'driver': 'GPV', 'value': 99, 'uom': 33}, 
-            {'driver': 'GV8', 'value': 99, 'uom': 33}, 
+
+            {'driver': 'GPV', 'value': 99, 'uom': 25}, 
+            {'driver': 'GV8', 'value': 99, 'uom': 25}, 
+
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
             {'driver': 'GV10', 'value': 0, 'uom': 33},  
             {'driver': 'GV11', 'value': 0, 'uom': 33},  
