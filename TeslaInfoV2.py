@@ -780,7 +780,7 @@ class tesla_info():
     def getTPW_yesterdayGrid_export(self, site_id):  
 
         if self.cloudAccessUp:
-            Pwr = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday') - self.TPWcloud.tesla_grid_energy_import(site_id, 'yesterday') 
+            Pwr = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
         elif  self.localAccessUp and self.firstPollCompleted:
             Pwr = self.yesterdayTotalGeneraton
         else:
