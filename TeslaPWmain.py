@@ -337,7 +337,7 @@ class TeslaPWController(udi_interface.Node):
                     node_name = self.poly.getValidName(string)
                     #logging.debug(string)
                     logging.debug('tesla_initialize 3 : {}'.format(self.my_Tesla_PW._oauthTokens))
-                    self.TPW = tesla_info()
+                    self.TPW = tesla_info(self.TPW_cloud)
                     teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
                     logging.debug('tesla_initialize 4 : {}'.format(self.my_Tesla_PW._oauthTokens))
                     #self.wait_for_node_done()
