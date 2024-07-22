@@ -371,7 +371,7 @@ class tesla_info():
                     self.yesterdaTotalSolar = self.TPWcloud.tesla_home_energy_solar(site_id, 'yesterday')         
                     self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(site_id, 'yesterday')#
                     self.yesterdayTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'yesterday')
-                     self.yesterdayTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday')
+                    self.yesterdayTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday')
             # Get data directly from PW....              
             if self.localAccessUp:
                 self.status = self.TPWlocal.get_sitemaster()
