@@ -145,7 +145,7 @@ class tesla_info():
         self.local_site_string = str(self.Gateway)
         self.local_site_name = self.TPWlocal.get_site_name()
 
-        self.solarInstalled = False
+        #self.solarInstalled = False
         self.generatorInstalled = False
         try:
             meters = self.TPWlocal.get_meters()
@@ -518,24 +518,23 @@ class tesla_info():
 
 
     def getTPW_solarSupply(self, site_id):
-        if self.solarInstalled:
-            logging.debug("")
-            if self.cloudAccessUp:
-                solarPwr = self.TPWcloud.tesla_live_solar_power(site_id)
-            elif  self.localAccessUp and self.firstPollCompleted:
-                try:
-                    #logging.debug(self.meters)
-                    solarPwr = self.solarMeter.instant_power
-                except Exception:
-                    return(None)
-            else:
-                return(None)
+        logging.debug("getTPW_solarSupply")
+        if self.cloudAccessUp:
+            solarPwr = self.TPWcloud.tesla_live_solar_power(site_id)
             logging.debug('getTPW_solarSupply - ' + str(solarPwr))
             return(round(solarPwr/1000,2))
-            #site_live
+        elif  self.localAccessUp and self.firstPollCompleted and self.solarInstalled:
+            try:       
+                #logging.debug(self.meters)
+                solarPwr = self.solarMeter.instant_power
+                logging.debug('getTPW_solarSupply - ' + str(solarPwr))
+                return(round(solarPwr/1000,2))
+            except Exception:
+                return(None)
         else:
             return(None)
 
+    
     def getTPW_batterySupply(self, site_id):
         if self.cloudAccessUp:
             batteryPwr = self.TPWcloud.tesla_live_battery_power(site_id)
