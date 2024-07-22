@@ -554,6 +554,7 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['battery_power'])
     
     def tesla_live_solar_power(self, site_id):
+        logging.debug('Solar power : {}'.format(self.site_live_info[site_id]['solar_power']))
         return(self.site_live_info[site_id]['solar_power'])
 
     def teslaExtractTouMode(self, site_id):
