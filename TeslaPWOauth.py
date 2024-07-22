@@ -597,11 +597,13 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['generator_power'])
 
     def teslaExtractGridServiceActive(self, site_id):
-        if self.site_live_info[site_id]['grid_services_active']:
-            return(1)
-        else:
-            return(0)
-
+        try:
+            if self.site_live_info[site_id]['grid_services_enabled']:
+                return(1)
+            else:
+                return(0)
+        except:
+            return(99)
     '''
 
     

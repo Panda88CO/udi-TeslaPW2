@@ -239,6 +239,10 @@ class tesla_info():
             self.daysTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'today' )
             self.daysTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'today')
             self.daysTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'today')
+
+            self.daysTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'today')
+            self.daysTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'today')
+
             self.daysTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'today')
             self.daysTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'today')
             self.daysTotalSolar = self.TPWcloud.tesla_home_energy_solar(site_id, 'today')                                                     
@@ -247,6 +251,10 @@ class tesla_info():
             self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday' )
             self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
             self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'yesterday')
+
+            self.yesterdayTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'yesterday')
+            self.yesterdayTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday')
+
             self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'yesterday')
             self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'yesterday')
             self.yesterdaTotalSolar = self.TPWcloud.tesla_home_energy_solar(site_id, 'yesterday')         
@@ -314,6 +322,7 @@ class tesla_info():
 
         try:
             self.nowDay = date.today() 
+            
             if (self.lastDay.day != self.nowDay.day): # we passed midnight
                 self.yesterdayTotalSolar = self.daysTotalSolar
                 self.yesterdayTotalConsumption = self.daysTotalConsumption
@@ -354,11 +363,15 @@ class tesla_info():
                     self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday' )
                     self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
                     self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'yesterday')
+                    self.daysTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'today')
+                    self.daysTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'today')
+                    
                     self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'yesterday')
                     self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'yesterday')
                     self.yesterdaTotalSolar = self.TPWcloud.tesla_home_energy_solar(site_id, 'yesterday')         
                     self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(site_id, 'yesterday')#
-
+                    self.yesterdayTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'yesterday')
+                     self.yesterdayTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday')
             # Get data directly from PW....              
             if self.localAccessUp:
                 self.status = self.TPWlocal.get_sitemaster()
@@ -381,7 +394,6 @@ class tesla_info():
                     self.daysTotalBattery_exp =float(self.batteryMeter.energy_exported - self.DSbatteryMeter.energy_exported)
                     self.daysTotalBattery_imp = float(self.batteryMeter.energy_imported - self.DSbatteryMeter.energy_imported)
                     self.daysTotalBattery =  (self.daysTotalBattery_exp-self.daysTotalBattery )
-                    
                     self.daysTotalGrid = -self.daysTotalConsumption - self.daysTotalGeneraton 
                     if not self.TPWcloudAccess:
                         self.daysTotalGridServices = 0.0 #Does not seem to exist
