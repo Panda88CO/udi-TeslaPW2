@@ -242,6 +242,7 @@ class tesla_info():
 
             self.daysTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'today')
             self.daysTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'today')
+            self.daysTotalSite_imp = self.TPWcloud.tesla_home_energy_total(site_id, 'today')
 
             self.daysTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'today')
             self.daysTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'today')
@@ -251,7 +252,7 @@ class tesla_info():
             self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday' )
             self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
             self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'yesterday')
-
+            self.yesterdayTotalSite_imp = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday')
             self.yesterdayTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'yesterday')
             self.yesterdayTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday')
 
