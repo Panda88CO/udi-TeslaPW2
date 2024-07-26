@@ -37,7 +37,18 @@ class tesla_info():
         self.gridstatus = {'on_grid':0, 'islanded_ready':1, 'islanded':2, 'transition ot grid':3}
         self.gridStatusEnum = {GridStatus.CONNECTED.value: 'on_grid', GridStatus.ISLANDED_READY.value:'islanded_ready', GridStatus.ISLANDED.value:'islanded', GridStatus.TRANSITION_TO_GRID.value:'transition to grid' }
         self.operationLocalEnum =  {OperationMode.BACKUP.value:'backup',OperationMode.SELF_CONSUMPTION.value:'self_consumption', OperationMode.AUTONOMOUS.value:'autonomous', OperationMode.SITE_CONTROL.value: 'site_ctrl' }
-
+        self.yesterdayTotalSolar = 0
+        self.yesterdayTotalConsumption = 0 
+        self.yesterdayTotalGeneration  = 0 
+        self.yesterdayTotalBattery =  0 
+        self.yesterdayTotalGrid = 0
+        self.yesterdayTotalGridServices = 0
+        self.yesterdayTotalGenerator = 0
+        self.daysTotalGridServices = 0 #Does not seem to exist
+        self.daysTotalGenerator = 0 #needs to be updated - may not ex     
+        self.daysTotalBattery_imp = 0
+        self.daysTotalBattery_exp = 0
+        self.daysTotalSite_imp = 0
 
         #\if not self.local_access_enabled() and not self.cloud_access_enabled():
         #    logging.debug('No connection specified')
@@ -366,6 +377,7 @@ class tesla_info():
                     self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'yesterday')
                     self.daysTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'today')
                     self.daysTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'today')
+                    self.daysTotalSite_imp = self.TPWcloud.tesla_home_energy_total(site_id, 'today')
                     
                     self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'yesterday')
                     self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'yesterday')
