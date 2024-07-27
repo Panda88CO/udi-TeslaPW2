@@ -322,41 +322,41 @@ class teslaPWAccess(teslaAccess):
             self.history_data[site_id]['energy']['today'] = {}
         if 'yesterday'  not in self.history_data[site_id]['energy']:
             self.history_data[site_id]['energy']['yesterday'] = {}
+        if 'time_series' in hist_data:
+            for indx in range(0,len(hist_data['time_series'])):
+                # remove old data 
+                energy_data = hist_data['time_series'][indx]
+                time_str = energy_data['timestamp']
+                dt_object = datetime.fromisoformat(time_str)
+                date_str = dt_object.strftime('%Y-%m-%d')
+                if date_str == self.t_now_date:
+                    self.history_data[site_id]['energy']['today'] = {}
+                if date_str == self.t_yesterday_date:
+                    self.history_data[site_id]['energy']['yesterday'] = {}           
 
-        for indx in range(0,len(hist_data['time_series'])):
-            # remove old data 
-            energy_data = hist_data['time_series'][indx]
-            time_str = energy_data['timestamp']
-            dt_object = datetime.fromisoformat(time_str)
-            date_str = dt_object.strftime('%Y-%m-%d')
-            if date_str == self.t_now_date:
-                self.history_data[site_id]['energy']['today'] = {}
-            if date_str == self.t_yesterday_date:
-                self.history_data[site_id]['energy']['yesterday'] = {}           
+            for indx in range(0,len(hist_data['time_series'])):        
+                energy_data = hist_data['time_series'][indx]
 
-        for indx in range(0,len(hist_data['time_series'])):        
-            energy_data = hist_data['time_series'][indx]
+                if date_str == self.t_now_date:
+                    #date_key = 'today'
+                    for key in energy_data:
+                        #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                        if isinstance(energy_data[key], numbers.Number): # only process numbers 
+                            if key not in self.history_data[site_id]['energy']['today']:
+                                self.history_data[site_id]['energy']['today'][key] = energy_data[key]
+                                
+                            else:
+                                self.history_data[site_id]['energy']['today'][key] += energy_data[key]
 
-            if date_str == self.t_now_date:
-                #date_key = 'today'
-                for key in energy_data:
-                    #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
-                    if isinstance(energy_data[key], numbers.Number): # only process numbers 
-                        if key not in self.history_data[site_id]['energy']['today']:
-                            self.history_data[site_id]['energy']['today'][key] = energy_data[key]
-                            
-                        else:
-                            self.history_data[site_id]['energy']['today'][key] += energy_data[key]
-
-            elif date_str == self.t_yesterday_date:
-                #date_key = 'yesterday'
-                for key in energy_data:
-                    #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
-                    if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
-                        if key not in self.history_data[site_id]['energy']['yesterday']:
-                            self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
-                        else:
-                            self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
+                elif date_str == self.t_yesterday_date:
+                    #date_key = 'yesterday'
+                    for key in energy_data:
+                        #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                        if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
+                            if key not in self.history_data[site_id]['energy']['yesterday']:
+                                self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
+                            else:
+                                self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
         try:
             logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
             logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
