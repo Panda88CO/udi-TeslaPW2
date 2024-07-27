@@ -104,16 +104,20 @@ class teslaPWAccess(teslaAccess):
         try:
             if site_id not in self.total_pack_energy:
                 self.total_pack_energy[site_id] = self.NaN
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
-            logging.debug('live_status: {} '.format(temp))
-            if 'response' in temp:
-                self.site_live_info[site_id] = temp['response']
-                if 'total_pack_energy' in self.site_live_info[site_id]:
-                    self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy']
-        
-                return(self.site_live_info[site_id])
+            if site_id is not None:
+                temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
+                logging.debug('live_status: {} '.format(temp))
+                if 'response' in temp:
+                    self.site_live_info[site_id] = temp['response']
+                    if 'total_pack_energy' in self.site_live_info[site_id]:
+                        self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy']
+            
+                    return(self.site_live_info[site_id])
+            else:
+                return (None)
         except Exception as e:
             logging.error('tesla_get_live_status Exception : {}'.format(e))
+            return(None)
                           
     def tesla_get_site_info(self, site_id) -> None:
         logging.debug('tesla_get_site_info ')
