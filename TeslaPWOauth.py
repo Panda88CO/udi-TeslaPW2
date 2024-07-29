@@ -104,16 +104,20 @@ class teslaPWAccess(teslaAccess):
         try:
             if site_id not in self.total_pack_energy:
                 self.total_pack_energy[site_id] = self.NaN
-            temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
-            logging.debug('live_status: {} '.format(temp))
-            if 'response' in temp:
-                self.site_live_info[site_id] = temp['response']
-                if 'total_pack_energy' in self.site_live_info[site_id]:
-                    self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy']
-        
-                return(self.site_live_info[site_id])
+            if site_id is not None:
+                temp = self._callApi('GET','/energy_sites/'+site_id +'/live_status' )
+                logging.debug('live_status: {} '.format(temp))
+                if 'response' in temp:
+                    self.site_live_info[site_id] = temp['response']
+                    if 'total_pack_energy' in self.site_live_info[site_id]:
+                        self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy']
+            
+                    return(self.site_live_info[site_id])
+            else:
+                return (None)
         except Exception as e:
             logging.error('tesla_get_live_status Exception : {}'.format(e))
+            return(None)
                           
     def tesla_get_site_info(self, site_id) -> None:
         logging.debug('tesla_get_site_info ')
@@ -322,41 +326,41 @@ class teslaPWAccess(teslaAccess):
             self.history_data[site_id]['energy']['today'] = {}
         if 'yesterday'  not in self.history_data[site_id]['energy']:
             self.history_data[site_id]['energy']['yesterday'] = {}
+        if 'time_series' in hist_data:
+            for indx in range(0,len(hist_data['time_series'])):
+                # remove old data 
+                energy_data = hist_data['time_series'][indx]
+                time_str = energy_data['timestamp']
+                dt_object = datetime.fromisoformat(time_str)
+                date_str = dt_object.strftime('%Y-%m-%d')
+                if date_str == self.t_now_date:
+                    self.history_data[site_id]['energy']['today'] = {}
+                if date_str == self.t_yesterday_date:
+                    self.history_data[site_id]['energy']['yesterday'] = {}           
 
-        for indx in range(0,len(hist_data['time_series'])):
-            # remove old data 
-            energy_data = hist_data['time_series'][indx]
-            time_str = energy_data['timestamp']
-            dt_object = datetime.fromisoformat(time_str)
-            date_str = dt_object.strftime('%Y-%m-%d')
-            if date_str == self.t_now_date:
-                self.history_data[site_id]['energy']['today'] = {}
-            if date_str == self.t_yesterday_date:
-                self.history_data[site_id]['energy']['yesterday'] = {}           
+            for indx in range(0,len(hist_data['time_series'])):        
+                energy_data = hist_data['time_series'][indx]
 
-        for indx in range(0,len(hist_data['time_series'])):        
-            energy_data = hist_data['time_series'][indx]
+                if date_str == self.t_now_date:
+                    #date_key = 'today'
+                    for key in energy_data:
+                        #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                        if isinstance(energy_data[key], numbers.Number): # only process numbers 
+                            if key not in self.history_data[site_id]['energy']['today']:
+                                self.history_data[site_id]['energy']['today'][key] = energy_data[key]
+                                
+                            else:
+                                self.history_data[site_id]['energy']['today'][key] += energy_data[key]
 
-            if date_str == self.t_now_date:
-                #date_key = 'today'
-                for key in energy_data:
-                    #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
-                    if isinstance(energy_data[key], numbers.Number): # only process numbers 
-                        if key not in self.history_data[site_id]['energy']['today']:
-                            self.history_data[site_id]['energy']['today'][key] = energy_data[key]
-                            
-                        else:
-                            self.history_data[site_id]['energy']['today'][key] += energy_data[key]
-
-            elif date_str == self.t_yesterday_date:
-                #date_key = 'yesterday'
-                for key in energy_data:
-                    #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
-                    if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
-                        if key not in self.history_data[site_id]['energy']['yesterday']:
-                            self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
-                        else:
-                            self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
+                elif date_str == self.t_yesterday_date:
+                    #date_key = 'yesterday'
+                    for key in energy_data:
+                        #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
+                        if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
+                            if key not in self.history_data[site_id]['energy']['yesterday']:
+                                self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
+                            else:
+                                self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
         try:
             logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
             logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
@@ -554,6 +558,7 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['battery_power'])
     
     def tesla_live_solar_power(self, site_id):
+        logging.debug('Solar power : {} {}'.format(self.site_live_info[site_id]['solar_power'], self.site_live_info[site_id]))
         return(self.site_live_info[site_id]['solar_power'])
 
     def teslaExtractTouMode(self, site_id):
@@ -597,11 +602,13 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['generator_power'])
 
     def teslaExtractGridServiceActive(self, site_id):
-        if self.site_live_info[site_id]['grid_services_active']:
-            return(1)
-        else:
-            return(0)
-
+        try:
+            if self.site_live_info[site_id]['grid_services_enabled']:
+                return(1)
+            else:
+                return(0)
+        except:
+            return(99)
     '''
 
     

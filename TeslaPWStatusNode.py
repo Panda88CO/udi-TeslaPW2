@@ -107,7 +107,7 @@ class teslaPWStatusNode(udi_interface.Node):
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         #self.update_PW_data(self.site_id, 'all')
-        self.TPW.pollSystemData(self.site_id, 'sll') 
+        self.TPW.pollSystemData(self.site_id, 'all') 
         self.updateISYdrivers()
 
  
