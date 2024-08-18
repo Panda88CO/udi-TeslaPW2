@@ -115,7 +115,10 @@ GRID_EXP_MODE-99 = Unknown
 
 
 ND-pwstatus-NAME = Power Wall Status
+ND-pwhistory-Name = Power Wall History
 ND-pwstatus-ICON = Electricity
+ND-pwhistory-ICON = Electricity
+
 CMD-nlspwstatus-UPDATE-NAME = Update System Data
 ST-nlspwstatus-ST-NAME = Connected to Tesla
 ST-nlspwstatus-GV0-NAME = Remaining Battery 
