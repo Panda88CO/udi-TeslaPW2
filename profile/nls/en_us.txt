@@ -115,7 +115,7 @@ GRID_EXP_MODE-99 = Unknown
 
 
 ND-pwstatus-NAME = Power Wall Status
-ND-pwhistory-Name = Power Wall History
+ND-pwhistory-NAME = Power Wall History
 ND-pwstatus-ICON = Electricity
 ND-pwhistory-ICON = Electricity
 
