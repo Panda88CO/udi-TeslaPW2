@@ -101,7 +101,7 @@ EN_ONLINE-0 = offline
 EN_ONLINE-1 = online
 EN_ONLINE-99 = unknown
 
-error-98 = NOt defined
+error-98 = Not defined
 error-99 = Unknown
 
 GRID_IMP_MODE-0 = Allowed   
