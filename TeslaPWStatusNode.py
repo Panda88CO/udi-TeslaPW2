@@ -85,8 +85,6 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus(self.site_id))
         self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive(self.site_id))
 
-        self.PW_setDriver('GPV', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id) - self.TPW.getTPW_daysGrid_export(self.site_id),2), 33)
-
         self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
         self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
         self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(self.site_id),2), 33)       
@@ -94,10 +92,10 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id),2), 33) 
         self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id),2), 33)
         self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id)- self.TPW.getTPW_daysGrid_import(self.site_id) ,2), 33)
-        self.PW_setDriver('CPW', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
 
 
-
+        #self.PW_setDriver('GV29', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id) - self.TPW.getTPW_daysGrid_export(self.site_id),2), 33)
+        self.PW_setDriver('GV28', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
 
     '''
     def update_PW_data(self, site_id, level):
@@ -166,7 +164,7 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV6', 'value': 99, 'uom': 25},  
             {'driver': 'GV7', 'value': 99, 'uom': 25},  
 
-            {'driver': 'GPV', 'value': 99, 'uom': 25}, 
+            {'driver': 'GV29', 'value': 99, 'uom': 25}, 
             {'driver': 'GV8', 'value': 99, 'uom': 25}, 
 
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
@@ -175,23 +173,10 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 33},
             {'driver': 'GV13', 'value': 0, 'uom': 33}, 
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV15', 'value': 0, 'uom': 33},
-            {'driver': 'CPW', 'value': 0, 'uom': 33},
+
+            {'driver': 'GV28', 'value': 0, 'uom': 33},
             
-            #{'driver': 'GV16', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV17', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV18', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV19', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV20', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV21', 'value': 0, 'uom': 33},
-            #{'driver': 'GV22', 'value': 0, 'uom': 0},
-            #{'driver': 'GV23', 'value': 0, 'uom': 58},
-            #{'driver': 'GV24', 'value': 0, 'uom': 0}, 
-            #{'driver': 'GV25', 'value': 0, 'uom': 58}, 
-            #{'driver': 'GV26', 'value': 99, 'uom': 33},
-            #{'driver': 'GV27', 'value': 99, 'uom': 58}, 
-            #{'driver': 'GV28', 'value': 99, 'uom': 33},
-            #{'driver': 'GV28', 'value': 99, 'uom': 58},    
+   
                      
             ]
 
