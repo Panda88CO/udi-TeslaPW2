@@ -67,7 +67,6 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.PW_setDriver('GV12', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id),2), 33) 
         self.PW_setDriver('GV13', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id),2), 33)
         self.PW_setDriver('GV14', self.round2ISY(self.TPW.getTPW_daysGrid_export(self.site_id)- self.TPW.getTPW_daysGrid_import(self.site_id) ,2), 33)
-        #self.PW_setDriver('GV30', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id) - self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33)
 
         self.PW_setDriver('GV15', self.round2ISY(self.TPW.getTPW_yesterdayConsumption(self.site_id),2), 33)
         self.PW_setDriver('GV16', self.round2ISY(self.TPW.getTPW_yesterdaySolar(self.site_id),2), 33)
@@ -165,12 +164,7 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 33},
             {'driver': 'GV13', 'value': 0, 'uom': 33}, 
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
-
-
-            {'driver': 'GV30', 'value': 0, 'uom': 33},       
             {'driver': 'GV15', 'value': 0, 'uom': 33}, 
-
-      
 
             {'driver': 'GV16', 'value': 0, 'uom': 33}, 
             {'driver': 'GV17', 'value': 0, 'uom': 33}, 
