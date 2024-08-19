@@ -115,9 +115,9 @@ GRID_EXP_MODE-99 = Unknown
 
 
 ND-pwstatus-NAME = Power Wall Status
-ND-pwhistory-NAME = Power Wall History
+
 ND-pwstatus-ICON = Electricity
-ND-pwhistory-ICON = Electricity
+
 
 CMD-nlspwstatus-UPDATE-NAME = Update System Data
 ST-nlspwstatus-ST-NAME = Connected to Tesla
@@ -131,32 +131,48 @@ ST-nlspwstatus-GV5-NAME = Operation Mode
 ST-nlspwstatus-GV6-NAME = Grid Status
 ST-nlspwstatus-GV7-NAME = Grid Services Active
 
-ST-nlspwstatus-GPV-NAME = Home Net Power Use Today
-
 ST-nlspwstatus-GV8-NAME = Home Total Use Today
 ST-nlspwstatus-GV9-NAME = Solar Export Today
 ST-nlspwstatus-GV10-NAME = Battery Export Today
 ST-nlspwstatus-GV11-NAME = Battery Import Today
 ST-nlspwstatus-GV12-NAME = Grid Export Today
 ST-nlspwstatus-GV13-NAME = Grid Import Today
-ST-nlspwstatus-GV14-NAME = Grid Net Use Today
-ST-nlspwstatus-CPW-NAME = Generator Today
-ST-nlspwstatus-GV30-NAME = Home Net Power Use Yesterday
+ST-nlspwstatus-GV14-NAME = Grid/House Net Use Today
 
-ST-nlspwstatus-GV15-NAME = Home Total Use Yesterday
-ST-nlspwstatus-GV16-NAME = Solar Export Yesterday
-ST-nlspwstatus-GV17-NAME = Battery Export Yesterday
-ST-nlspwstatus-GV18-NAME = Battery Import Yesterday
-ST-nlspwstatus-GV19-NAME = Grid Export Yesterday
-ST-nlspwstatus-GV20-NAME = Grid Import Yesterday
-ST-nlspwstatus-GV21-NAME = Grid Net Use Yesterday
-ST-nlspwstatus-TPW-NAME = Generator Yesterday
-ST-nlspwstatus-GV22-NAME = Today nbr backup events 
-ST-nlspwstatus-GV23-NAME = Today backup event time
-ST-nlspwstatus-GV24-NAME = Yesterday nbr backup events 
-ST-nlspwstatus-GV25-NAME = Yesterday backup event time
-ST-nlspwstatus-GV26-NAME = Today charge power
-ST-nlspwstatus-GV27-NAME = Today charge time
-ST-nlspwstatus-GV28-NAME = Yesterday charge power
-ST-nlspwstatus-GV29-NAME = Yesterday charge time
+ST-nlspwstatus-GV28-NAME = Generator Today
+ST-nlspwstatus-GV29-NAME = Home Net Power Use Today
 
+ND-pwhistory-NAME = Power Wall History
+ND-pwhistory-ICON = Electricity
+CMD-nlspwhist-UPDATE-NAME = Update System Data
+ST-nlspwhist-ST-NAME = Connected to Tesla
+
+ST-nlspwhist-GV8-NAME = Home Total Use Today
+ST-nlspwhist-GV9-NAME = Solar Export Today
+ST-nlspwhist-GV10-NAME = Battery Export Today
+ST-nlspwhist-GV11-NAME = Battery Import Today
+ST-nlspwhist-GV12-NAME = Grid Export Today
+ST-nlspwhist-GV13-NAME = Grid Import Today
+ST-nlspwhist-GV14-NAME = Grid/House Net Use Today
+
+
+
+ST-nlspwhist-GV15-NAME = Home Total Use Yesterday
+ST-nlspwhist-GV16-NAME = Solar Export Yesterday
+ST-nlspwhist-GV17-NAME = Battery Export Yesterday
+ST-nlspwhist-GV18-NAME = Battery Import Yesterday
+ST-nlspwhist-GV19-NAME = Grid Export Yesterday
+ST-nlspwhist-GV20-NAME = Grid Import Yesterday
+ST-nlspwhist-GV21-NAME = Grid/House Net Use Yesterday
+
+ST-nlspwhist-GV22-NAME = Today nbr backup events 
+ST-nlspwhist-GV23-NAME = Today backup event time
+ST-nlspwhist-GV24-NAME = Yesterday nbr backup events 
+ST-nlspwhist-GV25-NAME = Yesterday backup event time
+ST-nlspwhist-GV26-NAME = Today charge power
+ST-nlspwhist-GV27-NAME = Today charge time
+ST-nlspwhist-GV28-NAME = Yesterday charge power
+ST-nlspwhist-GV29-NAME = Yesterday charge time
+
+ST-nlspwhist-GV1-NAME = Generator Today
+ST-nlspwhist-GV2-NAME = Generator Yesterday
