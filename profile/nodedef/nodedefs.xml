@@ -30,7 +30,7 @@
          <st id="GV5" editor="OP_MODE" />
          <st id="GV6" editor="GRID_ST" />
          <st id="GV7" editor="GRID_MODE" />
-         <!--<st id="GPV" editor="KWH" /> -->
+        
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
@@ -39,9 +39,9 @@
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
 
-         <!--<st id="GV15" editor="KWH" />-->
-
-         <st id="CPW" editor="KWH" />
+         <!--<st id="GV15" editor="KWH" />
+         <st id="GV29" editor="KWH" />-->
+         <st id="GV28" editor="KWH" />
 
          <!--
          <st id="GV16" editor="KWH" />
@@ -71,7 +71,7 @@
    </nodeDef> 
 
 
-      <nodeDef id="pwhistory" nls="nlspwstatus">
+      <nodeDef id="pwhistory" nls="nlspwhist">
       <editors />
       <sts>
          <st id="ST" editor="ON_LINE" />     
@@ -86,7 +86,7 @@
          <st id="GV7" editor="EN_MODE" />
          -->
 
-         <st id="GPV" editor="KWH" />         
+      
 
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
@@ -95,17 +95,15 @@
          <st id="GV12" editor="KWH" />
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
-         <st id="GV30" editor="KWH" />
          <st id="GV15" editor="KWH" />
-         <st id="CPW" editor="KWH" />
-         <st id="GV30" editor="KWH" />
+
          <st id="GV16" editor="KWH" />
          <st id="GV17" editor="KWH" />
          <st id="GV18" editor="KWH" />
          <st id="GV19" editor="KWH" />
          <st id="GV20" editor="KWH" />
          <st id="GV21" editor="KWH" />
-         <st id="TPW" editor="KWH" />
+
          <st id="GV22" editor="count" />    
          <st id="GV23" editor="TIME" />
          <st id="GV24" editor="count" />
@@ -115,6 +113,9 @@
          <st id="GV28" editor="KWH" />
          <st id="GV29" editor="TIME" />
 
+
+         <st id="GV1" editor="KWH" />
+         <st id="GV2" editor="KWH" />
       </sts>
       <cmds>
          <sends>
@@ -124,7 +125,7 @@
          </accepts>
       </cmds>
    </nodeDef> 
-
+   <!--
    <nodeDef id="pwsolar" nls="nlspwsolar">
       <editors />
       <sts>
@@ -155,6 +156,7 @@
          </accepts>
       </cmds>
    </nodeDef> 
+   -->
 
    <nodeDef id="pwsetup" nls="nlspwsetup">
       <editors />
