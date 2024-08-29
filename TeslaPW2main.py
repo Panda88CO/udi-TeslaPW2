@@ -51,7 +51,9 @@ class TeslaPWController(udi_interface.Node):
         self.TPW = None
         self.Gateway= None
         self.site_id = None
-        
+        self.LOCAL_USER_EMAIL = ''
+        self.LOCAL_USER_PASSWORD = ''
+        self.LOCAL_IP_ADDRESS = ''
         self.customParameters = Custom(self.poly, 'customparams')
 
         self.Notices = Custom(self.poly, 'notices')
