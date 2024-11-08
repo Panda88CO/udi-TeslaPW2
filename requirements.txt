@@ -1,4 +1,4 @@
-udi_interface>=3.3.5
+udi_interface>=3.3.14
 requests>=2.31.0
 tesla-powerwall==0.3.19
 tzlocal>=5.2
