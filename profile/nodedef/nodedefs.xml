@@ -22,7 +22,7 @@
       <editors />
       <sts>
          <st id="ST" editor="ON_LINE" />      
-         <st id="GV0" editor="KWH" />
+         <st id="GV0" editor="PERCENT" />
          <st id="GV1" editor="KWH" />
          <st id="GV2" editor="KWH" />
          <st id="GV3" editor="KWH" />
