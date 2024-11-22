@@ -87,6 +87,11 @@
      <range uom="25" subset="98-99" nls="NODATA" />
   </editor>
 
+  <editor id = "KW" > 
+     <range uom="30" min="-100" max="100" prec="1" />
+     <range uom="25" subset="98-99" nls="NODATA" />
+  </editor>
+
   <editor id = "KWH_20" > 
      <range  uom="33" min="-20" max="20" prec="2" />
      <range uom="25" subset="98-99" nls="NODATA" />

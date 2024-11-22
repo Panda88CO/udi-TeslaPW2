@@ -23,10 +23,10 @@
       <sts>
          <st id="ST" editor="ON_LINE" />      
          <st id="GV0" editor="PERCENT" />
-         <st id="GV1" editor="KWH" />
-         <st id="GV2" editor="KWH" />
-         <st id="GV3" editor="KWH" />
-         <st id="GV4" editor="KWH" />
+         <st id="GV1" editor="KW" />
+         <st id="GV2" editor="KW" />
+         <st id="GV3" editor="KW" />
+         <st id="GV4" editor="KW" />
          <st id="GV5" editor="OP_MODE" />
          <st id="GV6" editor="GRID_ST" />
          <st id="GV7" editor="GRID_MODE" />
