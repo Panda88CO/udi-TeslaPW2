@@ -135,7 +135,7 @@ def PW_setDriver(self, key, value, Unit=None):
         if Unit:
             self.node.setDriver(key, value, True, True, Unit)
         else:
-            self.node.setDriver(key, value)
+            self.node.setDriver(key, value, True, True)
 
 
 def send_rel_temp_to_isy(self, temperature, stateVar):
