@@ -120,7 +120,7 @@ class teslaPWAccess(teslaAccess):
             return(None)
                           
     def tesla_get_site_info(self, site_id) -> None:
-        logging.debug('tesla_get_site_info ')
+        logging.debug(f'tesla_get_site_info {site_id}')
         try:
             if site_id not in self.installation_tz:
                 self.installation_tz[site_id] = None

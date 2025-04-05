@@ -20,7 +20,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.27'
+VERSION = '0.1.28'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -59,8 +59,8 @@ class TeslaPWController(udi_interface.Node):
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
 
 
-        logging.debug('self.address : ' + str(self.address))
-        logging.debug('self.name :' + str(self.name))
+        #logging.debug('self.address : ' + str(self.address))
+        #logging.debug('self.name :' + str(self.name))
         self.hb = 0
 
         self.poly.Notices.clear()
@@ -192,7 +192,7 @@ class TeslaPWController(udi_interface.Node):
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsDone(), self.config_done))
             time.sleep(1)
-        #logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
+        logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         
 
         self.TPW = tesla_info(self.TPW_cloud)
