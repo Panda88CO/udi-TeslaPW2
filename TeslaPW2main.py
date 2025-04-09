@@ -121,7 +121,7 @@ class TeslaPWController(udi_interface.Node):
         #logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
-        time.sleep(1)
+   
         oauthSettingsUpdate = {}
         #oauthSettingsUpdate['parameters'] = {}
         oauthSettingsUpdate['token_parameters'] = {}
