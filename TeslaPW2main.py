@@ -121,23 +121,22 @@ class TeslaPWController(udi_interface.Node):
         #logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
         self.customParameters.load(userParams)
         logging.debug('customParamsHandler called {}'.format(userParams))
-
+        time.sleep(1)
         oauthSettingsUpdate = {}
         #oauthSettingsUpdate['parameters'] = {}
         oauthSettingsUpdate['token_parameters'] = {}
         # Example for a boolean field
 
         if 'region' in userParams:
-            if self.customParameters['region'] != 'enter region (NA, EU, CN)':
-                self.region = str(self.customParameters['region'])
+            if self.customParameters['region'] != 'Input region (NA, EU, CN)':
+                self.region = str(self.customParameters['region']).strip()
                 if self.region.upper() not in ['NA', 'EU', 'CN']:
                     logging.error('Unsupported region {}'.format(self.region))
                     self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
                     self.region = None
-
         else:
             logging.warning('No region found')
-            self.customParameters['region'] = 'enter region (NA, EU, CN)'
+            self.customParameters['region'] = 'Input region (NA, EU, CN)'
             self.region = None
             self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
    
@@ -193,7 +192,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.updateProfile()
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
-        while not self.customParam_done or not self.TPW_cloud.customNsDone() and not self.config_done:
+        while not self.customParam_done or not self.TPW_cloud.customNsDone() or not self.config_done:
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsDone(), self.config_done))
             time.sleep(1)
