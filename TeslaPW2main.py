@@ -133,7 +133,7 @@ class TeslaPWController(udi_interface.Node):
                 if self.region.upper() not in ['NA', 'EU', 'CN']:
                     logging.error('Unsupported region {}'.format(self.region))
                     self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-                #else:
+                    self.region = None
 
         else:
             logging.warning('No region found')
