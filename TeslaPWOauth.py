@@ -506,202 +506,299 @@ class teslaPWAccess(teslaAccess):
 
 
     def supportedOperatingModes(self) -> list:
-        return( self.OPERATING_MODES )
- 
+        try:
+            return( self.OPERATING_MODES )
+        except KeyError:
+            return(None)
 
     def isConnectedToPW(self) -> bool:
-        return( self.authenticated())
-
+        try:
+            return( self.authenticated())
+        except KeyError:
+            return(None)
 
    
     def teslaSolarInstalled(self, site_id) -> bool:
-        return(self.site_info[site_id]['components']['solar'])
 
+        try:
+            return(self.site_info[site_id]['components']['solar'])
+        except KeyError:
+            return(None)
+        
     def tesla_get_pw_name(self, site_id) -> str:
-        return(self.site_info[site_id]['site_name'])
-
+        try:
+            return(self.site_info[site_id]['site_name'])
+        except KeyError:
+            return(None)
+        
     def teslaExtractOperationMode(self, site_id):
-        return(self.site_info[site_id]['default_real_mode'])
-
+        try:
+            return(self.site_info[site_id]['default_real_mode'])
+        except KeyError:
+            return(None)
+        
     def teslaExtractStormMode(self, site_id):
-        return(self.site_live_info[site_id]['storm_mode_active'])
-
+        try:
+            return(self.site_live_info[site_id]['storm_mode_active'])
+        except KeyError:
+            return(None)
+        
     def teslaExtractBackupPercent(self, site_id):
         logging.debug('teslaExtractBackupPercent : {} {}'.format(site_id, self.site_info))
-        return(self.site_info[site_id]['backup_reserve_percent'])
-    
-    def tesla_total_battery(self, site_id):
-        return(self.site_live_info[site_id][site_id]['total_pack_energy'])
+        try:
+            return(self.site_info[site_id]['backup_reserve_percent'])
+        except KeyError:
+            return(None)
         
-    def tesla_remaining_battery (self, site_id):
-        return(self.site_live_info[site_id]['energy_left'])
-    
-    def tesla_island_staus(self, site_id):
-        return(self.site_live_info[site_id]['island_status'])
-    
-    def tesla_grid_staus(self, site_id):
-        return(self.site_live_info[site_id]['grid_status'])
-    
-    def tesla_live_grid_service_active(self, site_id):
-        return(self.site_live_info[site_id]['grid_services_active'])
+    def tesla_total_battery(self, site_id):
+        try:
+            return(self.site_live_info[site_id][site_id]['total_pack_energy'])
+        except KeyError:
+            return(None)
 
+
+    def tesla_remaining_battery (self, site_id):
+        try:
+            return(self.site_live_info[site_id]['energy_left'])
+        except KeyError:
+            return(None)
+        
+
+    def tesla_island_staus(self, site_id):
+        try:
+            return(self.site_live_info[site_id]['island_status'])
+        except KeyError:
+            return(None)    
+        
+    def tesla_grid_staus(self, site_id):
+        try:
+            return(self.site_live_info[site_id]['grid_status'])
+        except KeyError:
+            return(None)    
+        
+    def tesla_live_grid_service_active(self, site_id):
+        try:
+            return(self.site_live_info[site_id]['grid_services_active'])
+        except KeyError:
+            return(None)
+        
     def tesla_live_grid_power(self, site_id):
-        return(self.site_live_info[site_id]['grid_power'])
-    
+        try:
+            return(self.site_live_info[site_id]['grid_power'])
+        except KeyError:
+            return(None)
+            
     def tesla_live_generator_power(self, site_id):
-        return(self.site_live_info[site_id]['generator_power'])
-    
+        try:
+            return(self.site_live_info[site_id]['generator_power'])
+        except KeyError:
+            return(None)
+            
     def tesla_live_load_power(self, site_id):
-        return(self.site_live_info[site_id]['load_power'])
-    
+        try:
+            return(self.site_live_info[site_id]['load_power'])
+        except KeyError:
+            return(None)
+
+
     def tesla_live_battery_power(self, site_id):
-        return(self.site_live_info[site_id]['battery_power'])
-    
+        try:
+            return(self.site_live_info[site_id]['battery_power'])
+        except KeyError:
+            return(None)
+            
     def tesla_live_solar_power(self, site_id):
         logging.debug('Solar power : {} {}'.format(self.site_live_info[site_id]['solar_power'], self.site_live_info[site_id]))
-        return(self.site_live_info[site_id]['solar_power'])
-
+        try:
+            return(self.site_live_info[site_id]['solar_power'])
+        except KeyError:
+            return(None)
+        
     def teslaExtractTouMode(self, site_id):
-        return(self.site_info[site_id]['tou_settings']['optimization_strategy'])
+        try:
+            return(self.site_info[site_id]['tou_settings']['optimization_strategy'])
+        except KeyError:
+            return(None)
+        
 
-    def teslaExtractTouScheduleList(self, site_id):        
-        self.touScheduleList = self.site_live_info[site_id]['components']['tou_settings']['schedule']
-        return( self.touScheduleList )
+    def teslaExtractTouScheduleList(self, site_id):  
+        try:      
+            self.touScheduleList = self.site_live_info[site_id]['components']['tou_settings']['schedule']
+            return( self.touScheduleList )
+        except KeyError:
+            return([])
 
     def teslaExtractChargeLevel(self, site_id):
-        return(round(self.site_live_info[site_id]['percentage_charged'],2))
+        try:
+            return(round(self.site_live_info[site_id]['percentage_charged'],2))
+        except KeyError:
+            return(None)
         
     #def teslaExtractBackoffLevel(self, site_id):
     #    return(round(self.site_info[site_id]['backup_reserve_percent'],1))
 
-    def teslaExtractGridStatus(self, site_id): 
-        return(self.site_live_info[site_id]['island_status'])
-    
+    def teslaExtractGridStatus(self, site_id):
+
+        try:
+            return(self.site_live_info[site_id]['island_status'])
+        except KeyError:
+            return(None)
+            
     def teslaExtractLoad(self, site_id): 
-        return(self.site_live_info[site_id]['load_power'])
+        try:
+            return(self.site_live_info[site_id]['load_power'])
+        except KeyError:
+            return(None)
+        
 
     def teslaExtractSolarSupply(self, site_id):
-        return(self.site_live_info[site_id]['solar_power'])
+        try:
+            return(self.site_live_info[site_id]['solar_power'])
+        except KeyError:
+            return(None)
+        
 
     def teslaExtractBatterySupply(self, site_id):     
-        return(self.site_live_info[site_id]['battery_power'])
+        try:
+            return(self.site_live_info[site_id]['battery_power'])
+        except KeyError:
+            return(None)
+        
 
     def teslaExtractGridSupply(self, site_id):     
-        return(self.site_live_info[site_id]['grid_power'])
+        try:
+            return(self.site_live_info[site_id]['grid_power'])
+        except KeyError:
+            return(None)
+        
 
     def teslaExtractEnergyRemaining(self, site_id): 
+            
         if 'total_pack_energy' in self.site_live_info[site_id]:
             self.total_pack_energy = self.site_live_info[site_id]['total_pack_energy']
+        try:
             return(self.site_live_info[site_id]['energy_left'])
-        elif self.total_pack_energy != self.NaN:
-            return(self.total_pack_energy)
-        else:
+        except  KeyError:
             return(None)
 
     def teslaExtractGeneratorSupply (self, site_id):
-        return(self.site_live_info[site_id]['generator_power'])
-
+        try:
+            return(self.site_live_info[site_id]['generator_power'])
+        except KeyError:
+            return(None)
+        
     def teslaExtractGridServiceActive(self, site_id):
         try:
             if self.site_live_info[site_id]['grid_services_enabled']:
                 return(1)
             else:
                 return(0)
-        except:
+        except KeyError:
             return(99)
-    '''
 
-    
-    		*'solar_energy_exported': 22458, 
-			'generator_energy_exported': 0, 
-			*'grid_energy_imported': 23080, 
-			'grid_services_energy_imported': 7.25, 
-			'grid_services_energy_exported': 11.8125, 
-			*'grid_energy_exported_from_solar': 15831, 
-			*'grid_energy_exported_from_generator': 0, 
-			*'grid_energy_exported_from_battery': 77, 
-			
-			'battery_energy_exported': 10638, 
-			'battery_energy_imported_from_grid': 15837,
-			'battery_energy_imported_from_solar': 71, 
-			'battery_energy_imported_from_generator': 0, 
-			energy flow
-			'consumer_energy_imported_from_grid': 7243, 
-			'consumer_energy_imported_from_solar': 6556, 
-			'consumer_energy_imported_from_battery': 10561, 
-			'consumer_energy_imported_from_generator': 0}]}}
-    '''
+
+
     def tesla_grid_energy_import(self, site_id, day):
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['grid_energy_imported'])
-        
+        except KeyError:
+            return(None)
+                
     def tesla_grid_energy_export(self, site_id, day):    
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['grid_energy_exported_from_solar'] + self.history_data[site_id]['energy'][day]['grid_energy_exported_from_generator'] + self.history_data[site_id]['energy'][day]['grid_energy_exported_from_battery'])
-
+        except KeyError:
+            return(None)
+        
     def tesla_solar_to_grid_energy(self, site_id, day): 
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['grid_energy_exported_from_solar'])
-
+        except KeyError:
+            return(None)
+        
     def tesla_solar_energy_exported(self, site_id, day):
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['solar_energy_exported'])
-
+        except KeyError:
+            return(None)
+        
     def tesla_home_energy_total(self, site_id, day):    
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_grid'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_solar'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_battery'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_generator'] )
-
+        except KeyError:
+            return(None)
 
     def  tesla_home_energy_solar(self, site_id, day):   
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_solar'])
-        
+        except KeyError:
+            return(None)
+                
     def  tesla_home_energy_battery(self, site_id, day):   
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_battery'])   
-        
+        except KeyError:
+            return(None)
+                
     def  tesla_home_energy_grid(self, site_id, day):   
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_grid'])          
-
+        except KeyError:
+            return(None)
+        
     def  tesla_home_energy_generator(self, site_id, day):   
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_generator'])            
-
+        except KeyError:
+            return(None)
 
     def tesla_battery_energy_import(self, site_id, day):        
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['battery_energy_imported_from_grid'] + self.history_data[site_id]['energy'][day]['battery_energy_imported_from_solar'] + self.history_data[site_id]['energy'][day]['battery_energy_imported_from_generator']  )
-
+        except KeyError:
+            return(None)
+        
     def tesla_battery_energy_export(self, site_id, day):
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['battery_energy_exported'])
-        
+        except KeyError:
+            return(None)
+                
     def tesla_grid_service_export(self, site_id, day):
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['energy'][day]['grid_services_energy_exported'])   
-
-    def tesla_grid_service_import(self, site_id, day):
-        if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])
+        except KeyError:
+            return(None)
         
+    def tesla_grid_service_import(self, site_id, day):
+        try:
+            return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])
+        except KeyError:
+            return(None)        
 
     def tesla_backup_events(self, site_id, day):
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['backup'][day]['total_events'])
-        
+        except KeyError:
+            return(None)
+                
     def tesla_backup_time(self, site_id, day):
-        if day in self.DAY_HISTORY:
+        try:
             return(self.history_data[site_id]['backup'][day]['total_duration'])
-
-    def tesla_evcharge_power(self, site_id, day):
-        if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['charge'][day]['total_energy'])
+        except KeyError:
+            return(None)
         
-    def tesla_evcharge_time(self, site_id, day):
-        if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['charge'][day]['total_duration'])
+    def tesla_evcharge_power(self, site_id, day):
+        try:
+            return(self.history_data[site_id]['charge'][day]['total_energy'])
+        except KeyError:
+            return(None)
 
+    def tesla_evcharge_time(self, site_id, day):
+        try:
+            return(self.history_data[site_id]['charge'][day]['total_duration'])
+        except KeyError:
+            return(None)
 
 
     '''
