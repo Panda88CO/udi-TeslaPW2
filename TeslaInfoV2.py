@@ -49,6 +49,7 @@ class tesla_info():
         self.daysTotalBattery_imp = 0
         self.daysTotalBattery_exp = 0
         self.daysTotalSite_imp = 0
+        self.wall_connectors = []
 
         #\if not self.local_access_enabled() and not self.cloud_access_enabled():
         #    logging.debug('No connection specified')
@@ -113,6 +114,10 @@ class tesla_info():
                         if 'components' in  PowerWalls[site]:
                             if 'solar' in PowerWalls[site]['components']:
                                 self.solarInstalled = PowerWalls[site]['components']['solar']
+                        if 'wall_connectors' in PowerWalls[site]:
+                                self.wall_connectors = PowerWalls[site]['wall_connectors']
+                    elif 'vin' in   products[site]:
+
 
         if PowerWalls == {}:
             PowerWalls['local'] = {}
