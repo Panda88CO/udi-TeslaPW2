@@ -104,15 +104,16 @@ class tesla_info():
                 for site in products:
                     logging.debug('site id loop {} {}'.format(site, products[site]))
                     if 'energy_site_id' in products[site]:
-                        PowerWalls[site] = {}
-                        PowerWalls[site]['gateway_id'] = str(products[site]['gateway_id'])
-                        if self.localAccessUp:
-                            PowerWalls[site]['local'] = self.local_gateway== str(PowerWalls[site]['gateway_id'])
-                        PowerWalls[site]['energy_site_id'] = str(products[site]['energy_site_id'])
-                        PowerWalls[site]['site_name'] = str(products[site]['site_name'])
-                        if 'components' in  PowerWalls[site]:
-                            if 'solar' in PowerWalls[site]['components']:
-                                self.solarInstalled = PowerWalls[site]['components']['solar']
+                        if 'gateway_id' in products[site]:
+                            PowerWalls[site] = {}
+                            PowerWalls[site]['gateway_id'] = str(products[site]['gateway_id'])
+                            if self.localAccessUp:
+                                PowerWalls[site]['local'] = self.local_gateway== str(PowerWalls[site]['gateway_id'])
+                            PowerWalls[site]['energy_site_id'] = str(products[site]['energy_site_id'])
+                            PowerWalls[site]['site_name'] = str(products[site]['site_name'])
+                            if 'components' in  products[site]:
+                                if 'solar' in products[site]['components']:
+                                    self.solarInstalled = products[site]['components']['solar']
 
         if PowerWalls == {}:
             PowerWalls['local'] = {}
