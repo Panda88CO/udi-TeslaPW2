@@ -569,7 +569,10 @@ class teslaPWAccess(teslaAccess):
         return( self.touScheduleList )
 
     def teslaExtractChargeLevel(self, site_id):
-        return(round(self.site_live_info[site_id]['percentage_charged'],2))
+        try:
+            return(round(self.site_live_info[site_id]['percentage_charged'],2))
+        except Exception as e:
+            return(None) 
         
     #def teslaExtractBackoffLevel(self, site_id):
     #    return(round(self.site_info[site_id]['backup_reserve_percent'],1))
