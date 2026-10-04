@@ -19,7 +19,7 @@ class teslaPWStatusNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
 
     def __init__(self, polyglot, primary, address, name, site_id, TPW):
-        #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
+        super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.poly = polyglot
         self.ISYforced = False
@@ -155,16 +155,15 @@ class teslaPWStatusNode(udi_interface.Node):
     drivers = [
             {'driver': 'ST', 'value': 99, 'uom': 25},  #online         
             {'driver': 'GV0', 'value': 0, 'uom': 51},       
-            {'driver': 'GV1', 'value': 0, 'uom': 33},
-            {'driver': 'GV2', 'value': 0, 'uom': 33},  
-            {'driver': 'GV3', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV4', 'value': 0, 'uom': 33},  
+            {'driver': 'GV1', 'value': 0, 'uom': 30},
+            {'driver': 'GV2', 'value': 0, 'uom': 30},  
+            {'driver': 'GV3', 'value': 0, 'uom': 30}, 
+            {'driver': 'GV4', 'value': 0, 'uom': 30},  
 
             {'driver': 'GV5', 'value': 99, 'uom': 25},  
             {'driver': 'GV6', 'value': 99, 'uom': 25},  
             {'driver': 'GV7', 'value': 99, 'uom': 25},  
 
-            {'driver': 'GV29', 'value': 99, 'uom': 25}, 
             {'driver': 'GV8', 'value': 99, 'uom': 25}, 
 
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
@@ -175,9 +174,6 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
 
             {'driver': 'GV28', 'value': 0, 'uom': 33},
-            
-   
-                     
             ]
 
     

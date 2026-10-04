@@ -15,8 +15,8 @@ class teslaPWHistoryNode(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, bool2ISY, round2ISY, PW_setDriver
 
     def __init__(self, polyglot, primary, address, name, site_id, TPW):
-        #super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
-        logging.info('_init_ Tesla Power Wall Status Node')
+        super(teslaPWHistoryNode, self).__init__(polyglot, primary, address, name)
+        logging.info('_init_ Tesla Power Wall History Node')
         self.poly = polyglot
         self.ISYforced = False
         self.site_id = site_id
@@ -183,7 +183,6 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV28', 'value': 99, 'uom': 33},
             {'driver': 'GV29', 'value': 99, 'uom': 58},
 
-            {'driver': 'GV0', 'value': 99, 'uom': 25},     
             {'driver': 'GV1', 'value': 0, 'uom': 33},            
             {'driver': 'GV2', 'value': 0, 'uom': 33},                      
             ]          

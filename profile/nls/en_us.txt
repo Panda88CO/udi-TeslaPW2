@@ -3,7 +3,7 @@ ND-CONTROLLER-ICON = Electricity
 
 CMD-nlscontroller-UPDATE-NAME = Update System Data
 ST-nlscontroller-ST-NAME = Controller Up
-UPDN-0 = Donw
+UPDN-0 = Down
 UPDN-1 = Up
 ST-nlscontroller-GV2-NAME = Connected to Tesla Power Wall
 CONNECTION-0 = Not Connected
