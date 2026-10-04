@@ -78,7 +78,7 @@ class TeslaPWController(udi_interface.Node):
         self.poly.addNode(self)
         self.wait_for_node_done()
         #self.poly.updateProfile()
-        self.node = self.poly.getNode(self.address)
+        self.node = self
         logging.debug('Node info: {}'.format(self.node))
         self.node.setDriver('ST', 1, True, True)
         logging.debug('finish Init ')
@@ -189,7 +189,7 @@ class TeslaPWController(udi_interface.Node):
         site_string = ''
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
         #logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
-        self.poly.updateProfile()
+        #self.poly.updateProfile()
         #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
         while not self.customParam_done or not self.TPW_cloud.customNsDone() or not self.config_done:
@@ -269,8 +269,6 @@ class TeslaPWController(udi_interface.Node):
             
             teslaPWStatusNode(self.poly, node_address, node_address, node_name, PW_site, self.TPW)
             assigned_addresses.append(node_address)
-            if self.cloud_access_enabled:
-                self.TPW.init_cloud_data(PW_site)
 
         logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))
 
@@ -563,7 +561,7 @@ if __name__ == "__main__":
         logging.debug('before subscribe')
         polyglot.subscribe(polyglot.STOP, TPW.stop)
         polyglot.subscribe(polyglot.CUSTOMPARAMS, TPW.customParamsHandler)
-        polyglot.subscribe(polyglot.CUSTOMDATA, None) # ytService.customDataHandler)
+        polyglot.subscribe(polyglot.CUSTOMDATA, TPW_cloud.customDataHandler)
         polyglot.subscribe(polyglot.CONFIGDONE, TPW.configDoneHandler)
         #polyglot.subscribe(polyglot.ADDNODEDONE, TPW.node_queue)        
         polyglot.subscribe(polyglot.LOGLEVEL, TPW.handleLevelChange)

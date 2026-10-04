@@ -151,6 +151,7 @@ class MockPolyglotInterface:
             __getitem__=lambda k: None
         )
         self.nodes_in_db = []
+        self.ready_called = 0
 
     def subscribe(self, event, handler, key=None):
         if event not in self._subscriptions:
@@ -183,7 +184,7 @@ class MockPolyglotInterface:
         return list(self._nodes.values())
 
     def ready(self):
-        pass
+        self.ready_called += 1
 
     def stop(self):
         pass
@@ -528,6 +529,10 @@ class TestTeslaPWStatusNode(unittest.TestCase):
         self.assertEqual(self.node.id, 'PWSTATUS')
         self.assertEqual(self.node.address, 'pwstatus')
         self.assertIs(self.poly.getNode('pwstatus'), self.node)
+
+    def test_nodes_do_not_call_poly_ready(self):
+        """Verifies that node instantiation does not invoke polyglot.ready()."""
+        self.assertEqual(self.poly.ready_called, 0, "Nodes should not call poly.ready()")
 
     def test_start_creates_subnodes(self):
         self.node.start()

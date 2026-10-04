@@ -29,10 +29,9 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.START, self.start, address)
 
-        self.poly.ready()
         self.poly.addNode(self)
         self.wait_for_node_done()
-        self.node = self.poly.getNode(address)
+        self.node = self
         #self.TPW = tesla_info(self.my_TeslaPW, self.site_id)
         #self.TPW.tesla_get_site_info(self.site_id)
         #self.TPW.tesla_get_live_status(self.site_id)
