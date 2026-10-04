@@ -467,6 +467,51 @@ class TestProfileXmlAndNls(unittest.TestCase):
         self.assertIn(teslaPWHistoryNode.id, nodedef_ids)
         self.assertIn(teslaPWSetupNode.id, nodedef_ids)
 
+    def test_python_drivers_match_nodedefs_and_editors(self):
+        """Verifies that Python node drivers match nodedefs.xml and editors.xml."""
+        ed_tree = ET.parse(self.editors_xml)
+        editors = {}
+        for ed in ed_tree.getroot().findall('editor'):
+            eid = ed.attrib['id'].strip()
+            editors[eid] = [r.attrib.get('uom') for r in ed.findall('range') if 'uom' in r.attrib]
+
+        nd_tree = ET.parse(self.nodedefs_xml)
+        nodedefs = {}
+        for nd in nd_tree.getroot().findall('nodeDef'):
+            nid = nd.attrib['id'].strip()
+            sts = {st.attrib['id'].strip(): st.attrib.get('editor', '').strip() for st in nd.findall('.//st')}
+            nodedefs[nid] = sts
+
+        node_classes = {
+            'CONTROLLER': TeslaPWController,
+            'PWSTATUS': teslaPWStatusNode,
+            'PWHISTORY': teslaPWHistoryNode,
+            'PWSETUP': teslaPWSetupNode,
+        }
+
+        for nid, cls in node_classes.items():
+            nd_sts = nodedefs.get(nid, {})
+            py_drivers = {d['driver']: str(d.get('uom', '')) for d in getattr(cls, 'drivers', [])}
+
+            # 1. No extraneous drivers in Python that don't exist in nodedefs.xml
+            extra_in_py = set(py_drivers.keys()) - set(nd_sts.keys())
+            self.assertFalse(extra_in_py, f"{nid} defines drivers in Python not in nodedefs.xml: {extra_in_py}")
+
+            # 2. No drivers in nodedefs.xml missing from Python drivers list
+            missing_in_py = set(nd_sts.keys()) - set(py_drivers.keys())
+            self.assertFalse(missing_in_py, f"{nid} missing drivers in Python defined in nodedefs.xml: {missing_in_py}")
+
+            # 3. UOM in Python driver must be valid for the editor in editors.xml
+            for drv, py_uom in py_drivers.items():
+                ed_id = nd_sts.get(drv)
+                if ed_id and ed_id in editors:
+                    allowed_uoms = editors[ed_id]
+                    self.assertIn(
+                        py_uom,
+                        allowed_uoms,
+                        f"{nid} driver '{drv}' has uom={py_uom} in Python, but editor '{ed_id}' only allows uoms={allowed_uoms}"
+                    )
+
 
 class TestTeslaPWStatusNode(unittest.TestCase):
     """Tests the Powerwall Status Node functionality."""
