@@ -110,7 +110,7 @@ class teslaPWStatusNode(udi_interface.Node):
 
  
 
-    id = 'pwstatus'
+    id = 'PWSTATUS'
     commands = { 'UPDATE': ISYupdate, 
                 }
     '''

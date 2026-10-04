@@ -100,7 +100,7 @@ class teslaPWHistoryNode(udi_interface.Node):
 
  
 
-    id = 'pwhistory'
+    id = 'PWHISTORY'
     commands = { 'UPDATE': ISYupdate, 
                 }
     '''

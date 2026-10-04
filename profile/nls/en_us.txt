@@ -1,13 +1,13 @@
-ND-controller-NAME = Tesla PowerWall Info
-ND-controller-ICON = Electricity
+ND-CONTROLLER-NAME = Tesla PowerWall Info
+ND-CONTROLLER-ICON = Electricity
 
 CMD-nlscontroller-UPDATE-NAME = Update System Data
 ST-nlscontroller-ST-NAME = Controller Up
 UPDN-0 = Donw
 UPDN-1 = Up
 ST-nlscontroller-GV2-NAME = Connected to Tesla Power Wall
-CON-0 = Not Connected
-CON-1 = connected
+CONNECTION-0 = Not Connected
+CONNECTION-1 = connected
 
 ST-nlscontroller-GV3-NAME = Consecutive missed LongPolls
 ST-nlscontroller-GV4-NAME = Connection Status
@@ -18,8 +18,8 @@ CON_STATE-3 = Local and Cloud
 
 
 #new node define
-ND-pwstatus-NAME = Power Wall Status
-ND-pwstatus-ICON = Electricity
+ND-PWSTATUS-NAME = Power Wall Status
+ND-PWSTATUS-ICON = Electricity
 
 
 SEASON-0 = Winter
@@ -32,21 +32,21 @@ PERIOD-1 = Partial-Peak
 PERIOD-2 = Peak
 PERIOD-99 = Unknown
 
-ND-pwsolar-NAME = Power Wall Solar Status
-ND-pwsolar-ICON = Electricity
+ND-PWSOLAR-NAME = Power Wall Solar Status
+ND-PWSOLAR-ICON = Electricity
 CMD-nlspwsolar-UPDATE-NAME = Update System Data
 ST-nlspwsolar-GV1-NAME = Current Solar Supply
 ST-nlspwsolar-GV2-NAME = Solar Power Today
 ST-nlspwsolar-GV3-NAME = Solar Power Yesterday
 
-ND-pwgenerator-NAME = Power Wall Generator Status
-ND-pwgenerator-ICON = Electricity
+ND-PWGENERATOR-NAME = Power Wall Generator Status
+ND-PWGENERATOR-ICON = Electricity
 CMD-nlspwgen-UPDATE-NAME = Update System Data
 ST-nlspwgen-GV1-NAME = Generator Power Today
 ST-nlspwgen-GV2-NAME = Generator Power Yesterday
 
-ND-pwsetup-NAME = Power Wall Control Parameters
-ND-pwsetup-ICON = Electricity
+ND-PWSETUP-NAME = Power Wall Control Parameters
+ND-PWSETUP-ICON = Electricity
 CMD-nlspwsetup-BACKUP_PCT-NAME = Backup Reserve (%)
 CMD-nlspwsetup-OP_MODE-NAME = Operating Mode
 CMD-nlspwsetup-STORM_MODE-NAME = Storm Mode
@@ -114,9 +114,9 @@ GRID_EXP_MODE-2 = Never
 GRID_EXP_MODE-99 = Unknown
 
 
-ND-pwstatus-NAME = Power Wall Status
+ND-PWSTATUS-NAME = Power Wall Status
 
-ND-pwstatus-ICON = Electricity
+ND-PWSTATUS-ICON = Electricity
 
 
 CMD-nlspwstatus-UPDATE-NAME = Update System Data
@@ -142,8 +142,8 @@ ST-nlspwstatus-GV14-NAME = Grid/House Net Use Today
 ST-nlspwstatus-GV28-NAME = Generator Today
 ST-nlspwstatus-GV29-NAME = Home Net Power Use Today
 
-ND-pwhistory-NAME = Power Wall History
-ND-pwhistory-ICON = Electricity
+ND-PWHISTORY-NAME = Power Wall History
+ND-PWHISTORY-ICON = Electricity
 CMD-nlspwhist-UPDATE-NAME = Update System Data
 ST-nlspwhist-ST-NAME = Connected to Tesla
 

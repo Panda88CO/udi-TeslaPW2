@@ -8,7 +8,7 @@
     "notice": "Uses APIs from https://github.com/jrester/tesla_powerwall and aofficial Tesla API.",
     "shortPoll": "60",
     "longPoll": "180",
-    "profile_version": "0.1.6",
+    "profile_version": "0.1.7",
     "logLevel":"INFO",
 	"customParams": {
 		"LOCAL_IP_ADDRESS": "",
@@ -20,8 +20,8 @@
         {
             "title": "A NodeServer to integrate Tesla Power Wall Controll system",
             "author": "Panda88CO",
-            "version": "0.1.14",
-            "date": "April 29,  2024",
+            "version": "0.1.31",
+            "date": "October 4,  2026",
             "source": "https://github.com/Panda88CO/udi-TeslaPW2",
             "license": "https://github.com/Panda88CO/udi-TeslaPW2/blob/main/license"
         }

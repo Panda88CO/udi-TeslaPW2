@@ -1,11 +1,11 @@
 <nodeDefs> 
-   <nodeDef id="controller" nls="nlscontroller">
+   <nodeDef id="CONTROLLER" nls="nlscontroller">
       <editors />
       <sts>
          <st id="ST"  editor="UPDN" />
-         <st id="GV2" editor="CON" />
+         <st id="GV2" editor="CONNECTION" />
          <st id="GV3" editor="MISS" />
-         <st id="GV4" editor="CON_TYPE" />         
+         <st id="GV4" editor="CONNECTIONTYPE" />         
       </sts>
       <cmds>
          <sends>
@@ -18,18 +18,18 @@
       </cmds>
    </nodeDef> 
 
-   <nodeDef id="pwstatus" nls="nlspwstatus">
+   <nodeDef id="PWSTATUS" nls="nlspwstatus">
       <editors />
       <sts>
-         <st id="ST" editor="ON_LINE" />      
+         <st id="ST" editor="ONLINE" />      
          <st id="GV0" editor="PERCENT" />
          <st id="GV1" editor="KW" />
          <st id="GV2" editor="KW" />
          <st id="GV3" editor="KW" />
          <st id="GV4" editor="KW" />
-         <st id="GV5" editor="OP_MODE" />
-         <st id="GV6" editor="GRID_ST" />
-         <st id="GV7" editor="GRID_MODE" />
+         <st id="GV5" editor="OPMODE" />
+         <st id="GV6" editor="GRIDST" />
+         <st id="GV7" editor="GRIDMODE" />
         
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
@@ -50,14 +50,14 @@
          <st id="GV19" editor="KWH" />
          <st id="GV20" editor="KWH" />
          <st id="GV21" editor="KWH" />
-         <st id="GV22" editor="count" />    
-         <st id="GV23" editor="TIME" />
-         <st id="GV24" editor="count" />
-         <st id="GV25" editor="TIME" />
+         <st id="GV22" editor="COUNT" />    
+         <st id="GV23" editor="UNIXTIME" />
+         <st id="GV24" editor="COUNT" />
+         <st id="GV25" editor="UNIXTIME" />
          <st id="GV26" editor="KWH" />
-         <st id="GV27" editor="TIME" />
+         <st id="GV27" editor="UNIXTIME" />
          <st id="GV28" editor="KWH" />
-         <st id="GV29" editor="TIME" />
+         <st id="GV29" editor="UNIXTIME" />
          -->
 
       </sts>
@@ -71,18 +71,18 @@
    </nodeDef> 
 
 
-      <nodeDef id="pwhistory" nls="nlspwhist">
+      <nodeDef id="PWHISTORY" nls="nlspwhist">
       <editors />
       <sts>
-         <st id="ST" editor="ON_LINE" />     
+         <st id="ST" editor="ONLINE" />     
          <!--      
          <st id="GV0" editor="KWH" />
          <st id="GV1" editor="KWH" />
          <st id="GV2" editor="KWH" />
          <st id="GV3" editor="KWH" />
          <st id="GV4" editor="KWH" />
-         <st id="GV5" editor="OP_MODE" />
-         <st id="GV6" editor="GRID_ST" />
+         <st id="GV5" editor="OPMODE" />
+         <st id="GV6" editor="GRIDST" />
          <st id="GV7" editor="EN_MODE" />
          -->
 
@@ -104,14 +104,14 @@
          <st id="GV20" editor="KWH" />
          <st id="GV21" editor="KWH" />
 
-         <st id="GV22" editor="count" />    
-         <st id="GV23" editor="TIME" />
-         <st id="GV24" editor="count" />
-         <st id="GV25" editor="TIME" />
+         <st id="GV22" editor="COUNT" />    
+         <st id="GV23" editor="UNIXTIME" />
+         <st id="GV24" editor="COUNT" />
+         <st id="GV25" editor="UNIXTIME" />
          <st id="GV26" editor="KWH" />
-         <st id="GV27" editor="TIME" />
+         <st id="GV27" editor="UNIXTIME" />
          <st id="GV28" editor="KWH" />
-         <st id="GV29" editor="TIME" />
+         <st id="GV29" editor="UNIXTIME" />
 
 
          <st id="GV1" editor="KWH" />
@@ -126,10 +126,10 @@
       </cmds>
    </nodeDef> 
    <!--
-   <nodeDef id="pwsolar" nls="nlspwsolar">
+   <nodeDef id="PWSOLAR" nls="nlspwsolar">
       <editors />
       <sts>
-         <st id="GV1" editor="KWH_LOW" />
+         <st id="GV1" editor="KWHLOW" />
          <st id="GV2" editor="KWH" />
          <st id="GV3" editor="KWH" />
       </sts>
@@ -142,7 +142,7 @@
       </cmds>
    </nodeDef> 
 
-   <nodeDef id="pwgenerator" nls="nlspwgen">
+   <nodeDef id="PWGENERATOR" nls="nlspwgen">
       <editors />
       <sts>
          <st id="GV1" editor="KWH" />
@@ -158,25 +158,25 @@
    </nodeDef> 
    -->
 
-   <nodeDef id="pwsetup" nls="nlspwsetup">
+   <nodeDef id="PWSETUP" nls="nlspwsetup">
       <editors />
       <sts>
          <st id="GV1" editor="PERCENT" />
-         <st id="GV2" editor="OP_MODE" />
+         <st id="GV2" editor="OPMODE" />
          <st id="GV3" editor="TOGGLE" />
-         <!--<st id="GV4" editor="TOU_MODE" />-->
-         <st id="GV5" editor="GRID_IMP_MODE" />  
-         <st id="GV6" editor="GRID_EXP_MODE" />
+         <!--<st id="GV4" editor="TOUMODE" />-->
+         <st id="GV5" editor="GRIDIMPMODE" />  
+         <st id="GV6" editor="GRIDEXPMODE" />
          <st id="GV7" editor="PERCENT" />                         
-         <!--<st id="GV4" editor="TOU_MODE" />
-         <st id="GV5" editor="TIME" />
-         <st id="GV6" editor="TIME" />
-         <st id="GV7" editor="TIME" />
-         <st id="GV8" editor="TIME" />
-         <st id="GV9" editor="TIME" />
-         <st id="GV10" editor="TIME" />
-         <st id="GV11" editor="TIME" />
-         <st id="GV12" editor="TIME" /> -->
+         <!--<st id="GV4" editor="TOUMODE" />
+         <st id="GV5" editor="UNIXTIME" />
+         <st id="GV6" editor="UNIXTIME" />
+         <st id="GV7" editor="UNIXTIME" />
+         <st id="GV8" editor="UNIXTIME" />
+         <st id="GV9" editor="UNIXTIME" />
+         <st id="GV10" editor="UNIXTIME" />
+         <st id="GV11" editor="UNIXTIME" />
+         <st id="GV12" editor="UNIXTIME" /> -->
       </sts>
       <cmds>
          <sends>
@@ -187,17 +187,17 @@
                <p id="" editor="PERCENT" init="GV1" /> 
             </cmd> 
             <cmd id="OP_MODE" > 
-               <p id="" editor="setOP_MODE" init="GV2" /> 
+               <p id="" editor="SETOPMODE" init="GV2" /> 
             </cmd> 
             <cmd id="STORM_MODE" > 
-               <p id="" editor="setTOGGLE" init="GV3" /> 
+               <p id="" editor="SETTOGGLE" init="GV3" /> 
             </cmd> 
             <!--<cmd id="TOU_MODE" > 
-               <p id="" editor="setTOU_MODE" init="GV4" /> 
+               <p id="" editor="SETTOUMODE" init="GV4" /> 
             </cmd> -->
             <cmd id="GRID_MODE" > 
-               <p id="import" editor="setGRID_IMP_MODE" init="GV5" /> 
-               <p id="export" editor="setGRID_EXP_MODE" init="GV6" /> 
+               <p id="import" editor="SETGRIDIMPMODE" init="GV5" /> 
+               <p id="export" editor="SETGRIDEXPMODE" init="GV6" /> 
             </cmd> 
             <cmd id="EV_CHRG_MODE" > 
                <p id="" editor="PERCENT" init="GV7" /> 
