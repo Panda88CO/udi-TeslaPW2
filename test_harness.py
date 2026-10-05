@@ -25,6 +25,7 @@ Can be run:
 
 import sys
 import os
+import json
 import types
 import unittest
 import xml.etree.ElementTree as ET
@@ -141,6 +142,8 @@ class MockPolyglotInterface:
     NOTICES = 'notices'
     CUSTOMNS = 'customNs'
     OAUTH = 'oauth'
+    PROFILE = 'getProfile'
+    UPDATEPROFILEDONE = 'updateProfileDone'
 
     def __init__(self):
         self._nodes = {}
@@ -152,6 +155,16 @@ class MockPolyglotInterface:
         )
         self.nodes_in_db = []
         self.ready_called = 0
+        self.serverdata = {'profile_version': '0.2.0'}
+        self._ifaceData = types.SimpleNamespace(profile_version=None)
+        self.json_profile_updates = []
+
+    def updateJsonProfile(self, profile, options=None):
+        if not isinstance(profile, dict):
+            raise ValueError('Profile must be a dictionary')
+        self.json_profile_updates.append(profile)
+        self.publish(self.UPDATEPROFILEDONE, {'success': True, 'requestId': profile.get('requestId')})
+        return {'success': True}
 
     def subscribe(self, event, handler, key=None):
         if event not in self._subscriptions:
@@ -377,9 +390,12 @@ class TestProfileXmlAndNls(unittest.TestCase):
     """Verifies profile XML standards and consistency with Python Node classes."""
 
     def setUp(self):
-        self.editors_xml = os.path.join(ROOT_DIR, 'profile', 'editor', 'editors.xml')
-        self.nodedefs_xml = os.path.join(ROOT_DIR, 'profile', 'nodedef', 'nodedefs.xml')
-        self.nls_txt = os.path.join(ROOT_DIR, 'profile', 'nls', 'en_us.txt')
+        profile_dir = os.path.join(ROOT_DIR, 'profile')
+        if not os.path.exists(profile_dir):
+            profile_dir = os.path.join(ROOT_DIR, 'profile.static')
+        self.editors_xml = os.path.join(profile_dir, 'editor', 'editors.xml')
+        self.nodedefs_xml = os.path.join(profile_dir, 'nodedef', 'nodedefs.xml')
+        self.nls_txt = os.path.join(profile_dir, 'nls', 'en_us.txt')
         self.reserved_words = {'CON', 'TIME', 'BOOL'}
 
     def test_xml_files_exist_and_well_formed(self):
@@ -716,6 +732,118 @@ class TestTeslaPWController(unittest.TestCase):
         self.assertEqual(drivers['GV4']['value'], 0)  # Cloud/Local mode
 
 
+class TestDynamicJsonProfile(unittest.TestCase):
+    """Verifies PG3x / IoX Dynamic JSON profile generation and node server integration."""
+
+    def setUp(self):
+        self.base_profile_path = os.path.join(ROOT_DIR, 'data', 'base_profile.json')
+        self.reserved_words = {'CON', 'TIME', 'BOOL'}
+
+    def test_base_profile_json_exists_and_valid(self):
+        self.assertTrue(os.path.exists(self.base_profile_path), "data/base_profile.json does not exist")
+        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        self.assertIn('editors', data)
+        self.assertIn('nodedefs', data)
+        self.assertIn('nls', data)
+        self.assertGreaterEqual(len(data['editors']), 28)
+        self.assertEqual(len(data['nodedefs']), 4)
+        self.assertGreaterEqual(len(data['nls']), 130)
+
+    def test_dynamic_editors_standards(self):
+        """Verifies dynamic JSON editors comply with PG3x conventions (uppercase, no underscore, no reserved words)."""
+        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        seen = set()
+        for ed in data['editors']:
+            eid = ed.get('id', '')
+            self.assertTrue(eid, "Editor missing id")
+            self.assertNotIn(eid, seen, f"Duplicate editor ID: {eid}")
+            seen.add(eid)
+            self.assertEqual(eid, eid.upper(), f"Editor ID '{eid}' is not uppercase")
+            self.assertNotIn('_', eid, f"Editor ID '{eid}' contains underscore")
+            self.assertNotIn(eid, self.reserved_words, f"Editor ID '{eid}' is reserved word")
+            for r in ed.get('range', []):
+                subset = r.get('subset')
+                if subset is not None:
+                    self.assertNotIn('-', str(subset), f"Editor '{eid}' subset has range hyphen: '{subset}'")
+                    parts = [p.strip() for p in str(subset).split(',')]
+                    for p in parts:
+                        self.assertTrue(p.isdigit(), f"Editor '{eid}' non-integer subset value: '{p}'")
+
+    def test_dynamic_nodedefs_standards(self):
+        """Verifies dynamic JSON nodedefs reference valid editors and follow naming rules."""
+        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        editor_ids = {e['id'] for e in data['editors']}
+        seen = set()
+        for nd in data['nodedefs']:
+            nid = nd.get('id', '')
+            self.assertTrue(nid, "NodeDef missing id")
+            self.assertNotIn(nid, seen, f"Duplicate nodeDef ID: {nid}")
+            seen.add(nid)
+            self.assertEqual(nid, nid.upper(), f"NodeDef ID '{nid}' is not uppercase")
+            self.assertNotIn('_', nid, f"NodeDef ID '{nid}' contains underscore")
+            self.assertNotIn(nid, self.reserved_words, f"NodeDef ID '{nid}' is reserved word")
+            for st in nd.get('sts', []):
+                ed_ref = st.get('editor')
+                if ed_ref:
+                    self.assertIn(ed_ref, editor_ids, f"NodeDef '{nid}' references missing editor '{ed_ref}'")
+            for cmd in nd.get('cmds', {}).get('accepts', []):
+                for p in cmd.get('params', []):
+                    ed_ref = p.get('editor')
+                    if ed_ref:
+                        self.assertIn(ed_ref, editor_ids, f"NodeDef '{nid}' param references missing editor '{ed_ref}'")
+
+    def test_dynamic_nls_covers_nodedefs(self):
+        """Verifies dynamic JSON NLS entries contain name and icon for each nodedef."""
+        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        nls = data['nls']
+        for nd in data['nodedefs']:
+            nid = nd['id']
+            self.assertIn(f"ND-{nid}-NAME", nls, f"Missing ND-{nid}-NAME in dynamic NLS")
+            self.assertIn(f"ND-{nid}-ICON", nls, f"Missing ND-{nid}-ICON in dynamic NLS")
+
+    def test_controller_dynamic_profile_update(self):
+        """Tests controller update_dynamic_profile calling updateJsonProfile with version caching."""
+        poly = MockPolyglotInterface()
+        mock_cloud = types.SimpleNamespace(
+            customDataHandlerDone=True,
+            customNsHandler=lambda *a: None,
+            oauthHandler=lambda *a: None
+        )
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', mock_cloud)
+        controller.node = controller
+        
+        self.assertEqual(len(poly.json_profile_updates), 0)
+        self.assertIsNone(poly._ifaceData.profile_version)
+
+        # First call: sends updateJsonProfile and records version
+        controller.update_dynamic_profile()
+        self.assertEqual(len(poly.json_profile_updates), 1)
+        self.assertEqual(poly._ifaceData.profile_version, '0.2.0')
+
+        # Second call (idempotent): should NOT re-send because version is identical
+        controller.update_dynamic_profile()
+        self.assertEqual(len(poly.json_profile_updates), 1)
+
+        # Forced update: sends updateJsonProfile even when version matches
+        controller.update_dynamic_profile(force=True)
+        self.assertEqual(len(poly.json_profile_updates), 2)
+
+    def test_update_profile_done_handler(self):
+        """Tests controller updateProfileDoneHandler runs without exception."""
+        poly = MockPolyglotInterface()
+        mock_cloud = types.SimpleNamespace(
+            customDataHandlerDone=True,
+            customNsHandler=lambda *a: None,
+            oauthHandler=lambda *a: None
+        )
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', mock_cloud)
+        controller.updateProfileDoneHandler({'success': True, 'requestId': 'test1234'})
+
+
 # ---------------------------------------------------------------------------
 # 4. Interactive Demonstration / Simulation Runner
 # ---------------------------------------------------------------------------
@@ -742,19 +870,29 @@ def run_simulation_demo():
     if hist_node:
         hist_node.start()
 
-    # Parse en_us.txt for driver descriptions
+    # Parse en_us.txt or base_profile.json for driver descriptions
     nls_names = {}
-    nls_path = os.path.join(ROOT_DIR, 'profile', 'nls', 'en_us.txt')
-    if os.path.exists(nls_path):
-        with open(nls_path, 'r') as f:
-            for line in f:
-                if '=' in line and line.strip().startswith('ST-'):
-                    k, v = line.split('=', 1)
-                    parts = k.strip().split('-')
+    base_json_path = os.path.join(ROOT_DIR, 'data', 'base_profile.json')
+    if os.path.exists(base_json_path):
+        with open(base_json_path, 'r', encoding='utf-8') as f:
+            prof_data = json.load(f)
+            for k, v in prof_data.get('nls', {}).items():
+                if k.startswith('ST-'):
+                    parts = k.split('-')
                     if len(parts) >= 3:
-                        nls_tag = parts[1]
-                        drv_id = parts[2]
-                        nls_names[(nls_tag, drv_id)] = v.strip()
+                        nls_names[(parts[1], parts[2])] = v
+    else:
+        for cand in ['profile', 'profile.static']:
+            nls_path = os.path.join(ROOT_DIR, cand, 'nls', 'en_us.txt')
+            if os.path.exists(nls_path):
+                with open(nls_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        if '=' in line and line.strip().startswith('ST-'):
+                            k, v = line.split('=', 1)
+                            parts = k.strip().split('-')
+                            if len(parts) >= 3:
+                                nls_names[(parts[1], parts[2])] = v.strip()
+                break
 
     nls_tags = {'PWSTATUS': 'nlspwstatus', 'PWSETUP': 'nlspwsetup', 'PWHISTORY': 'nlspwhist', 'CONTROLLER': 'nlscontroller'}
 

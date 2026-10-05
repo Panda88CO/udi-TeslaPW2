@@ -1,0 +1,810 @@
+{
+  "editors": [
+    {
+      "id": "UPDN",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1",
+          "nls": "UPDN"
+        }
+      ]
+    },
+    {
+      "id": "CONNECTION",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1",
+          "nls": "CONNECTION"
+        }
+      ]
+    },
+    {
+      "id": "MISS",
+      "range": [
+        {
+          "uom": 55,
+          "min": 0,
+          "max": 255,
+          "prec": 0
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "error"
+        }
+      ]
+    },
+    {
+      "id": "CONNECTIONTYPE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2,3,99",
+          "nls": "CON_STATE"
+        }
+      ]
+    },
+    {
+      "id": "HOURS",
+      "range": [
+        {
+          "uom": 20,
+          "min": 0,
+          "max": 100,
+          "prec": 2
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "error"
+        }
+      ]
+    },
+    {
+      "id": "PERCENT",
+      "range": [
+        {
+          "uom": 51,
+          "min": 0,
+          "max": 100,
+          "prec": 0
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "error"
+        }
+      ]
+    },
+    {
+      "id": "TOGGLE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,99",
+          "nls": "EN_TOGGLE"
+        }
+      ]
+    },
+    {
+      "id": "SETTOGGLE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1",
+          "nls": "EN_TOGGLE"
+        }
+      ]
+    },
+    {
+      "id": "GRIDMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,99",
+          "nls": "EN_TOGGLE"
+        }
+      ]
+    },
+    {
+      "id": "OPMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2,99",
+          "nls": "OP_MODE"
+        }
+      ]
+    },
+    {
+      "id": "SETOPMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "1,2",
+          "nls": "OP_MODE"
+        }
+      ]
+    },
+    {
+      "id": "GRIDST",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2,3,99",
+          "nls": "EN_GRID_STATUS"
+        }
+      ]
+    },
+    {
+      "id": "GRIDIMPMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,99",
+          "nls": "GRID_IMP_MODE"
+        }
+      ]
+    },
+    {
+      "id": "SETGRIDIMPMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1",
+          "nls": "GRID_IMP_MODE"
+        }
+      ]
+    },
+    {
+      "id": "GRIDEXPMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2,99",
+          "nls": "GRID_EXP_MODE"
+        }
+      ]
+    },
+    {
+      "id": "SETGRIDEXPMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2",
+          "nls": "GRID_EXP_MODE"
+        }
+      ]
+    },
+    {
+      "id": "SETTOUMODE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1",
+          "nls": "EN_TOU_MODE"
+        }
+      ]
+    },
+    {
+      "id": "ONLINE",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,99",
+          "nls": "EN_ONLINE"
+        }
+      ]
+    },
+    {
+      "id": "KWHLOW",
+      "range": [
+        {
+          "uom": 33,
+          "min": 0,
+          "max": 20,
+          "prec": 2
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "error"
+        }
+      ]
+    },
+    {
+      "id": "KWH",
+      "range": [
+        {
+          "uom": 33,
+          "min": -100,
+          "max": 100,
+          "prec": 1
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "NODATA"
+        }
+      ]
+    },
+    {
+      "id": "KW",
+      "range": [
+        {
+          "uom": 30,
+          "min": -100,
+          "max": 100,
+          "prec": 1
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "NODATA"
+        }
+      ]
+    },
+    {
+      "id": "KWH20",
+      "range": [
+        {
+          "uom": 33,
+          "min": -20,
+          "max": 20,
+          "prec": 2
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "NODATA"
+        }
+      ]
+    },
+    {
+      "id": "UNIXTIME",
+      "range": [
+        {
+          "uom": 58,
+          "min": 0,
+          "max": 86400,
+          "prec": 0
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "NODATA"
+        }
+      ]
+    },
+    {
+      "id": "UNIXTIMESET",
+      "range": [
+        {
+          "uom": 58,
+          "min": 0,
+          "max": 86400,
+          "prec": 0
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "NODATA"
+        }
+      ]
+    },
+    {
+      "id": "SEASON",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2,99",
+          "nls": "SEASON"
+        }
+      ]
+    },
+    {
+      "id": "PERIOD",
+      "range": [
+        {
+          "uom": 25,
+          "subset": "0,1,2,99",
+          "nls": "PERIOD"
+        }
+      ]
+    },
+    {
+      "id": "DOLLAR",
+      "range": [
+        {
+          "uom": 103,
+          "min": 0,
+          "max": 5,
+          "prec": 2
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "error"
+        }
+      ]
+    },
+    {
+      "id": "COUNT",
+      "range": [
+        {
+          "uom": 0,
+          "min": 0,
+          "max": 100,
+          "prec": 0
+        },
+        {
+          "uom": 25,
+          "subset": "98,99",
+          "nls": "NODATA"
+        }
+      ]
+    }
+  ],
+  "nodedefs": [
+    {
+      "id": "CONTROLLER",
+      "nls": "nlscontroller",
+      "sts": [
+        {
+          "id": "ST",
+          "editor": "UPDN"
+        },
+        {
+          "id": "GV2",
+          "editor": "CONNECTION"
+        },
+        {
+          "id": "GV3",
+          "editor": "MISS"
+        },
+        {
+          "id": "GV4",
+          "editor": "CONNECTIONTYPE"
+        }
+      ],
+      "cmds": {
+        "sends": [
+          {
+            "id": "DON"
+          },
+          {
+            "id": "DOF"
+          }
+        ],
+        "accepts": [
+          {
+            "id": "UPDATE"
+          }
+        ]
+      }
+    },
+    {
+      "id": "PWSTATUS",
+      "nls": "nlspwstatus",
+      "sts": [
+        {
+          "id": "ST",
+          "editor": "ONLINE"
+        },
+        {
+          "id": "GV0",
+          "editor": "PERCENT"
+        },
+        {
+          "id": "GV1",
+          "editor": "KW"
+        },
+        {
+          "id": "GV2",
+          "editor": "KW"
+        },
+        {
+          "id": "GV3",
+          "editor": "KW"
+        },
+        {
+          "id": "GV4",
+          "editor": "KW"
+        },
+        {
+          "id": "GV5",
+          "editor": "OPMODE"
+        },
+        {
+          "id": "GV6",
+          "editor": "GRIDST"
+        },
+        {
+          "id": "GV7",
+          "editor": "GRIDMODE"
+        },
+        {
+          "id": "GV8",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV9",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV10",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV11",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV12",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV13",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV14",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV28",
+          "editor": "KWH"
+        }
+      ],
+      "cmds": {
+        "sends": [],
+        "accepts": [
+          {
+            "id": "UPDATE"
+          }
+        ]
+      }
+    },
+    {
+      "id": "PWHISTORY",
+      "nls": "nlspwhist",
+      "sts": [
+        {
+          "id": "ST",
+          "editor": "ONLINE"
+        },
+        {
+          "id": "GV8",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV9",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV10",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV11",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV12",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV13",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV14",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV15",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV16",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV17",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV18",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV19",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV20",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV21",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV22",
+          "editor": "COUNT"
+        },
+        {
+          "id": "GV23",
+          "editor": "UNIXTIME"
+        },
+        {
+          "id": "GV24",
+          "editor": "COUNT"
+        },
+        {
+          "id": "GV25",
+          "editor": "UNIXTIME"
+        },
+        {
+          "id": "GV26",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV27",
+          "editor": "UNIXTIME"
+        },
+        {
+          "id": "GV28",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV29",
+          "editor": "UNIXTIME"
+        },
+        {
+          "id": "GV1",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV2",
+          "editor": "KWH"
+        }
+      ],
+      "cmds": {
+        "sends": [],
+        "accepts": [
+          {
+            "id": "UPDATE"
+          }
+        ]
+      }
+    },
+    {
+      "id": "PWSETUP",
+      "nls": "nlspwsetup",
+      "sts": [
+        {
+          "id": "GV1",
+          "editor": "PERCENT"
+        },
+        {
+          "id": "GV2",
+          "editor": "OPMODE"
+        },
+        {
+          "id": "GV3",
+          "editor": "TOGGLE"
+        },
+        {
+          "id": "GV5",
+          "editor": "GRIDIMPMODE"
+        },
+        {
+          "id": "GV6",
+          "editor": "GRIDEXPMODE"
+        },
+        {
+          "id": "GV7",
+          "editor": "PERCENT"
+        }
+      ],
+      "cmds": {
+        "sends": [],
+        "accepts": [
+          {
+            "id": "UPDATE"
+          },
+          {
+            "id": "BACKUP_PCT",
+            "params": [
+              {
+                "id": "",
+                "editor": "PERCENT",
+                "init": "GV1"
+              }
+            ]
+          },
+          {
+            "id": "OP_MODE",
+            "params": [
+              {
+                "id": "",
+                "editor": "SETOPMODE",
+                "init": "GV2"
+              }
+            ]
+          },
+          {
+            "id": "STORM_MODE",
+            "params": [
+              {
+                "id": "",
+                "editor": "SETTOGGLE",
+                "init": "GV3"
+              }
+            ]
+          },
+          {
+            "id": "GRID_MODE",
+            "params": [
+              {
+                "id": "import",
+                "editor": "SETGRIDIMPMODE",
+                "init": "GV5"
+              },
+              {
+                "id": "export",
+                "editor": "SETGRIDEXPMODE",
+                "init": "GV6"
+              }
+            ]
+          },
+          {
+            "id": "EV_CHRG_MODE",
+            "params": [
+              {
+                "id": "",
+                "editor": "PERCENT",
+                "init": "GV7"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "nls": {
+    "ND-CONTROLLER-NAME": "Tesla PowerWall Info",
+    "ND-CONTROLLER-ICON": "Electricity",
+    "CMD-nlscontroller-UPDATE-NAME": "Update System Data",
+    "ST-nlscontroller-ST-NAME": "Controller Up",
+    "UPDN-0": "Down",
+    "UPDN-1": "Up",
+    "ST-nlscontroller-GV2-NAME": "Connected to Tesla Power Wall",
+    "CONNECTION-0": "Not Connected",
+    "CONNECTION-1": "connected",
+    "ST-nlscontroller-GV3-NAME": "Consecutive missed LongPolls",
+    "ST-nlscontroller-GV4-NAME": "Connection Status",
+    "CON_STATE-0": "No Connection",
+    "CON_STATE-1": "Cloud only",
+    "CON_STATE-2": "Local only",
+    "CON_STATE-3": "Local and Cloud",
+    "ND-PWSTATUS-NAME": "Power Wall Status",
+    "ND-PWSTATUS-ICON": "Electricity",
+    "SEASON-0": "Winter",
+    "SEASON-1": "Summer",
+    "SEASON-2": "Between SUmmer and Winter",
+    "SEASON-99": "Unknown",
+    "PERIOD-0": "Off-peak",
+    "PERIOD-1": "Partial-Peak",
+    "PERIOD-2": "Peak",
+    "PERIOD-99": "Unknown",
+    "ND-PWSOLAR-NAME": "Power Wall Solar Status",
+    "ND-PWSOLAR-ICON": "Electricity",
+    "CMD-nlspwsolar-UPDATE-NAME": "Update System Data",
+    "ST-nlspwsolar-GV1-NAME": "Current Solar Supply",
+    "ST-nlspwsolar-GV2-NAME": "Solar Power Today",
+    "ST-nlspwsolar-GV3-NAME": "Solar Power Yesterday",
+    "ND-PWGENERATOR-NAME": "Power Wall Generator Status",
+    "ND-PWGENERATOR-ICON": "Electricity",
+    "CMD-nlspwgen-UPDATE-NAME": "Update System Data",
+    "ST-nlspwgen-GV1-NAME": "Generator Power Today",
+    "ST-nlspwgen-GV2-NAME": "Generator Power Yesterday",
+    "ND-PWSETUP-NAME": "Power Wall Control Parameters",
+    "ND-PWSETUP-ICON": "Electricity",
+    "CMD-nlspwsetup-BACKUP_PCT-NAME": "Backup Reserve (%)",
+    "CMD-nlspwsetup-OP_MODE-NAME": "Operating Mode",
+    "CMD-nlspwsetup-STORM_MODE-NAME": "Storm Mode",
+    "CMD-nlspwsetup-GRID_MODE-NAME": "Grid Operation",
+    "CMD-nlspwsetup-EV_CHRG_MODE-NAME": "EV offgrid charge reserve",
+    "CMDP-export-NAME": "Export mode to grid",
+    "CMDP-import-NAME": "Charging from grid w. solar",
+    "CMD-nlspwsetup-UPDATE-NAME": "Update System Data",
+    "ST-nlspwsetup-GV1-NAME": "Backup Reserve (%)",
+    "ST-nlspwsetup-GV2-NAME": "Operating Mode",
+    "ST-nlspwsetup-GV3-NAME": "Storm Mode",
+    "ST-nlspwsetup-GV4-NAME": "Time of Use Mode",
+    "ST-nlspwsetup-GV5-NAME": "Grid Import to battery",
+    "ST-nlspwsetup-GV6-NAME": "Grid ExportMode",
+    "ST-nlspwsetup-GV7-NAME": "EV offgrid charge reserve (%)",
+    "TOUTIME-99": "No data",
+    "NODATA-99": "No Data",
+    "EN_TOGGLE-0": "Disabled",
+    "EN_TOGGLE-1": "Enabled",
+    "EN_TOGGLE-99": "Unknown",
+    "OP_MODE-0": "backup",
+    "OP_MODE-1": "self consumption",
+    "OP_MODE-2": "autonomous",
+    "OP_MODE-3": "site control",
+    "OP_MODE-99": "Unknown",
+    "EN_TOU_MODE-0": "Economics",
+    "EN_TOU_MODE-1": "Balanced",
+    "EN_TOU_MODE-99": "Unknown",
+    "EN_GRID_STATUS-0": "on grid",
+    "EN_GRID_STATUS-1": "islanded ready",
+    "EN_GRID_STATUS-2": "islanded",
+    "EN_GRID_STATUS-3": "transition to grid",
+    "EN_GRID_STATUS-99": "Unknown code",
+    "EN_ONLINE-0": "offline",
+    "EN_ONLINE-1": "online",
+    "EN_ONLINE-99": "unknown",
+    "error-98": "Not defined",
+    "error-99": "Unknown",
+    "GRID_IMP_MODE-0": "Allowed",
+    "GRID_IMP_MODE-1": "Not Allowed",
+    "GRID_IMP_MODE-99": "Unknown",
+    "GRID_EXP_MODE-0": "PV-only",
+    "GRID_EXP_MODE-1": "Battery-ok",
+    "GRID_EXP_MODE-2": "Never",
+    "GRID_EXP_MODE-99": "Unknown",
+    "CMD-nlspwstatus-UPDATE-NAME": "Update System Data",
+    "ST-nlspwstatus-ST-NAME": "Connected to Tesla",
+    "ST-nlspwstatus-GV0-NAME": "Remaining Battery",
+    "ST-nlspwstatus-GV1-NAME": "Inst Solar Export",
+    "ST-nlspwstatus-GV2-NAME": "Inst Battery Export",
+    "ST-nlspwstatus-GV3-NAME": "Inst Home Load",
+    "ST-nlspwstatus-GV4-NAME": "Inst Grid Import",
+    "ST-nlspwstatus-GV5-NAME": "Operation Mode",
+    "ST-nlspwstatus-GV6-NAME": "Grid Status",
+    "ST-nlspwstatus-GV7-NAME": "Grid Services Active",
+    "ST-nlspwstatus-GV8-NAME": "Home Total Use Today",
+    "ST-nlspwstatus-GV9-NAME": "Solar Export Today",
+    "ST-nlspwstatus-GV10-NAME": "Battery Export Today",
+    "ST-nlspwstatus-GV11-NAME": "Battery Import Today",
+    "ST-nlspwstatus-GV12-NAME": "Grid Export Today",
+    "ST-nlspwstatus-GV13-NAME": "Grid Import Today",
+    "ST-nlspwstatus-GV14-NAME": "Grid/House Net Use Today",
+    "ST-nlspwstatus-GV28-NAME": "Generator Today",
+    "ST-nlspwstatus-GV29-NAME": "Home Net Power Use Today",
+    "ND-PWHISTORY-NAME": "Power Wall History",
+    "ND-PWHISTORY-ICON": "Electricity",
+    "CMD-nlspwhist-UPDATE-NAME": "Update System Data",
+    "ST-nlspwhist-ST-NAME": "Connected to Tesla",
+    "ST-nlspwhist-GV8-NAME": "Home Total Use Today",
+    "ST-nlspwhist-GV9-NAME": "Solar Export Today",
+    "ST-nlspwhist-GV10-NAME": "Battery Export Today",
+    "ST-nlspwhist-GV11-NAME": "Battery Import Today",
+    "ST-nlspwhist-GV12-NAME": "Grid Export Today",
+    "ST-nlspwhist-GV13-NAME": "Grid Import Today",
+    "ST-nlspwhist-GV14-NAME": "Grid/House Net Use Today",
+    "ST-nlspwhist-GV15-NAME": "Home Total Use Yesterday",
+    "ST-nlspwhist-GV16-NAME": "Solar Export Yesterday",
+    "ST-nlspwhist-GV17-NAME": "Battery Export Yesterday",
+    "ST-nlspwhist-GV18-NAME": "Battery Import Yesterday",
+    "ST-nlspwhist-GV19-NAME": "Grid Export Yesterday",
+    "ST-nlspwhist-GV20-NAME": "Grid Import Yesterday",
+    "ST-nlspwhist-GV21-NAME": "Grid/House Net Use Yesterday",
+    "ST-nlspwhist-GV22-NAME": "Today nbr backup events",
+    "ST-nlspwhist-GV23-NAME": "Today backup event time",
+    "ST-nlspwhist-GV24-NAME": "Yesterday nbr backup events",
+    "ST-nlspwhist-GV25-NAME": "Yesterday backup event time",
+    "ST-nlspwhist-GV26-NAME": "Today charge power",
+    "ST-nlspwhist-GV27-NAME": "Today charge time",
+    "ST-nlspwhist-GV28-NAME": "Yesterday charge power",
+    "ST-nlspwhist-GV29-NAME": "Yesterday charge time",
+    "ST-nlspwhist-GV1-NAME": "Generator Today",
+    "ST-nlspwhist-GV2-NAME": "Generator Yesterday"
+  }
+}

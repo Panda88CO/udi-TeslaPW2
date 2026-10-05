@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import os
 import sys
+import json
 import time 
 import traceback
 from TeslaInfoV2 import tesla_info
@@ -20,7 +22,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.1.31'
+VERSION = '0.1.32'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -188,9 +190,7 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         site_string = ''
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
-        #logging.debug('start 1 : {}'.format(self.TPW_cloud._oauthTokens))
-        #self.poly.updateProfile()
-        #logging.debug('start 2 : {}'.format(self.TPW_cloud._oauthTokens))
+        self.update_dynamic_profile()
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
         while not self.customParam_done or not self.TPW_cloud.customNsDone() or not self.config_done:
             logging.info('Waiting for node to initialize')
@@ -530,8 +530,72 @@ class TeslaPWController(udi_interface.Node):
     def update_PW_data(self, site_id, level):
         pass   
 
+    def updateProfileDoneHandler(self, data):
+        logging.info(f'Dynamic JSON profile update completed: {data}')
+
+    def update_dynamic_profile(self, force=False):
+        """
+        Updates the IoX profile dynamically via PG3x JSON profile API.
+        Only sends profile if force is True or profile_version has changed / not yet recorded.
+        """
+        try:
+            if not hasattr(self.poly, 'updateJsonProfile'):
+                logging.info('Dynamic JSON profile (updateJsonProfile) not supported in this udi_interface version.')
+                return
+
+            current_version = None
+            if hasattr(self.poly, 'serverdata') and isinstance(self.poly.serverdata, dict):
+                current_version = self.poly.serverdata.get('profile_version')
+
+            if not current_version:
+                try:
+                    server_json_path = os.path.join(os.path.dirname(__file__), 'server.json')
+                    if os.path.exists(server_json_path):
+                        with open(server_json_path, 'r', encoding='utf-8') as sf:
+                            sdata = json.load(sf)
+                            current_version = sdata.get('profile_version')
+                except Exception:
+                    pass
+
+            saved_version = None
+            if hasattr(self.poly, '_ifaceData'):
+                try:
+                    saved_version = getattr(self.poly._ifaceData, 'profile_version', None)
+                except Exception:
+                    saved_version = None
+
+            if not force and current_version and saved_version and saved_version == current_version:
+                logging.info(f'Dynamic JSON profile is up to date (version {current_version}).')
+                return
+
+            profile_file = os.path.join(os.path.dirname(__file__), 'data', 'base_profile.json')
+            if not os.path.exists(profile_file):
+                logging.info(f'{profile_file} not found. Generating from profile definitions...')
+                try:
+                    from scripts.generate_profile_json import generate_profile
+                    profile_data = generate_profile()
+                except Exception as ex:
+                    logging.error(f'Failed to generate dynamic profile: {ex}')
+                    return
+            else:
+                with open(profile_file, 'r', encoding='utf-8') as f:
+                    profile_data = json.load(f)
+
+            logging.info(f'Updating dynamic JSON profile (version {current_version})...')
+            self.poly.updateJsonProfile(profile_data)
+            if hasattr(self.poly, '_ifaceData') and current_version:
+                try:
+                    self.poly._ifaceData.profile_version = current_version
+                    logging.info(f'Dynamic profile version recorded as {current_version}.')
+                except Exception as ex:
+                    logging.debug(f'Could not record profile_version in _ifaceData: {ex}')
+
+        except Exception as e:
+            logging.error(f'Exception in update_dynamic_profile: {e}', exc_info=True)
+
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
+        self.update_dynamic_profile(force=True)
         self.longPoll()
 
 
@@ -571,6 +635,8 @@ if __name__ == "__main__":
         logging.debug('Calling start')
         polyglot.subscribe(polyglot.CUSTOMNS, TPW_cloud.customNsHandler)
         polyglot.subscribe(polyglot.OAUTH, TPW_cloud.oauthHandler)
+        if hasattr(polyglot, 'UPDATEPROFILEDONE'):
+            polyglot.subscribe(polyglot.UPDATEPROFILEDONE, TPW.updateProfileDoneHandler)
         logging.debug('after subscribe')
         polyglot.ready()
         polyglot.runForever()
