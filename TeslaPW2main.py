@@ -627,7 +627,8 @@ class TeslaPWController(udi_interface.Node):
                 },
                 'editors': profile_data.get('editors', []),
                 'nodedefs': profile_data.get('nodedefs', []),
-                'linkdefs': profile_data.get('linkdefs', [])
+                'linkdefs': profile_data.get('linkdefs', []),
+                'nls': profile_data.get('nls', {})
             }
 
             logging.info(f'Updating dynamic JSON profile (version {current_version})...')

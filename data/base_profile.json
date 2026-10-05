@@ -32,7 +32,7 @@
         {
           "uom": 25,
           "subset": "98,99",
-          "nls": "error"
+          "nls": "ERROR"
         }
       ]
     },
@@ -42,7 +42,7 @@
         {
           "uom": 25,
           "subset": "0,1,2,3,99",
-          "nls": "CON_STATE"
+          "nls": "CONNECTIONSTATE"
         }
       ]
     },
@@ -58,7 +58,7 @@
         {
           "uom": 25,
           "subset": "98,99",
-          "nls": "error"
+          "nls": "ERROR"
         }
       ]
     },
@@ -74,7 +74,7 @@
         {
           "uom": 25,
           "subset": "98,99",
-          "nls": "error"
+          "nls": "ERROR"
         }
       ]
     },
@@ -84,7 +84,7 @@
         {
           "uom": 25,
           "subset": "0,1,99",
-          "nls": "EN_TOGGLE"
+          "nls": "ENTOGGLE"
         }
       ]
     },
@@ -94,7 +94,7 @@
         {
           "uom": 25,
           "subset": "0,1",
-          "nls": "EN_TOGGLE"
+          "nls": "ENTOGGLE"
         }
       ]
     },
@@ -104,7 +104,7 @@
         {
           "uom": 25,
           "subset": "0,1,99",
-          "nls": "EN_TOGGLE"
+          "nls": "ENTOGGLE"
         }
       ]
     },
@@ -114,7 +114,7 @@
         {
           "uom": 25,
           "subset": "0,1,2,99",
-          "nls": "OP_MODE"
+          "nls": "OPMODE"
         }
       ]
     },
@@ -124,7 +124,7 @@
         {
           "uom": 25,
           "subset": "1,2",
-          "nls": "OP_MODE"
+          "nls": "OPMODE"
         }
       ]
     },
@@ -134,7 +134,7 @@
         {
           "uom": 25,
           "subset": "0,1,2,3,99",
-          "nls": "EN_GRID_STATUS"
+          "nls": "ENGRIDSTATUS"
         }
       ]
     },
@@ -144,7 +144,7 @@
         {
           "uom": 25,
           "subset": "0,1,99",
-          "nls": "GRID_IMP_MODE"
+          "nls": "GRIDIMPMODE"
         }
       ]
     },
@@ -154,7 +154,7 @@
         {
           "uom": 25,
           "subset": "0,1",
-          "nls": "GRID_IMP_MODE"
+          "nls": "GRIDIMPMODE"
         }
       ]
     },
@@ -164,7 +164,7 @@
         {
           "uom": 25,
           "subset": "0,1,2,99",
-          "nls": "GRID_EXP_MODE"
+          "nls": "GRIDEXPMODE"
         }
       ]
     },
@@ -174,7 +174,7 @@
         {
           "uom": 25,
           "subset": "0,1,2",
-          "nls": "GRID_EXP_MODE"
+          "nls": "GRIDEXPMODE"
         }
       ]
     },
@@ -184,7 +184,7 @@
         {
           "uom": 25,
           "subset": "0,1",
-          "nls": "EN_TOU_MODE"
+          "nls": "ENTOUMODE"
         }
       ]
     },
@@ -194,7 +194,7 @@
         {
           "uom": 25,
           "subset": "0,1,99",
-          "nls": "EN_ONLINE"
+          "nls": "ENONLINE"
         }
       ]
     },
@@ -210,7 +210,7 @@
         {
           "uom": 25,
           "subset": "98,99",
-          "nls": "error"
+          "nls": "ERROR"
         }
       ]
     },
@@ -326,7 +326,7 @@
         {
           "uom": 25,
           "subset": "98,99",
-          "nls": "error"
+          "nls": "ERROR"
         }
       ]
     },
@@ -687,10 +687,16 @@
     "CONNECTION-1": "connected",
     "ST-nlscontroller-GV3-NAME": "Consecutive missed LongPolls",
     "ST-nlscontroller-GV4-NAME": "Connection Status",
-    "CON_STATE-0": "No Connection",
-    "CON_STATE-1": "Cloud only",
-    "CON_STATE-2": "Local only",
-    "CON_STATE-3": "Local and Cloud",
+    "CONNECTIONSTATE-0": "No Connection",
+    "CONNECTIONSTATE-1": "Cloud only",
+    "CONNECTIONSTATE-2": "Local only",
+    "CONNECTIONSTATE-3": "Local and Cloud",
+    "CONNECTIONSTATE-99": "Unknown",
+    "CONNECTIONTYPE-0": "No Connection",
+    "CONNECTIONTYPE-1": "Cloud only",
+    "CONNECTIONTYPE-2": "Local only",
+    "CONNECTIONTYPE-3": "Local and Cloud",
+    "CONNECTIONTYPE-99": "Unknown",
     "ND-PWSTATUS-NAME": "Power Wall Status",
     "ND-PWSTATUS-ICON": "Electricity",
     "SEASON-0": "Winter",
@@ -730,35 +736,71 @@
     "ST-nlspwsetup-GV6-NAME": "Grid ExportMode",
     "ST-nlspwsetup-GV7-NAME": "EV offgrid charge reserve (%)",
     "TOUTIME-99": "No data",
+    "NODATA-98": "No Data",
     "NODATA-99": "No Data",
-    "EN_TOGGLE-0": "Disabled",
-    "EN_TOGGLE-1": "Enabled",
-    "EN_TOGGLE-99": "Unknown",
-    "OP_MODE-0": "backup",
-    "OP_MODE-1": "self consumption",
-    "OP_MODE-2": "autonomous",
-    "OP_MODE-3": "site control",
-    "OP_MODE-99": "Unknown",
-    "EN_TOU_MODE-0": "Economics",
-    "EN_TOU_MODE-1": "Balanced",
-    "EN_TOU_MODE-99": "Unknown",
-    "EN_GRID_STATUS-0": "on grid",
-    "EN_GRID_STATUS-1": "islanded ready",
-    "EN_GRID_STATUS-2": "islanded",
-    "EN_GRID_STATUS-3": "transition to grid",
-    "EN_GRID_STATUS-99": "Unknown code",
-    "EN_ONLINE-0": "offline",
-    "EN_ONLINE-1": "online",
-    "EN_ONLINE-99": "unknown",
+    "ENTOGGLE-0": "Disabled",
+    "ENTOGGLE-1": "Enabled",
+    "ENTOGGLE-99": "Unknown",
+    "TOGGLE-0": "Disabled",
+    "TOGGLE-1": "Enabled",
+    "TOGGLE-99": "Unknown",
+    "SETTOGGLE-0": "Disabled",
+    "SETTOGGLE-1": "Enabled",
+    "GRIDMODE-0": "Disabled",
+    "GRIDMODE-1": "Enabled",
+    "GRIDMODE-99": "Unknown",
+    "OPMODE-0": "backup",
+    "OPMODE-1": "self consumption",
+    "OPMODE-2": "autonomous",
+    "OPMODE-3": "site control",
+    "OPMODE-99": "Unknown",
+    "SETOPMODE-1": "self consumption",
+    "SETOPMODE-2": "autonomous",
+    "ENTOUMODE-0": "Economics",
+    "ENTOUMODE-1": "Balanced",
+    "ENTOUMODE-99": "Unknown",
+    "TOUMODE-0": "Economics",
+    "TOUMODE-1": "Balanced",
+    "TOUMODE-99": "Unknown",
+    "SETTOUMODE-0": "Economics",
+    "SETTOUMODE-1": "Balanced",
+    "ENGRIDSTATUS-0": "on grid",
+    "ENGRIDSTATUS-1": "islanded ready",
+    "ENGRIDSTATUS-2": "islanded",
+    "ENGRIDSTATUS-3": "transition to grid",
+    "ENGRIDSTATUS-99": "Unknown code",
+    "GRIDST-0": "on grid",
+    "GRIDST-1": "islanded ready",
+    "GRIDST-2": "islanded",
+    "GRIDST-3": "transition to grid",
+    "GRIDST-99": "Unknown code",
+    "GRIDSTATUS-0": "on grid",
+    "GRIDSTATUS-1": "islanded ready",
+    "GRIDSTATUS-2": "islanded",
+    "GRIDSTATUS-3": "transition to grid",
+    "GRIDSTATUS-99": "Unknown code",
+    "ENONLINE-0": "offline",
+    "ENONLINE-1": "online",
+    "ENONLINE-99": "unknown",
+    "ONLINE-0": "offline",
+    "ONLINE-1": "online",
+    "ONLINE-99": "unknown",
+    "ERROR-98": "Not defined",
+    "ERROR-99": "Unknown",
     "error-98": "Not defined",
     "error-99": "Unknown",
-    "GRID_IMP_MODE-0": "Allowed",
-    "GRID_IMP_MODE-1": "Not Allowed",
-    "GRID_IMP_MODE-99": "Unknown",
-    "GRID_EXP_MODE-0": "PV-only",
-    "GRID_EXP_MODE-1": "Battery-ok",
-    "GRID_EXP_MODE-2": "Never",
-    "GRID_EXP_MODE-99": "Unknown",
+    "GRIDIMPMODE-0": "Allowed",
+    "GRIDIMPMODE-1": "Not Allowed",
+    "GRIDIMPMODE-99": "Unknown",
+    "SETGRIDIMPMODE-0": "Allowed",
+    "SETGRIDIMPMODE-1": "Not Allowed",
+    "GRIDEXPMODE-0": "PV-only",
+    "GRIDEXPMODE-1": "Battery-ok",
+    "GRIDEXPMODE-2": "Never",
+    "GRIDEXPMODE-99": "Unknown",
+    "SETGRIDEXPMODE-0": "PV-only",
+    "SETGRIDEXPMODE-1": "Battery-ok",
+    "SETGRIDEXPMODE-2": "Never",
     "CMD-nlspwstatus-UPDATE-NAME": "Update System Data",
     "ST-nlspwstatus-ST-NAME": "Connected to Tesla",
     "ST-nlspwstatus-GV0-NAME": "Remaining Battery",
