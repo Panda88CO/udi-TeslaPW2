@@ -97,7 +97,16 @@ class TeslaPWController(udi_interface.Node):
         # We use this to discover devices, or ask to authenticate if user has not already done so
         self.poly.Notices.clear()
         self.nodes_in_db = self.poly.getNodesFromDb()
-        self.config_done= True
+        self.config_done = True
+        self.customParam_done = True
+        if hasattr(self, 'TPW_cloud'):
+            self.TPW_cloud.customNsHandlerDone = True
+        if self.cloud_access_enabled and hasattr(self, 'TPW_cloud'):
+            if not self.TPW_cloud.authenticated():
+                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+            else:
+                if 'auth' in self.poly.Notices:
+                    self.poly.Notices.delete('auth')
         #while not self.TPW_cloud.customNsDone() and not self.TPW_cloud.oauthHandlerCallled():
         #    logging.debug('waiting for authendication')
         #    self.poly.Notices['auth'] = 'Please initiate authentication'
@@ -118,6 +127,8 @@ class TeslaPWController(udi_interface.Node):
     
     def oauthHandler(self, token):
         self.TPW_cloud.oauthHandler(token)
+        if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+            self.poly.Notices.delete('auth')
 
     def customParamsHandler(self, userParams):
         #logging.debug('customParamsHandler 1 : {}'.format(self.TPW_cloud._oauthTokens))
@@ -129,13 +140,16 @@ class TeslaPWController(udi_interface.Node):
         oauthSettingsUpdate['token_parameters'] = {}
         # Example for a boolean field
 
-        if 'region' in userParams:
-            if self.customParameters['region'] != 'Input region (NA, EU, CN)':
+        if userParams and 'region' in userParams:
+            if self.customParameters['region'] not in ['Input region (NA, EU, CN)', 'Input region NA, EU, CN']:
                 self.region = str(self.customParameters['region']).strip()
                 if self.region.upper() not in ['NA', 'EU', 'CN']:
                     logging.error('Unsupported region {}'.format(self.region))
                     self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
                     self.region = None
+                else:
+                    if 'region' in self.poly.Notices:
+                        self.poly.Notices.delete('region')
         else:
             logging.warning('No region found')
             self.customParameters['region'] = 'Input region (NA, EU, CN)'
@@ -155,6 +169,16 @@ class TeslaPWController(udi_interface.Node):
         else:
             logging.warning('No cloud_access_en found')
             self.customParameters['cloud_access_en'] = 'True/False'
+
+        if self.cloud_access_enabled and hasattr(self, 'TPW_cloud'):
+            if not self.TPW_cloud.authenticated():
+                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+            else:
+                if 'auth' in self.poly.Notices:
+                    self.poly.Notices.delete('auth')
+        elif not self.cloud_access_enabled:
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+                self.poly.Notices.delete('auth')
 
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
@@ -176,7 +200,7 @@ class TeslaPWController(udi_interface.Node):
 
         if 'LOCAL_IP_ADDRESS' in self.customParameters:
             if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
-                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] )
+                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] ).strip().replace(',', '.')
                 #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
                 #secret_ok = True
         else:
@@ -192,7 +216,7 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
         self.update_dynamic_profile()
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
-        while not self.customParam_done or not self.TPW_cloud.customNsDone() or not self.config_done:
+        while not (self.config_done and self.customParam_done and (self.TPW_cloud.customNsDone() or not self.cloud_access_enabled)):
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsDone(), self.config_done))
             time.sleep(1)
@@ -200,6 +224,9 @@ class TeslaPWController(udi_interface.Node):
         
 
         self.TPW = tesla_info(self.TPW_cloud)
+
+        if self.cloud_access_enabled and not self.TPW.cloud_authenticated():
+            self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
     
         if self.local_access_enabled:
             count = 1
@@ -230,8 +257,10 @@ class TeslaPWController(udi_interface.Node):
             #    logging.info('Waiting to oauthHandler to execute')
             while not self.TPW.cloud_authenticated():
                 logging.info('Waiting to authenticate to complete - press authenticate button')
-                self.poly.Notices['auth'] = 'Please initiate authentication'
+                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
                 time.sleep(5)
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+                self.poly.Notices.delete('auth')
             #if self.TPW_cloud.authenticated():
             #    self.cloudAccessUp = True
             #else:

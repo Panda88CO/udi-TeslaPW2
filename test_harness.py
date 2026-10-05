@@ -148,11 +148,7 @@ class MockPolyglotInterface:
     def __init__(self):
         self._nodes = {}
         self._subscriptions = {}
-        self.Notices = types.SimpleNamespace(
-            clear=lambda: None,
-            __setitem__=lambda k, v: None,
-            __getitem__=lambda k: None
-        )
+        self.Notices = MockCustom(self, 'notices')
         self.nodes_in_db = []
         self.ready_called = 0
         self.serverdata = {'profile_version': '0.2.0'}
@@ -222,15 +218,37 @@ class MockCustom:
         self.data = {}
     def __setitem__(self, k, v): self.data[k] = v
     def __getitem__(self, k): return self.data.get(k)
+    def __contains__(self, k): return k in self.data
+    def delete(self, k): self.data.pop(k, None)
     def clear(self): self.data.clear()
-    def load(self, d): self.data = d or {}
+    def load(self, d, save=False): self.data = d or {}
+    def get(self, k, default=None): return self.data.get(k, default)
 
 
 class MockOAuthBase:
     def __init__(self, poly):
         self.poly = poly
         self.customData = MockCustom(poly, 'customdata')
-        self.oauthConfig = {}
+        self._oauthTokens = MockCustom(poly, 'oauthTokens')
+        self._oauthConfig = MockCustom(poly, 'oauth')
+        self._oauthConfigInitialized = False
+
+    def customNsHandler(self, key, data):
+        if key == 'oauth':
+            self._oauthConfigInitialized = True
+            self._oauthConfig.load(data)
+        elif key == 'oauthTokens':
+            self._oauthTokens.load(data)
+        return True
+
+    def oauthHandler(self, token):
+        self._oauthTokens.load(token)
+        return True
+
+    def getAccessToken(self):
+        if self._oauthTokens and self._oauthTokens.get('access_token'):
+            return self._oauthTokens.get('access_token')
+        raise ValueError('Access token is not available')
 
 
 # Inject mock udi_interface into sys.modules if not already present
@@ -842,6 +860,86 @@ class TestDynamicJsonProfile(unittest.TestCase):
         )
         controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', mock_cloud)
         controller.updateProfileDoneHandler({'success': True, 'requestId': 'test1234'})
+
+
+class TestStartupSequence(unittest.TestCase):
+    """Verifies startup sequence, error fixes, parameter sanitization, and authentication notice behavior."""
+
+    def test_tesla_oauth_custom_data_handler_no_error(self):
+        """Verifies customDataHandler does not raise AttributeError and sets customDataHandlerDone."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.customDataHandler({'some': 'data'})
+        self.assertTrue(oauth.customDataHandlerDone)
+
+    def test_tesla_oauth_custom_ns_handler_oauth(self):
+        """Verifies customNsHandler with key='oauth' sets customNsHandlerDone and customNsDone."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.customNsHandler('oauth', {'client_id': 'xyz'})
+        self.assertTrue(oauth.customNsHandlerDone)
+        self.assertTrue(oauth.customNsDone())
+
+    def test_tesla_oauth_custom_ns_handler_oauth_tokens(self):
+        """Verifies customNsHandler with key='oauthTokens' sets customNsHandlerDone and customNsDone."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.customNsHandler('oauthTokens', {'access_token': 'abc', 'expiry': '2099-01-01'})
+        self.assertTrue(oauth.customNsHandlerDone)
+        self.assertTrue(oauth.customNsDone())
+
+    def test_controller_config_done_handler_unblocks_startup(self):
+        """Verifies configDoneHandler sets config_done, customParam_done, and TPW_cloud flags."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+        self.assertFalse(controller.config_done)
+        controller.configDoneHandler()
+        self.assertTrue(controller.config_done)
+        self.assertTrue(controller.customParam_done)
+        self.assertTrue(oauth.customNsHandlerDone)
+
+    def test_custom_params_sanitizes_ip_and_region(self):
+        """Verifies customParamsHandler sanitizes comma in IP address and valid regions."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+        user_params = {
+            'LOCAL_IP_ADDRESS': '192,168.1.151',
+            'region': 'NA',
+            'cloud_access_en': 'True',
+            'local_access_en': 'True'
+        }
+        controller.customParamsHandler(user_params)
+        self.assertEqual(controller.LOCAL_IP_ADDRESS, '192.168.1.151')
+        self.assertEqual(controller.region, 'NA')
+        self.assertTrue(controller.cloud_access_enabled)
+
+    def test_unauthenticated_notice_displayed_and_cleared_on_auth(self):
+        """Verifies notice is posted when unauthenticated and removed once authenticated."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+        
+        # User enables cloud access but has not authenticated yet
+        controller.customParamsHandler({'cloud_access_en': 'True', 'region': 'NA'})
+        controller.configDoneHandler()
+        
+        # Notice must be present directing the user to authenticate
+        self.assertIn('auth', poly.Notices)
+        self.assertEqual(poly.Notices['auth'], 'Please initiate authentication - press Authenticate button')
+        
+        # Now simulate user authenticating via OAuth callback
+        controller.oauthHandler({'access_token': 'valid_token', 'refresh_token': 'ref_tok', 'expires_in': 3600})
+        
+        # Notice must be cleared
+        self.assertNotIn('auth', poly.Notices)
 
 
 # ---------------------------------------------------------------------------

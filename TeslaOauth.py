@@ -80,16 +80,7 @@ class teslaAccess(udi_interface.OAuth):
     
     def customDataHandler(self, data):
         logging.debug('customDataHandler called {}'.format(data))
-        #while not self.handleCustomParamsDone:
-        #    logging.debug('Waiting for customDataHandler to complete')
-        #    time.sleep(1)       
-        logging.debug('customDataHandler result: {}'.format(super().customDataHandler(data)))
-        self.customDataHandlerDone = True
-        logging.debug('customDataHandler Finished')
-    '''    
-
-    def customDataHandler(self, data):
-        if data.get('token'):
+        if isinstance(data, dict) and data.get('token'):
             logging.info('Migrating tokens to the new version')
             # Save token data to the new oAuthTokens custom
             Custom(self.poly, 'oauthTokens').load(data['token'], True)
@@ -100,7 +91,8 @@ class teslaAccess(udi_interface.OAuth):
             
             # Continue processing as if it was in the right place
             self.customNsHandler('oauthTokens', data['token'])
-    '''
+        self.customDataHandlerDone = True
+        logging.debug('customDataHandler Finished')
         
     def customNsHandler(self, key, data):
         logging.debug('customNsHandler called {} {}'.format(key, data))
@@ -109,7 +101,7 @@ class teslaAccess(udi_interface.OAuth):
         #    time.sleep(1)
         #self.updateOauthConfig()
         logging.debug('customerNSHandler results: {}'.format(super().customNsHandler(key, data)))
-        if key == 'oauthTokens': # stored oauthToken values processed
+        if key in ['oauth', 'oauthTokens']: # stored oauth / oauthToken values processed
             self.customNsHandlerDone = True
         logging.debug('customNsHandler Finished')
 
@@ -121,6 +113,8 @@ class teslaAccess(udi_interface.OAuth):
         #logging.debug('oauth Parameters: {}'.format(self.getOauthSettings()))
         logging.debug('oauthHandler result: {}'.format(super().oauthHandler(token)))
         self.oauthHandlerCalled = True
+        if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+            self.poly.Notices.delete('auth')
         #while not self.authendication_done :
         #time.sleep(2)
         '''
@@ -140,10 +134,13 @@ class teslaAccess(udi_interface.OAuth):
     def oauthHandlerRun(self):
         return(self.oauthHandlerCalled)
     def customNsDone(self):
-        return(self.customNsHandlerDone)
+        return self.customNsHandlerDone or getattr(self, '_oauthConfigInitialized', False)
     
+    def customDataDone(self):
+        return self.customDataHandlerDone
+
     def customDateDone(self):
-        return(self.customDataHandlerDone )
+        return self.customDataHandlerDone
 
 
     #def customOauthDone(self):
@@ -201,16 +198,24 @@ class teslaAccess(udi_interface.OAuth):
         #if not self._oauthTokens:
         #   time.sleep(1)
         #   logging.debug('Waiting for system to initialize')
-        #   self.poly.Notices['auth'] = 'Please initiate authentication'
+        #   self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
         try:
             if 'expiry' not in self._oauthTokens:            
                 self.getAccessToken()
                 #time.sleep(2)
             #self.apiLock.release()
-            return(self._oauthTokens.get('expiry') != None)
+            is_auth = (self._oauthTokens.get('expiry') != None)
+            if is_auth:
+                if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+                    self.poly.Notices.delete('auth')
+            else:
+                if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                    self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+            return is_auth
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
-            self.poly.Notices['auth'] = 'Please initiate authentication'
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             logging.debug('_callAPI oauth error: {}'.format(err))
             return (False)
 
@@ -226,10 +231,12 @@ class teslaAccess(udi_interface.OAuth):
             accessToken = self.getAccessToken()
             #refresh_token = self._oauthTokens.get('refresh_token')
             #logging.debug('call api tokens: {} {}'.format(refresh_token, accessToken))
-            self.poly.Notices.clear()
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+                self.poly.Notices.delete('auth')
         except ValueError as err:
             logging.warning('Access token is not yet available. Please authenticate.')
-            self.poly.Notices['auth'] = 'Please initiate authentication'
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             logging.debug('_callAPI oauth error: {}'.format(err))
             accessToken = None
             return
