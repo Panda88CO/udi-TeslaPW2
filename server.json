@@ -20,8 +20,8 @@
         {
             "title": "A NodeServer to integrate Tesla Power Wall Controll system",
             "author": "Panda88CO",
-            "version": "0.1.32",
-            "date": "October 4,  2026",
+            "version": "0.2.0",
+            "date": "October 5,  2026",
             "source": "https://github.com/Panda88CO/udi-TeslaPW2",
             "license": "https://github.com/Panda88CO/udi-TeslaPW2/blob/main/license"
         }
