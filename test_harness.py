@@ -207,6 +207,12 @@ class MockPolyglotInterface:
     def getNodesFromDb(self):
         return self.nodes_in_db
 
+    def db_getNodeDrivers(self, address):
+        return []
+
+    def send(self, message, topic=''):
+        pass
+
     def setCustomParamsDoc(self):
         pass
 
@@ -255,6 +261,21 @@ class MockOAuthBase:
 if 'udi_interface' not in sys.modules:
     try:
         import udi_interface
+        _orig_setDriver = udi_interface.Node.setDriver
+        def _mock_setDriver(self, key, value, report=True, force=False, uom=None):
+            if not hasattr(self, '_driver_values'):
+                self._driver_values = {}
+            self._driver_values[key] = {'value': value, 'uom': uom, 'report': report, 'force': force}
+            try:
+                _orig_setDriver(self, key, value, report, force, uom)
+            except Exception:
+                pass
+        udi_interface.Node.setDriver = _mock_setDriver
+        def _mock_reportCmd(self, cmd, value=None):
+            if not hasattr(self, '_reported_cmds'):
+                self._reported_cmds = []
+            self._reported_cmds.append((cmd, value))
+        udi_interface.Node.reportCmd = _mock_reportCmd
     except ImportError:
         mock_udi = types.ModuleType('udi_interface')
         mock_udi.Node = MockNodeBase

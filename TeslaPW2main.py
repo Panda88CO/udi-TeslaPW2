@@ -214,7 +214,6 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         site_string = ''
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
-        self.update_dynamic_profile()
         #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
         while not (self.config_done and self.customParam_done and (self.TPW_cloud.customNsDone() or not self.cloud_access_enabled)):
             logging.info('Waiting for node to initialize')
@@ -320,6 +319,7 @@ class TeslaPWController(udi_interface.Node):
 
         self.updateISYdrivers()
         self.initialized = True
+        self.update_dynamic_profile()
         #time.sleep(1)
     #def handleNotices(self):
     #    logging.debug('handleNotices')
@@ -561,6 +561,14 @@ class TeslaPWController(udi_interface.Node):
 
     def updateProfileDoneHandler(self, data):
         logging.info(f'Dynamic JSON profile update completed: {data}')
+        if isinstance(data, dict) and data.get('success') is False:
+            logging.warning(f'Dynamic profile update reported failure: {data.get("error")}; attempting static updateProfile fallback')
+            if hasattr(self.poly, 'updateProfile'):
+                try:
+                    self.poly.updateProfile()
+                    logging.info('Static updateProfile fallback completed successfully')
+                except Exception as ex:
+                    logging.error(f'Static updateProfile fallback failed: {ex}')
 
     def update_dynamic_profile(self, force=False):
         """
@@ -610,8 +618,26 @@ class TeslaPWController(udi_interface.Node):
                 with open(profile_file, 'r', encoding='utf-8') as f:
                     profile_data = json.load(f)
 
+            payload = {
+                'version': current_version or '0.2.0',
+                'delete': {
+                    'editors': ['*'],
+                    'nodedefs': ['*'],
+                    'linkdefs': ['*']
+                },
+                'editors': profile_data.get('editors', []),
+                'nodedefs': profile_data.get('nodedefs', []),
+                'linkdefs': profile_data.get('linkdefs', [])
+            }
+
             logging.info(f'Updating dynamic JSON profile (version {current_version})...')
-            self.poly.updateJsonProfile(profile_data)
+            try:
+                self.poly.updateJsonProfile(payload)
+            except Exception as err:
+                logging.warning(f'updateJsonProfile call failed: {err}; falling back to updateProfile')
+                if hasattr(self.poly, 'updateProfile'):
+                    self.poly.updateProfile()
+
             if hasattr(self.poly, '_ifaceData') and current_version:
                 try:
                     self.poly._ifaceData.profile_version = current_version
