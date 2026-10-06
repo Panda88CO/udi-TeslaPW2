@@ -151,7 +151,7 @@ class MockPolyglotInterface:
         self.Notices = MockCustom(self, 'notices')
         self.nodes_in_db = []
         self.ready_called = 0
-        self.serverdata = {'profile_version': '0.2.1'}
+        self.serverdata = {'profile_version': '0.2.2'}
         self._ifaceData = types.SimpleNamespace(profile_version=None)
         self.json_profile_updates = []
 
@@ -356,9 +356,14 @@ class MockTeslaService:
         self.solarInstalled = True
         self.generatorInstalled = False
         self.poll_calls = []
+        self.last_update_time = 1728148800
 
     # Getters
     def getTPW_onLine(self): return self.online
+    def getTPW_lastUpdateTime(self, site_id=None):
+        if not self.online:
+            return None
+        return self.last_update_time
     def getTPW_chargeLevel(self, site_id): return self.charge_level
     def getTPW_solarSupply(self, site_id): return self.solar_supply
     def getTPW_batterySupply(self, site_id): return self.battery_supply
@@ -670,16 +675,65 @@ class TestTeslaPWStatusNode(unittest.TestCase):
         self.assertEqual(drivers['GV13']['value'], 1.40)              # Grid import today
         # Net grid = 10.20 - 1.40 = 8.80
         self.assertAlmostEqual(drivers['GV14']['value'], 8.80, places=2)
+        self.assertIn('TIME', drivers)
+        self.assertEqual(drivers['TIME']['value'], 1728148800)
+        self.assertEqual(drivers['TIME']['uom'], 151)
+
+    def test_time_only_updates_when_new_data_received(self):
+        self.node.start()
+        self.assertEqual(self.node._driver_values['TIME']['value'], 1728148800)
+
+        # Clear recorded driver writes
+        self.node._driver_values.clear()
+
+        # Update with unchanged data timestamp
+        self.node.updateISYdrivers()
+        self.assertNotIn('TIME', self.node._driver_values, "TIME should not update when data timestamp is unchanged")
+
+        # Now simulate new data received from Powerwall
+        self.tpw.last_update_time = 1728148850
+        self.node.updateISYdrivers()
+        self.assertIn('TIME', self.node._driver_values)
+        self.assertEqual(self.node._driver_values['TIME']['value'], 1728148850)
 
     def test_update_drivers_offline(self):
         self.tpw.online = False
         self.node.start()
         self.assertEqual(self.node._driver_values['ST']['value'], 0)
+        self.assertNotIn('TIME', self.node._driver_values)
 
     def test_isy_update_command(self):
         self.node.start()
         self.node.ISYupdate({'cmd': 'UPDATE'})
         self.assertIn((self.site_id, 'all'), self.tpw.poll_calls)
+
+    def test_tesla_timestamp_parsing(self):
+        from TeslaInfoV2 import parse_tesla_timestamp, extract_meter_timestamp
+        self.assertEqual(parse_tesla_timestamp(1728148800), 1728148800)
+        self.assertEqual(parse_tesla_timestamp('1728148800'), 1728148800)
+        ts_utc = parse_tesla_timestamp('2021-11-22T22:15:06Z')
+        self.assertEqual(ts_utc, 1637619306)
+        ts_offset = parse_tesla_timestamp('2021-11-22T22:15:06.590577619-07:00')
+        self.assertEqual(ts_offset, 1637644506)
+
+        class MockMeter:
+            def __init__(self):
+                self.last_communication_time = '2021-11-22T22:15:06.590577619-07:00'
+        self.assertEqual(extract_meter_timestamp(MockMeter()), 1637644506)
+
+    def test_tesla_info_local_last_update_time(self):
+        from TeslaInfoV2 import tesla_info
+        tpw = tesla_info(None)
+        tpw.localAccessUp = True
+        tpw.firstPollCompleted = True
+
+        class MockMeter:
+            def __init__(self, t):
+                self.last_communication_time = t
+        tpw.siteMeter = MockMeter('2021-11-22T22:15:06.590577619-07:00')
+        tpw.batteryMeter = MockMeter('2021-11-22T22:15:07.123456-07:00')
+
+        self.assertEqual(tpw.getTPW_lastUpdateTime(), 1637644507)
 
 
 class TestTeslaPWSetupNode(unittest.TestCase):

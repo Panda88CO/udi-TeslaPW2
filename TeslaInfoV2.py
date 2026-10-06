@@ -8,10 +8,68 @@ except ImportError:
     import logging
     logging.basicConfig(level=30)
 
-from datetime import date
+from datetime import date, datetime
 import time
+import re
 from tesla_powerwall import GridStatus, OperationMode, MeterType
 from TeslaLocal import tesla_local
+
+
+def parse_tesla_timestamp(ts):
+    """Parse Tesla timestamp (ISO string, int, float, or datetime) to unix seconds."""
+    if ts is None:
+        return None
+    if isinstance(ts, (int, float)):
+        return int(ts)
+    if isinstance(ts, datetime):
+        return int(ts.timestamp())
+    if isinstance(ts, str):
+        s = ts.strip()
+        if not s:
+            return None
+        if s.isdigit():
+            try:
+                return int(s)
+            except Exception:
+                pass
+        s_clean = re.sub(r'(\.\d{6})\d+', r'\1', s).replace('Z', '+00:00')
+        try:
+            dt = datetime.fromisoformat(s_clean)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.now().astimezone().tzinfo)
+            return int(dt.timestamp())
+        except Exception:
+            pass
+    return None
+
+
+def extract_meter_timestamp(meter):
+    """Extract unix timestamp from a Powerwall meter or status object."""
+    if meter is None:
+        return None
+    for attr in ('last_communication_time', 'timestamp', 'time', 'last_communication'):
+        try:
+            val = getattr(meter, attr, None)
+            if val is not None:
+                ts = parse_tesla_timestamp(val)
+                if ts is not None and ts > 0:
+                    return ts
+        except Exception:
+            pass
+    for raw_attr in ('response', '_raw', '__dict__'):
+        try:
+            d = getattr(meter, raw_attr, None)
+            if isinstance(d, dict):
+                for k in ('last_communication_time', 'timestamp', 'time'):
+                    val = d.get(k)
+                    if val is not None:
+                        ts = parse_tesla_timestamp(val)
+                        if ts is not None and ts > 0:
+                            return ts
+        except Exception:
+            pass
+    return None
+
 
 
 class tesla_info():
@@ -412,6 +470,7 @@ class tesla_info():
                     if not self.TPWcloudAccess:
                         self.daysTotalGridServices = 0.0 #Does not seem to exist
                         self.daysTotalGenerator = 0.0 #needs to be updated - may not exist
+            self.last_data_receive_time = int(time.time())
             self.firstPollCompleted = True
             return True
 
@@ -887,6 +946,52 @@ class tesla_info():
                 return(1)
             else:
                 return(0)
+
+    def getTPW_lastUpdateTime(self, site_id=None):
+        logging.debug('getTPW_lastUpdateTime')
+        # 1. Local gateway access
+        if self.localAccessUp and self.firstPollCompleted:
+            timestamps = []
+            meters_to_check = []
+            for attr in ('siteMeter', 'loadMeter', 'batteryMeter', 'solarMeter', 'generatorMeter', 'status'):
+                m = getattr(self, attr, None)
+                if m is not None:
+                    meters_to_check.append(m)
+
+            if not meters_to_check and hasattr(self, 'meters') and self.meters is not None:
+                for m_attr in ('site', 'load', 'battery', 'solar'):
+                    try:
+                        m = getattr(self.meters, m_attr, None)
+                        if m is not None:
+                            meters_to_check.append(m)
+                    except Exception:
+                        pass
+
+            for meter in meters_to_check:
+                ts = extract_meter_timestamp(meter)
+                if ts is not None and ts > 0:
+                    timestamps.append(ts)
+
+            if timestamps:
+                return max(timestamps)
+            if hasattr(self, 'last_data_receive_time') and self.last_data_receive_time:
+                return self.last_data_receive_time
+
+        # 2. Cloud access
+        elif self.cloudAccessUp and hasattr(self, 'TPWcloud'):
+            try:
+                raw_ts = self.TPWcloud.tesla_live_timestamp(site_id)
+                if raw_ts:
+                    ts = parse_tesla_timestamp(raw_ts)
+                    if ts is not None and ts > 0:
+                        return ts
+            except Exception as e:
+                logging.debug('Error extracting cloud timestamp: {}'.format(e))
+            if hasattr(self, 'last_data_receive_time') and self.last_data_receive_time:
+                return self.last_data_receive_time
+
+        return None
+
 
     def getTPW_gridServiceActive(self, site_id):
         logging.debug('getTPW_gridServiceActive ')  

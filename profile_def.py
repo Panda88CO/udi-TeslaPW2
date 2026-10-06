@@ -13,7 +13,7 @@ import json
 import os
 from typing import Any, Dict, List
 
-PROFILE_VERSION = "0.2.1"
+PROFILE_VERSION = "0.2.2"
 
 
 def _profile_editors() -> List[Dict[str, Any]]:
@@ -302,6 +302,12 @@ def _profile_editors() -> List[Dict[str, Any]]:
                     "prec": 0,
                 },
                 {
+                    "uom": "151",
+                    "min": 0,
+                    "max": 2147483647,
+                    "prec": 0,
+                },
+                {
                     "uom": "25",
                     "subset": "98,99",
                     "names": {
@@ -379,6 +385,7 @@ def _profile_nodedefs() -> List[Dict[str, Any]]:
                 {"id": "GV13", "name": "Grid Import Today", "editor": "KWH"},
                 {"id": "GV14", "name": "Grid/House Net Use Today", "editor": "KWH"},
                 {"id": "GV28", "name": "Generator Today", "editor": "KWH"},
+                {"id": "TIME", "name": "Last Update Time", "editor": "UNIXTIME"},
             ],
             "cmds": {
                 "accepts": [

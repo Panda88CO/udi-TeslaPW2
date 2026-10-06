@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#import time
+import time
 
 try:
     import udi_interface
@@ -32,6 +32,7 @@ class teslaPWStatusNode(udi_interface.Node):
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.START, self.start, address)
+        self.last_update_time = None
 
         self.poly.addNode(self)
         self.wait_for_node_done()
@@ -74,6 +75,19 @@ class teslaPWStatusNode(udi_interface.Node):
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
         self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
+
+        # Update TIME only when new data is received (from local meters or cloud)
+        data_time = None
+        if hasattr(self.TPW, 'getTPW_lastUpdateTime'):
+            data_time = self.TPW.getTPW_lastUpdateTime(self.site_id)
+        elif self.TPW.getTPW_onLine():
+            data_time = int(time.time())
+
+        if data_time is not None and data_time > 0:
+            if data_time != self.last_update_time:
+                self.last_update_time = data_time
+                self.PW_setDriver('TIME', data_time, 151)
+
         self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_chargeLevel(self.site_id),1), 51)
         self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_solarSupply(self.site_id),2), 30)
         self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_batterySupply(self.site_id),2), 30)
@@ -173,6 +187,7 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV14', 'value': 0, 'uom': 33}, 
 
             {'driver': 'GV28', 'value': 0, 'uom': 33},
+            {'driver': 'TIME', 'value': 0, 'uom': 151},
             ]
 
     

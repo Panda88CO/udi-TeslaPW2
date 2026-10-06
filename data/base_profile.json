@@ -1,5 +1,5 @@
 {
-  "version": "0.2.1",
+  "version": "0.2.2",
   "delete": {
     "editors": [
       "*"
@@ -295,6 +295,12 @@
           "prec": 0
         },
         {
+          "uom": "151",
+          "min": 0,
+          "max": 2147483647,
+          "prec": 0
+        },
+        {
           "uom": "25",
           "subset": "98,99",
           "names": {
@@ -461,6 +467,11 @@
           "id": "GV28",
           "name": "Generator Today",
           "editor": "KWH"
+        },
+        {
+          "id": "TIME",
+          "name": "Last Update Time",
+          "editor": "UNIXTIME"
         }
       ],
       "cmds": {

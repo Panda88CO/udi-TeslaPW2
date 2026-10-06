@@ -38,6 +38,7 @@
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
          <st id="GV28" editor="KWH" />
+         <st id="TIME" editor="UNIXTIME" />
       </sts>
       <cmds>
          <sends>

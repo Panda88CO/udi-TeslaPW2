@@ -26,6 +26,7 @@ ST-nlspwstatus-GV12-NAME = Grid Export Today
 ST-nlspwstatus-GV13-NAME = Grid Import Today
 ST-nlspwstatus-GV14-NAME = Grid/House Net Use Today
 ST-nlspwstatus-GV28-NAME = Generator Today
+ST-nlspwstatus-TIME-NAME = Last Update Time
 
 ND-PWHISTORY-NAME = Power Wall History
 ND-PWHISTORY-ICON = Electricity

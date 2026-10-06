@@ -561,6 +561,11 @@ class teslaPWAccess(teslaAccess):
         logging.debug('Solar power : {} {}'.format(self.site_live_info[site_id]['solar_power'], self.site_live_info[site_id]))
         return(self.site_live_info[site_id]['solar_power'])
 
+    def tesla_live_timestamp(self, site_id):
+        if site_id in self.site_live_info and isinstance(self.site_live_info[site_id], dict):
+            return self.site_live_info[site_id].get('timestamp')
+        return None
+
     def teslaExtractTouMode(self, site_id):
         return(self.site_info[site_id]['tou_settings']['optimization_strategy'])
 
