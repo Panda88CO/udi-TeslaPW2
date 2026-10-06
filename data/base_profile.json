@@ -1,348 +1,325 @@
 {
+  "version": "0.2.1",
+  "delete": {
+    "editors": [
+      "*"
+    ],
+    "nodedefs": [
+      "*"
+    ],
+    "linkdefs": [
+      "*"
+    ]
+  },
   "editors": [
     {
       "id": "UPDN",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1",
-          "nls": "UPDN"
+          "names": {
+            "0": "Down",
+            "1": "Up"
+          }
         }
       ]
     },
     {
       "id": "CONNECTION",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1",
-          "nls": "CONNECTION"
+          "names": {
+            "0": "Not Connected",
+            "1": "connected"
+          }
         }
       ]
     },
     {
       "id": "MISS",
-      "range": [
+      "ranges": [
         {
-          "uom": 55,
+          "uom": "55",
           "min": 0,
           "max": 255,
           "prec": 0
         },
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "98,99",
-          "nls": "ERROR"
+          "names": {
+            "98": "Not defined",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "CONNECTIONTYPE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,2,3,99",
-          "nls": "CONNECTIONSTATE"
-        }
-      ]
-    },
-    {
-      "id": "HOURS",
-      "range": [
-        {
-          "uom": 20,
-          "min": 0,
-          "max": 100,
-          "prec": 2
-        },
-        {
-          "uom": 25,
-          "subset": "98,99",
-          "nls": "ERROR"
+          "names": {
+            "0": "No Connection",
+            "1": "Cloud only",
+            "2": "Local only",
+            "3": "Local and Cloud",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "PERCENT",
-      "range": [
+      "ranges": [
         {
-          "uom": 51,
+          "uom": "51",
           "min": 0,
           "max": 100,
           "prec": 0
         },
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "98,99",
-          "nls": "ERROR"
+          "names": {
+            "98": "Not defined",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "TOGGLE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,99",
-          "nls": "ENTOGGLE"
+          "names": {
+            "0": "Disabled",
+            "1": "Enabled",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "SETTOGGLE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1",
-          "nls": "ENTOGGLE"
+          "names": {
+            "0": "Disabled",
+            "1": "Enabled"
+          }
         }
       ]
     },
     {
       "id": "GRIDMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,99",
-          "nls": "ENTOGGLE"
+          "names": {
+            "0": "Disabled",
+            "1": "Enabled",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "OPMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,2,99",
-          "nls": "OPMODE"
+          "names": {
+            "0": "backup",
+            "1": "self consumption",
+            "2": "autonomous",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "SETOPMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "1,2",
-          "nls": "OPMODE"
+          "names": {
+            "1": "self consumption",
+            "2": "autonomous"
+          }
         }
       ]
     },
     {
       "id": "GRIDST",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,2,3,99",
-          "nls": "ENGRIDSTATUS"
+          "names": {
+            "0": "on grid",
+            "1": "islanded ready",
+            "2": "islanded",
+            "3": "transition to grid",
+            "99": "Unknown code"
+          }
         }
       ]
     },
     {
       "id": "GRIDIMPMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,99",
-          "nls": "GRIDIMPMODE"
+          "names": {
+            "0": "Allowed",
+            "1": "Not Allowed",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "SETGRIDIMPMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1",
-          "nls": "GRIDIMPMODE"
+          "names": {
+            "0": "Allowed",
+            "1": "Not Allowed"
+          }
         }
       ]
     },
     {
       "id": "GRIDEXPMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,2,99",
-          "nls": "GRIDEXPMODE"
+          "names": {
+            "0": "PV-only",
+            "1": "Battery-ok",
+            "2": "Never",
+            "99": "Unknown"
+          }
         }
       ]
     },
     {
       "id": "SETGRIDEXPMODE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,2",
-          "nls": "GRIDEXPMODE"
-        }
-      ]
-    },
-    {
-      "id": "SETTOUMODE",
-      "range": [
-        {
-          "uom": 25,
-          "subset": "0,1",
-          "nls": "ENTOUMODE"
+          "names": {
+            "0": "PV-only",
+            "1": "Battery-ok",
+            "2": "Never"
+          }
         }
       ]
     },
     {
       "id": "ONLINE",
-      "range": [
+      "ranges": [
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "0,1,99",
-          "nls": "ENONLINE"
-        }
-      ]
-    },
-    {
-      "id": "KWHLOW",
-      "range": [
-        {
-          "uom": 33,
-          "min": 0,
-          "max": 20,
-          "prec": 2
-        },
-        {
-          "uom": 25,
-          "subset": "98,99",
-          "nls": "ERROR"
+          "names": {
+            "0": "offline",
+            "1": "online",
+            "99": "unknown"
+          }
         }
       ]
     },
     {
       "id": "KWH",
-      "range": [
+      "ranges": [
         {
-          "uom": 33,
+          "uom": "33",
           "min": -100,
           "max": 100,
           "prec": 1
         },
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "98,99",
-          "nls": "NODATA"
+          "names": {
+            "98": "No Data",
+            "99": "No Data"
+          }
         }
       ]
     },
     {
       "id": "KW",
-      "range": [
+      "ranges": [
         {
-          "uom": 30,
+          "uom": "30",
           "min": -100,
           "max": 100,
           "prec": 1
         },
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "98,99",
-          "nls": "NODATA"
-        }
-      ]
-    },
-    {
-      "id": "KWH20",
-      "range": [
-        {
-          "uom": 33,
-          "min": -20,
-          "max": 20,
-          "prec": 2
-        },
-        {
-          "uom": 25,
-          "subset": "98,99",
-          "nls": "NODATA"
+          "names": {
+            "98": "No Data",
+            "99": "No Data"
+          }
         }
       ]
     },
     {
       "id": "UNIXTIME",
-      "range": [
+      "ranges": [
         {
-          "uom": 58,
+          "uom": "58",
           "min": 0,
           "max": 86400,
           "prec": 0
         },
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "98,99",
-          "nls": "NODATA"
-        }
-      ]
-    },
-    {
-      "id": "UNIXTIMESET",
-      "range": [
-        {
-          "uom": 58,
-          "min": 0,
-          "max": 86400,
-          "prec": 0
-        },
-        {
-          "uom": 25,
-          "subset": "98,99",
-          "nls": "NODATA"
-        }
-      ]
-    },
-    {
-      "id": "SEASON",
-      "range": [
-        {
-          "uom": 25,
-          "subset": "0,1,2,99",
-          "nls": "SEASON"
-        }
-      ]
-    },
-    {
-      "id": "PERIOD",
-      "range": [
-        {
-          "uom": 25,
-          "subset": "0,1,2,99",
-          "nls": "PERIOD"
-        }
-      ]
-    },
-    {
-      "id": "DOLLAR",
-      "range": [
-        {
-          "uom": 103,
-          "min": 0,
-          "max": 5,
-          "prec": 2
-        },
-        {
-          "uom": 25,
-          "subset": "98,99",
-          "nls": "ERROR"
+          "names": {
+            "98": "No Data",
+            "99": "No Data"
+          }
         }
       ]
     },
     {
       "id": "COUNT",
-      "range": [
+      "ranges": [
         {
-          "uom": 0,
+          "uom": "0",
           "min": 0,
           "max": 100,
           "prec": 0
         },
         {
-          "uom": 25,
+          "uom": "25",
           "subset": "98,99",
-          "nls": "NODATA"
+          "names": {
+            "98": "No Data",
+            "99": "No Data"
+          }
         }
       ]
     }
@@ -350,26 +327,37 @@
   "nodedefs": [
     {
       "id": "CONTROLLER",
-      "nls": "nlscontroller",
-      "sts": [
+      "name": "Tesla PowerWall Info",
+      "icon": "Electricity",
+      "properties": [
         {
           "id": "ST",
+          "name": "Controller Up",
           "editor": "UPDN"
         },
         {
           "id": "GV2",
+          "name": "Connected to Tesla Power Wall",
           "editor": "CONNECTION"
         },
         {
           "id": "GV3",
+          "name": "Consecutive missed LongPolls",
           "editor": "MISS"
         },
         {
           "id": "GV4",
+          "name": "Connection Status",
           "editor": "CONNECTIONTYPE"
         }
       ],
       "cmds": {
+        "accepts": [
+          {
+            "id": "UPDATE",
+            "name": "Update System Data"
+          }
+        ],
         "sends": [
           {
             "id": "DON"
@@ -377,250 +365,312 @@
           {
             "id": "DOF"
           }
-        ],
-        "accepts": [
-          {
-            "id": "UPDATE"
-          }
         ]
+      },
+      "links": {
+        "ctl": [],
+        "rsp": []
       }
     },
     {
       "id": "PWSTATUS",
-      "nls": "nlspwstatus",
-      "sts": [
+      "name": "Power Wall Status",
+      "icon": "Electricity",
+      "properties": [
         {
           "id": "ST",
+          "name": "Connected to Tesla",
           "editor": "ONLINE"
         },
         {
           "id": "GV0",
+          "name": "Remaining Battery",
           "editor": "PERCENT"
         },
         {
           "id": "GV1",
+          "name": "Inst Solar Export",
           "editor": "KW"
         },
         {
           "id": "GV2",
+          "name": "Inst Battery Export",
           "editor": "KW"
         },
         {
           "id": "GV3",
+          "name": "Inst Home Load",
           "editor": "KW"
         },
         {
           "id": "GV4",
+          "name": "Inst Grid Import",
           "editor": "KW"
         },
         {
           "id": "GV5",
+          "name": "Operation Mode",
           "editor": "OPMODE"
         },
         {
           "id": "GV6",
+          "name": "Grid Status",
           "editor": "GRIDST"
         },
         {
           "id": "GV7",
+          "name": "Grid Services Active",
           "editor": "GRIDMODE"
         },
         {
           "id": "GV8",
+          "name": "Home Total Use Today",
           "editor": "KWH"
         },
         {
           "id": "GV9",
+          "name": "Solar Export Today",
           "editor": "KWH"
         },
         {
           "id": "GV10",
+          "name": "Battery Export Today",
           "editor": "KWH"
         },
         {
           "id": "GV11",
+          "name": "Battery Import Today",
           "editor": "KWH"
         },
         {
           "id": "GV12",
+          "name": "Grid Export Today",
           "editor": "KWH"
         },
         {
           "id": "GV13",
+          "name": "Grid Import Today",
           "editor": "KWH"
         },
         {
           "id": "GV14",
+          "name": "Grid/House Net Use Today",
           "editor": "KWH"
         },
         {
           "id": "GV28",
+          "name": "Generator Today",
           "editor": "KWH"
         }
       ],
       "cmds": {
-        "sends": [],
         "accepts": [
           {
-            "id": "UPDATE"
+            "id": "UPDATE",
+            "name": "Update System Data"
           }
-        ]
+        ],
+        "sends": []
+      },
+      "links": {
+        "ctl": [],
+        "rsp": []
       }
     },
     {
       "id": "PWHISTORY",
-      "nls": "nlspwhist",
-      "sts": [
+      "name": "Power Wall History",
+      "icon": "Electricity",
+      "properties": [
         {
           "id": "ST",
+          "name": "Connected to Tesla",
           "editor": "ONLINE"
         },
         {
+          "id": "GV1",
+          "name": "Generator Today",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV2",
+          "name": "Generator Yesterday",
+          "editor": "KWH"
+        },
+        {
           "id": "GV8",
+          "name": "Home Total Use Today",
           "editor": "KWH"
         },
         {
           "id": "GV9",
+          "name": "Solar Export Today",
           "editor": "KWH"
         },
         {
           "id": "GV10",
+          "name": "Battery Export Today",
           "editor": "KWH"
         },
         {
           "id": "GV11",
+          "name": "Battery Import Today",
           "editor": "KWH"
         },
         {
           "id": "GV12",
+          "name": "Grid Export Today",
           "editor": "KWH"
         },
         {
           "id": "GV13",
+          "name": "Grid Import Today",
           "editor": "KWH"
         },
         {
           "id": "GV14",
+          "name": "Grid/House Net Use Today",
           "editor": "KWH"
         },
         {
           "id": "GV15",
+          "name": "Home Total Use Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV16",
+          "name": "Solar Export Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV17",
+          "name": "Battery Export Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV18",
+          "name": "Battery Import Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV19",
+          "name": "Grid Export Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV20",
+          "name": "Grid Import Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV21",
+          "name": "Grid/House Net Use Yesterday",
           "editor": "KWH"
         },
         {
           "id": "GV22",
+          "name": "Today nbr backup events",
           "editor": "COUNT"
         },
         {
           "id": "GV23",
+          "name": "Today backup event time",
           "editor": "UNIXTIME"
         },
         {
           "id": "GV24",
+          "name": "Yesterday nbr backup events",
           "editor": "COUNT"
         },
         {
           "id": "GV25",
+          "name": "Yesterday backup event time",
           "editor": "UNIXTIME"
         },
         {
           "id": "GV26",
+          "name": "Today charge power",
           "editor": "KWH"
         },
         {
           "id": "GV27",
+          "name": "Today charge time",
           "editor": "UNIXTIME"
         },
         {
           "id": "GV28",
+          "name": "Yesterday charge power",
           "editor": "KWH"
         },
         {
           "id": "GV29",
+          "name": "Yesterday charge time",
           "editor": "UNIXTIME"
-        },
-        {
-          "id": "GV1",
-          "editor": "KWH"
-        },
-        {
-          "id": "GV2",
-          "editor": "KWH"
         }
       ],
       "cmds": {
-        "sends": [],
         "accepts": [
           {
-            "id": "UPDATE"
+            "id": "UPDATE",
+            "name": "Update System Data"
           }
-        ]
+        ],
+        "sends": []
+      },
+      "links": {
+        "ctl": [],
+        "rsp": []
       }
     },
     {
       "id": "PWSETUP",
-      "nls": "nlspwsetup",
-      "sts": [
+      "name": "Power Wall Control Parameters",
+      "icon": "Electricity",
+      "properties": [
         {
           "id": "GV1",
+          "name": "Backup Reserve (%)",
           "editor": "PERCENT"
         },
         {
           "id": "GV2",
+          "name": "Operating Mode",
           "editor": "OPMODE"
         },
         {
           "id": "GV3",
+          "name": "Storm Mode",
           "editor": "TOGGLE"
         },
         {
           "id": "GV5",
+          "name": "Grid Import to battery",
           "editor": "GRIDIMPMODE"
         },
         {
           "id": "GV6",
+          "name": "Grid Export Mode",
           "editor": "GRIDEXPMODE"
         },
         {
           "id": "GV7",
+          "name": "EV offgrid charge reserve (%)",
           "editor": "PERCENT"
         }
       ],
       "cmds": {
-        "sends": [],
         "accepts": [
           {
-            "id": "UPDATE"
+            "id": "UPDATE",
+            "name": "Update System Data"
           },
           {
             "id": "BACKUP_PCT",
-            "params": [
+            "name": "Backup Reserve (%)",
+            "parameters": [
               {
                 "id": "",
+                "name": "Backup Reserve",
                 "editor": "PERCENT",
                 "init": "GV1"
               }
@@ -628,9 +678,11 @@
           },
           {
             "id": "OP_MODE",
-            "params": [
+            "name": "Operating Mode",
+            "parameters": [
               {
                 "id": "",
+                "name": "Operating Mode",
                 "editor": "SETOPMODE",
                 "init": "GV2"
               }
@@ -638,9 +690,11 @@
           },
           {
             "id": "STORM_MODE",
-            "params": [
+            "name": "Storm Mode",
+            "parameters": [
               {
                 "id": "",
+                "name": "Storm Mode",
                 "editor": "SETTOGGLE",
                 "init": "GV3"
               }
@@ -648,14 +702,17 @@
           },
           {
             "id": "GRID_MODE",
-            "params": [
+            "name": "Grid Operation",
+            "parameters": [
               {
                 "id": "import",
+                "name": "Grid Import to battery",
                 "editor": "SETGRIDIMPMODE",
                 "init": "GV5"
               },
               {
                 "id": "export",
+                "name": "Grid Export Mode",
                 "editor": "SETGRIDEXPMODE",
                 "init": "GV6"
               }
@@ -663,190 +720,24 @@
           },
           {
             "id": "EV_CHRG_MODE",
-            "params": [
+            "name": "EV offgrid charge reserve",
+            "parameters": [
               {
                 "id": "",
+                "name": "EV Reserve",
                 "editor": "PERCENT",
                 "init": "GV7"
               }
             ]
           }
-        ]
+        ],
+        "sends": []
+      },
+      "links": {
+        "ctl": [],
+        "rsp": []
       }
     }
   ],
-  "nls": {
-    "ND-CONTROLLER-NAME": "Tesla PowerWall Info",
-    "ND-CONTROLLER-ICON": "Electricity",
-    "CMD-nlscontroller-UPDATE-NAME": "Update System Data",
-    "ST-nlscontroller-ST-NAME": "Controller Up",
-    "UPDN-0": "Down",
-    "UPDN-1": "Up",
-    "ST-nlscontroller-GV2-NAME": "Connected to Tesla Power Wall",
-    "CONNECTION-0": "Not Connected",
-    "CONNECTION-1": "connected",
-    "ST-nlscontroller-GV3-NAME": "Consecutive missed LongPolls",
-    "ST-nlscontroller-GV4-NAME": "Connection Status",
-    "CONNECTIONSTATE-0": "No Connection",
-    "CONNECTIONSTATE-1": "Cloud only",
-    "CONNECTIONSTATE-2": "Local only",
-    "CONNECTIONSTATE-3": "Local and Cloud",
-    "CONNECTIONSTATE-99": "Unknown",
-    "CONNECTIONTYPE-0": "No Connection",
-    "CONNECTIONTYPE-1": "Cloud only",
-    "CONNECTIONTYPE-2": "Local only",
-    "CONNECTIONTYPE-3": "Local and Cloud",
-    "CONNECTIONTYPE-99": "Unknown",
-    "ND-PWSTATUS-NAME": "Power Wall Status",
-    "ND-PWSTATUS-ICON": "Electricity",
-    "SEASON-0": "Winter",
-    "SEASON-1": "Summer",
-    "SEASON-2": "Between SUmmer and Winter",
-    "SEASON-99": "Unknown",
-    "PERIOD-0": "Off-peak",
-    "PERIOD-1": "Partial-Peak",
-    "PERIOD-2": "Peak",
-    "PERIOD-99": "Unknown",
-    "ND-PWSOLAR-NAME": "Power Wall Solar Status",
-    "ND-PWSOLAR-ICON": "Electricity",
-    "CMD-nlspwsolar-UPDATE-NAME": "Update System Data",
-    "ST-nlspwsolar-GV1-NAME": "Current Solar Supply",
-    "ST-nlspwsolar-GV2-NAME": "Solar Power Today",
-    "ST-nlspwsolar-GV3-NAME": "Solar Power Yesterday",
-    "ND-PWGENERATOR-NAME": "Power Wall Generator Status",
-    "ND-PWGENERATOR-ICON": "Electricity",
-    "CMD-nlspwgen-UPDATE-NAME": "Update System Data",
-    "ST-nlspwgen-GV1-NAME": "Generator Power Today",
-    "ST-nlspwgen-GV2-NAME": "Generator Power Yesterday",
-    "ND-PWSETUP-NAME": "Power Wall Control Parameters",
-    "ND-PWSETUP-ICON": "Electricity",
-    "CMD-nlspwsetup-BACKUP_PCT-NAME": "Backup Reserve (%)",
-    "CMD-nlspwsetup-OP_MODE-NAME": "Operating Mode",
-    "CMD-nlspwsetup-STORM_MODE-NAME": "Storm Mode",
-    "CMD-nlspwsetup-GRID_MODE-NAME": "Grid Operation",
-    "CMD-nlspwsetup-EV_CHRG_MODE-NAME": "EV offgrid charge reserve",
-    "CMDP-export-NAME": "Export mode to grid",
-    "CMDP-import-NAME": "Charging from grid w. solar",
-    "CMD-nlspwsetup-UPDATE-NAME": "Update System Data",
-    "ST-nlspwsetup-GV1-NAME": "Backup Reserve (%)",
-    "ST-nlspwsetup-GV2-NAME": "Operating Mode",
-    "ST-nlspwsetup-GV3-NAME": "Storm Mode",
-    "ST-nlspwsetup-GV4-NAME": "Time of Use Mode",
-    "ST-nlspwsetup-GV5-NAME": "Grid Import to battery",
-    "ST-nlspwsetup-GV6-NAME": "Grid ExportMode",
-    "ST-nlspwsetup-GV7-NAME": "EV offgrid charge reserve (%)",
-    "TOUTIME-99": "No data",
-    "NODATA-98": "No Data",
-    "NODATA-99": "No Data",
-    "ENTOGGLE-0": "Disabled",
-    "ENTOGGLE-1": "Enabled",
-    "ENTOGGLE-99": "Unknown",
-    "TOGGLE-0": "Disabled",
-    "TOGGLE-1": "Enabled",
-    "TOGGLE-99": "Unknown",
-    "SETTOGGLE-0": "Disabled",
-    "SETTOGGLE-1": "Enabled",
-    "GRIDMODE-0": "Disabled",
-    "GRIDMODE-1": "Enabled",
-    "GRIDMODE-99": "Unknown",
-    "OPMODE-0": "backup",
-    "OPMODE-1": "self consumption",
-    "OPMODE-2": "autonomous",
-    "OPMODE-3": "site control",
-    "OPMODE-99": "Unknown",
-    "SETOPMODE-1": "self consumption",
-    "SETOPMODE-2": "autonomous",
-    "ENTOUMODE-0": "Economics",
-    "ENTOUMODE-1": "Balanced",
-    "ENTOUMODE-99": "Unknown",
-    "TOUMODE-0": "Economics",
-    "TOUMODE-1": "Balanced",
-    "TOUMODE-99": "Unknown",
-    "SETTOUMODE-0": "Economics",
-    "SETTOUMODE-1": "Balanced",
-    "ENGRIDSTATUS-0": "on grid",
-    "ENGRIDSTATUS-1": "islanded ready",
-    "ENGRIDSTATUS-2": "islanded",
-    "ENGRIDSTATUS-3": "transition to grid",
-    "ENGRIDSTATUS-99": "Unknown code",
-    "GRIDST-0": "on grid",
-    "GRIDST-1": "islanded ready",
-    "GRIDST-2": "islanded",
-    "GRIDST-3": "transition to grid",
-    "GRIDST-99": "Unknown code",
-    "GRIDSTATUS-0": "on grid",
-    "GRIDSTATUS-1": "islanded ready",
-    "GRIDSTATUS-2": "islanded",
-    "GRIDSTATUS-3": "transition to grid",
-    "GRIDSTATUS-99": "Unknown code",
-    "ENONLINE-0": "offline",
-    "ENONLINE-1": "online",
-    "ENONLINE-99": "unknown",
-    "ONLINE-0": "offline",
-    "ONLINE-1": "online",
-    "ONLINE-99": "unknown",
-    "ERROR-98": "Not defined",
-    "ERROR-99": "Unknown",
-    "error-98": "Not defined",
-    "error-99": "Unknown",
-    "GRIDIMPMODE-0": "Allowed",
-    "GRIDIMPMODE-1": "Not Allowed",
-    "GRIDIMPMODE-99": "Unknown",
-    "SETGRIDIMPMODE-0": "Allowed",
-    "SETGRIDIMPMODE-1": "Not Allowed",
-    "GRIDEXPMODE-0": "PV-only",
-    "GRIDEXPMODE-1": "Battery-ok",
-    "GRIDEXPMODE-2": "Never",
-    "GRIDEXPMODE-99": "Unknown",
-    "SETGRIDEXPMODE-0": "PV-only",
-    "SETGRIDEXPMODE-1": "Battery-ok",
-    "SETGRIDEXPMODE-2": "Never",
-    "CMD-nlspwstatus-UPDATE-NAME": "Update System Data",
-    "ST-nlspwstatus-ST-NAME": "Connected to Tesla",
-    "ST-nlspwstatus-GV0-NAME": "Remaining Battery",
-    "ST-nlspwstatus-GV1-NAME": "Inst Solar Export",
-    "ST-nlspwstatus-GV2-NAME": "Inst Battery Export",
-    "ST-nlspwstatus-GV3-NAME": "Inst Home Load",
-    "ST-nlspwstatus-GV4-NAME": "Inst Grid Import",
-    "ST-nlspwstatus-GV5-NAME": "Operation Mode",
-    "ST-nlspwstatus-GV6-NAME": "Grid Status",
-    "ST-nlspwstatus-GV7-NAME": "Grid Services Active",
-    "ST-nlspwstatus-GV8-NAME": "Home Total Use Today",
-    "ST-nlspwstatus-GV9-NAME": "Solar Export Today",
-    "ST-nlspwstatus-GV10-NAME": "Battery Export Today",
-    "ST-nlspwstatus-GV11-NAME": "Battery Import Today",
-    "ST-nlspwstatus-GV12-NAME": "Grid Export Today",
-    "ST-nlspwstatus-GV13-NAME": "Grid Import Today",
-    "ST-nlspwstatus-GV14-NAME": "Grid/House Net Use Today",
-    "ST-nlspwstatus-GV28-NAME": "Generator Today",
-    "ST-nlspwstatus-GV29-NAME": "Home Net Power Use Today",
-    "ND-PWHISTORY-NAME": "Power Wall History",
-    "ND-PWHISTORY-ICON": "Electricity",
-    "CMD-nlspwhist-UPDATE-NAME": "Update System Data",
-    "ST-nlspwhist-ST-NAME": "Connected to Tesla",
-    "ST-nlspwhist-GV8-NAME": "Home Total Use Today",
-    "ST-nlspwhist-GV9-NAME": "Solar Export Today",
-    "ST-nlspwhist-GV10-NAME": "Battery Export Today",
-    "ST-nlspwhist-GV11-NAME": "Battery Import Today",
-    "ST-nlspwhist-GV12-NAME": "Grid Export Today",
-    "ST-nlspwhist-GV13-NAME": "Grid Import Today",
-    "ST-nlspwhist-GV14-NAME": "Grid/House Net Use Today",
-    "ST-nlspwhist-GV15-NAME": "Home Total Use Yesterday",
-    "ST-nlspwhist-GV16-NAME": "Solar Export Yesterday",
-    "ST-nlspwhist-GV17-NAME": "Battery Export Yesterday",
-    "ST-nlspwhist-GV18-NAME": "Battery Import Yesterday",
-    "ST-nlspwhist-GV19-NAME": "Grid Export Yesterday",
-    "ST-nlspwhist-GV20-NAME": "Grid Import Yesterday",
-    "ST-nlspwhist-GV21-NAME": "Grid/House Net Use Yesterday",
-    "ST-nlspwhist-GV22-NAME": "Today nbr backup events",
-    "ST-nlspwhist-GV23-NAME": "Today backup event time",
-    "ST-nlspwhist-GV24-NAME": "Yesterday nbr backup events",
-    "ST-nlspwhist-GV25-NAME": "Yesterday backup event time",
-    "ST-nlspwhist-GV26-NAME": "Today charge power",
-    "ST-nlspwhist-GV27-NAME": "Today charge time",
-    "ST-nlspwhist-GV28-NAME": "Yesterday charge power",
-    "ST-nlspwhist-GV29-NAME": "Yesterday charge time",
-    "ST-nlspwhist-GV1-NAME": "Generator Today",
-    "ST-nlspwhist-GV2-NAME": "Generator Yesterday"
-  }
+  "linkdefs": []
 }

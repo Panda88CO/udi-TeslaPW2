@@ -9,6 +9,7 @@ from TeslaInfoV2 import tesla_info
 
 from TeslaPWOauth import teslaPWAccess
 from TeslaPWStatusNode import teslaPWStatusNode
+from profile_def import build_profile_definition, dynamic_profile_payload, PROFILE_VERSION
 
 try:
     import udi_interface
@@ -22,7 +23,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -570,14 +571,31 @@ class TeslaPWController(udi_interface.Node):
                 except Exception as ex:
                     logging.error(f'Static updateProfile fallback failed: {ex}')
 
+    def _profiles_match(self, current_profile, expected_profile) -> bool:
+        """Compares two JSON profiles to avoid redundant publications."""
+        if not isinstance(current_profile, dict) or not isinstance(expected_profile, dict):
+            return False
+        return all(
+            current_profile.get(k, []) == expected_profile.get(k, [])
+            for k in ("editors", "nodedefs", "linkdefs")
+        )
+
     def update_dynamic_profile(self, force=False):
         """
-        Updates the IoX profile dynamically via PG3x JSON profile API.
-        Only sends profile if force is True or profile_version has changed / not yet recorded.
+        Updates the IoX profile dynamically via PG3x JSON profile API using in-code definitions.
+        Mirrors the implementation pattern in udi-kidde and udi-nuheatv2.
         """
         try:
-            if not hasattr(self.poly, 'updateJsonProfile'):
-                logging.info('Dynamic JSON profile (updateJsonProfile) not supported in this udi_interface version.')
+            updater = getattr(self.poly, 'updateJsonProfile', None)
+            if not callable(updater):
+                logging.info('updateJsonProfile is unavailable; dynamic profiles require PG3x support.')
+                if hasattr(self.poly, 'updateProfile'):
+                    try:
+                        self.poly.updateProfile()
+                        if hasattr(self.poly, 'Notices') and hasattr(self.poly.Notices, 'delete'):
+                            self.poly.Notices.delete('profile')
+                    except Exception as ex:
+                        logging.error(f'Static updateProfile fallback failed: {ex}')
                 return
 
             current_version = None
@@ -594,6 +612,25 @@ class TeslaPWController(udi_interface.Node):
                 except Exception:
                     pass
 
+            version = current_version or PROFILE_VERSION
+            payload = build_profile_definition(version=version)
+
+            current_profile_getter = getattr(self.poly, 'getJsonProfile', None)
+            if not force and callable(current_profile_getter):
+                try:
+                    current_profile = current_profile_getter({"waitResponse": False})
+                    if self._profiles_match(current_profile, payload):
+                        logging.info(f'Dynamic profile already up to date (version {version}), skipping publish')
+                        return
+                except Exception:
+                    try:
+                        current_profile = current_profile_getter()
+                        if self._profiles_match(current_profile, payload):
+                            logging.info(f'Dynamic profile already up to date (version {version}), skipping publish')
+                            return
+                    except Exception:
+                        pass
+
             saved_version = None
             if hasattr(self.poly, '_ifaceData'):
                 try:
@@ -601,48 +638,35 @@ class TeslaPWController(udi_interface.Node):
                 except Exception:
                     saved_version = None
 
-            if not force and current_version and saved_version and saved_version == current_version:
-                logging.info(f'Dynamic JSON profile is up to date (version {current_version}).')
+            if not force and saved_version and saved_version == version:
+                logging.info(f'Dynamic JSON profile is up to date (version {version}).')
                 return
 
-            profile_file = os.path.join(os.path.dirname(__file__), 'data', 'base_profile.json')
-            if not os.path.exists(profile_file):
-                logging.info(f'{profile_file} not found. Generating from profile definitions...')
-                try:
-                    from scripts.generate_profile_json import generate_profile
-                    profile_data = generate_profile()
-                except Exception as ex:
-                    logging.error(f'Failed to generate dynamic profile: {ex}')
-                    return
-            else:
-                with open(profile_file, 'r', encoding='utf-8') as f:
-                    profile_data = json.load(f)
-
-            payload = {
-                'version': current_version or '0.2.0',
-                'delete': {
-                    'editors': ['*'],
-                    'nodedefs': ['*'],
-                    'linkdefs': ['*']
-                },
-                'editors': profile_data.get('editors', []),
-                'nodedefs': profile_data.get('nodedefs', []),
-                'linkdefs': profile_data.get('linkdefs', []),
-                'nls': profile_data.get('nls', {})
-            }
-
-            logging.info(f'Updating dynamic JSON profile (version {current_version})...')
+            logging.info(f'Updating dynamic JSON profile in code (version {version})...')
             try:
-                self.poly.updateJsonProfile(payload)
+                updater(payload, {"waitResponse": True})
+                logging.info('Dynamic JSON profile updated successfully.')
+                if hasattr(self.poly, 'Notices') and hasattr(self.poly.Notices, 'delete'):
+                    self.poly.Notices.delete('profile')
+            except TypeError:
+                try:
+                    updater(payload)
+                    logging.info('Dynamic JSON profile updated successfully.')
+                    if hasattr(self.poly, 'Notices') and hasattr(self.poly.Notices, 'delete'):
+                        self.poly.Notices.delete('profile')
+                except Exception as err:
+                    logging.warning(f'updateJsonProfile call failed: {err}; falling back to updateProfile')
+                    if hasattr(self.poly, 'updateProfile'):
+                        self.poly.updateProfile()
             except Exception as err:
                 logging.warning(f'updateJsonProfile call failed: {err}; falling back to updateProfile')
                 if hasattr(self.poly, 'updateProfile'):
                     self.poly.updateProfile()
 
-            if hasattr(self.poly, '_ifaceData') and current_version:
+            if hasattr(self.poly, '_ifaceData') and version:
                 try:
-                    self.poly._ifaceData.profile_version = current_version
-                    logging.info(f'Dynamic profile version recorded as {current_version}.')
+                    self.poly._ifaceData.profile_version = version
+                    logging.info(f'Dynamic profile version recorded as {version}.')
                 except Exception as ex:
                     logging.debug(f'Could not record profile_version in _ifaceData: {ex}')
 

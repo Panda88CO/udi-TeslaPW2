@@ -30,7 +30,6 @@
          <st id="GV5" editor="OPMODE" />
          <st id="GV6" editor="GRIDST" />
          <st id="GV7" editor="GRIDMODE" />
-        
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
@@ -38,28 +37,7 @@
          <st id="GV12" editor="KWH" />
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
-
-         <!--<st id="GV15" editor="KWH" />
-         <st id="GV29" editor="KWH" />-->
          <st id="GV28" editor="KWH" />
-
-         <!--
-         <st id="GV16" editor="KWH" />
-         <st id="GV17" editor="KWH" />
-         <st id="GV18" editor="KWH" />
-         <st id="GV19" editor="KWH" />
-         <st id="GV20" editor="KWH" />
-         <st id="GV21" editor="KWH" />
-         <st id="GV22" editor="COUNT" />    
-         <st id="GV23" editor="UNIXTIME" />
-         <st id="GV24" editor="COUNT" />
-         <st id="GV25" editor="UNIXTIME" />
-         <st id="GV26" editor="KWH" />
-         <st id="GV27" editor="UNIXTIME" />
-         <st id="GV28" editor="KWH" />
-         <st id="GV29" editor="UNIXTIME" />
-         -->
-
       </sts>
       <cmds>
          <sends>
@@ -70,24 +48,12 @@
       </cmds>
    </nodeDef> 
 
-
-      <nodeDef id="PWHISTORY" nls="nlspwhist">
+   <nodeDef id="PWHISTORY" nls="nlspwhist">
       <editors />
       <sts>
          <st id="ST" editor="ONLINE" />     
-         <!--      
-         <st id="GV0" editor="KWH" />
          <st id="GV1" editor="KWH" />
          <st id="GV2" editor="KWH" />
-         <st id="GV3" editor="KWH" />
-         <st id="GV4" editor="KWH" />
-         <st id="GV5" editor="OPMODE" />
-         <st id="GV6" editor="GRIDST" />
-         <st id="GV7" editor="EN_MODE" />
-         -->
-
-      
-
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />
          <st id="GV10" editor="KWH" />
@@ -96,14 +62,12 @@
          <st id="GV13" editor="KWH" />
          <st id="GV14" editor="KWH" />
          <st id="GV15" editor="KWH" />
-
          <st id="GV16" editor="KWH" />
          <st id="GV17" editor="KWH" />
          <st id="GV18" editor="KWH" />
          <st id="GV19" editor="KWH" />
          <st id="GV20" editor="KWH" />
          <st id="GV21" editor="KWH" />
-
          <st id="GV22" editor="COUNT" />    
          <st id="GV23" editor="UNIXTIME" />
          <st id="GV24" editor="COUNT" />
@@ -112,10 +76,6 @@
          <st id="GV27" editor="UNIXTIME" />
          <st id="GV28" editor="KWH" />
          <st id="GV29" editor="UNIXTIME" />
-
-
-         <st id="GV1" editor="KWH" />
-         <st id="GV2" editor="KWH" />
       </sts>
       <cmds>
          <sends>
@@ -125,38 +85,6 @@
          </accepts>
       </cmds>
    </nodeDef> 
-   <!--
-   <nodeDef id="PWSOLAR" nls="nlspwsolar">
-      <editors />
-      <sts>
-         <st id="GV1" editor="KWHLOW" />
-         <st id="GV2" editor="KWH" />
-         <st id="GV3" editor="KWH" />
-      </sts>
-      <cmds>
-         <sends>
-         </sends>
-         <accepts>
-            <cmd id="UPDATE" /> 
-         </accepts>
-      </cmds>
-   </nodeDef> 
-
-   <nodeDef id="PWGENERATOR" nls="nlspwgen">
-      <editors />
-      <sts>
-         <st id="GV1" editor="KWH" />
-         <st id="GV2" editor="KWH" />
-      </sts>
-      <cmds>
-         <sends>
-         </sends>
-         <accepts>
-            <cmd id="UPDATE" /> 
-         </accepts>
-      </cmds>
-   </nodeDef> 
-   -->
 
    <nodeDef id="PWSETUP" nls="nlspwsetup">
       <editors />
@@ -164,19 +92,9 @@
          <st id="GV1" editor="PERCENT" />
          <st id="GV2" editor="OPMODE" />
          <st id="GV3" editor="TOGGLE" />
-         <!--<st id="GV4" editor="TOUMODE" />-->
          <st id="GV5" editor="GRIDIMPMODE" />  
          <st id="GV6" editor="GRIDEXPMODE" />
          <st id="GV7" editor="PERCENT" />                         
-         <!--<st id="GV4" editor="TOUMODE" />
-         <st id="GV5" editor="UNIXTIME" />
-         <st id="GV6" editor="UNIXTIME" />
-         <st id="GV7" editor="UNIXTIME" />
-         <st id="GV8" editor="UNIXTIME" />
-         <st id="GV9" editor="UNIXTIME" />
-         <st id="GV10" editor="UNIXTIME" />
-         <st id="GV11" editor="UNIXTIME" />
-         <st id="GV12" editor="UNIXTIME" /> -->
       </sts>
       <cmds>
          <sends>
@@ -192,9 +110,6 @@
             <cmd id="STORM_MODE" > 
                <p id="" editor="SETTOGGLE" init="GV3" /> 
             </cmd> 
-            <!--<cmd id="TOU_MODE" > 
-               <p id="" editor="SETTOUMODE" init="GV4" /> 
-            </cmd> -->
             <cmd id="GRID_MODE" > 
                <p id="import" editor="SETGRIDIMPMODE" init="GV5" /> 
                <p id="export" editor="SETGRIDEXPMODE" init="GV6" /> 
@@ -202,8 +117,7 @@
             <cmd id="EV_CHRG_MODE" > 
                <p id="" editor="PERCENT" init="GV7" /> 
             </cmd> 
-
          </accepts>
       </cmds>
    </nodeDef> 
-</nodeDefs> 
+</nodeDefs>

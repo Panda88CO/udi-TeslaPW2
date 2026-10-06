@@ -151,7 +151,7 @@ class MockPolyglotInterface:
         self.Notices = MockCustom(self, 'notices')
         self.nodes_in_db = []
         self.ready_called = 0
-        self.serverdata = {'profile_version': '0.2.0'}
+        self.serverdata = {'profile_version': '0.2.1'}
         self._ifaceData = types.SimpleNamespace(profile_version=None)
         self.json_profile_updates = []
 
@@ -296,6 +296,7 @@ from TeslaPWStatusNode import teslaPWStatusNode
 from TeslaPWHistoryNode import teslaPWHistoryNode
 from TeslaPWSetupNode import teslaPWSetupNode
 from TeslaPW2main import TeslaPWController
+from profile_def import build_profile_definition, dynamic_profile_payload, PROFILE_VERSION
 
 
 # ---------------------------------------------------------------------------
@@ -429,8 +430,19 @@ class TestProfileXmlAndNls(unittest.TestCase):
     """Verifies profile XML standards and consistency with Python Node classes."""
 
     def setUp(self):
-        profile_dir = os.path.join(ROOT_DIR, 'profile')
-        if not os.path.exists(profile_dir):
+        profile_dir = None
+        for candidate in ['profile.static', 'profile']:
+            cand_path = os.path.join(ROOT_DIR, candidate)
+            test_file = os.path.join(cand_path, 'editor', 'editors.xml')
+            try:
+                if os.path.exists(test_file):
+                    with open(test_file, 'rb') as f:
+                        f.read(10)
+                    profile_dir = cand_path
+                    break
+            except (OSError, PermissionError):
+                continue
+        if not profile_dir:
             profile_dir = os.path.join(ROOT_DIR, 'profile.static')
         self.editors_xml = os.path.join(profile_dir, 'editor', 'editors.xml')
         self.nodedefs_xml = os.path.join(profile_dir, 'nodedef', 'nodedefs.xml')
@@ -444,7 +456,7 @@ class TestProfileXmlAndNls(unittest.TestCase):
         ET.parse(self.nodedefs_xml)
 
     def test_editor_ids_standards(self):
-        """Verifies editor IDs are uppercase, no underscores, and not reserved."""
+        """Verifies editor IDs and range NLS attributes are uppercase, no underscores, and not reserved."""
         tree = ET.parse(self.editors_xml)
         seen_ids = set()
         for editor in tree.getroot().findall('editor'):
@@ -456,6 +468,13 @@ class TestProfileXmlAndNls(unittest.TestCase):
             self.assertEqual(eid, eid.upper(), f"Editor ID '{eid}' is not all uppercase")
             self.assertNotIn('_', eid, f"Editor ID '{eid}' contains underscore")
             self.assertNotIn(eid, self.reserved_words, f"Editor ID '{eid}' is a reserved word")
+
+            for r in editor.findall('range'):
+                nls = r.attrib.get('nls')
+                if nls is not None:
+                    self.assertEqual(nls, nls.upper(), f"Range nls '{nls}' in editor '{eid}' is not all uppercase")
+                    self.assertNotIn('_', nls, f"Range nls '{nls}' in editor '{eid}' contains underscore")
+                    self.assertNotIn(nls, self.reserved_words, f"Range nls '{nls}' in editor '{eid}' is a reserved word")
 
     def test_editor_subsets_comma_only(self):
         """Verifies subset definitions do not use range hyphens and only use commas."""
@@ -500,6 +519,35 @@ class TestProfileXmlAndNls(unittest.TestCase):
                 ed_ref = p.attrib.get('editor', '').strip()
                 if ed_ref:
                     self.assertIn(ed_ref, editor_ids, f"NodeDef '{nid}' param references missing editor '{ed_ref}'")
+
+    def test_no_unused_editors_in_xml(self):
+        """Verifies that every editor in editors.xml is referenced by at least one nodedef."""
+        ed_tree = ET.parse(self.editors_xml)
+        editor_ids = {e.attrib.get('id', '').strip() for e in ed_tree.getroot().findall('editor')}
+
+        nd_tree = ET.parse(self.nodedefs_xml)
+        used_ids = set()
+        for st in nd_tree.getroot().findall('.//st'):
+            ed = st.attrib.get('editor', '').strip()
+            if ed:
+                used_ids.add(ed)
+        for p in nd_tree.getroot().findall('.//p'):
+            ed = p.attrib.get('editor', '').strip()
+            if ed:
+                used_ids.add(ed)
+
+        unused = editor_ids - used_ids
+        self.assertFalse(unused, f"editors.xml contains unused editors: {unused}")
+
+    def test_no_commented_lines_in_profile_files(self):
+        """Verifies that editors.xml, nodedefs.xml, and en_us.txt do not contain commented-out lines."""
+        with open(self.editors_xml, 'r', encoding='utf-8') as f:
+            self.assertNotIn('<!--', f.read(), "editors.xml contains commented-out XML lines")
+        with open(self.nodedefs_xml, 'r', encoding='utf-8') as f:
+            self.assertNotIn('<!--', f.read(), "nodedefs.xml contains commented-out XML lines")
+        with open(self.nls_txt, 'r', encoding='utf-8') as f:
+            for line in f:
+                self.assertFalse(line.strip().startswith('#'), f"en_us.txt contains commented line: {line.strip()}")
 
     def test_nls_entries_match_nodedefs(self):
         """Verifies en_us.txt has ND-<id>-NAME and ND-<id>-ICON for each nodedef."""
@@ -772,29 +820,46 @@ class TestTeslaPWController(unittest.TestCase):
 
 
 class TestDynamicJsonProfile(unittest.TestCase):
-    """Verifies PG3x / IoX Dynamic JSON profile generation and node server integration."""
+    """Verifies PG3x / IoX Dynamic JSON profile definition in code and node server integration.
+    
+    Mirrors the testing standards from udi-kidde (test_profile_schema.py) and udi-nuheatv2.
+    """
 
     def setUp(self):
-        self.base_profile_path = os.path.join(ROOT_DIR, 'data', 'base_profile.json')
+        self.payload = build_profile_definition()
+        self.editors = self.payload['editors']
+        self.editor_map = {e['id']: e for e in self.editors}
+        self.nodedefs = self.payload['nodedefs']
+        self.nodedef_map = {n['id']: n for n in self.nodedefs}
         self.reserved_words = {'CON', 'TIME', 'BOOL'}
 
-    def test_base_profile_json_exists_and_valid(self):
-        self.assertTrue(os.path.exists(self.base_profile_path), "data/base_profile.json does not exist")
-        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        self.assertIn('editors', data)
-        self.assertIn('nodedefs', data)
-        self.assertIn('nls', data)
-        self.assertGreaterEqual(len(data['editors']), 28)
-        self.assertEqual(len(data['nodedefs']), 4)
-        self.assertGreaterEqual(len(data['nls']), 130)
+    def test_profile_payload_structure(self):
+        """Verifies top-level dynamic JSON profile structure, version, and wildcard deletes."""
+        self.assertEqual(self.payload.get('version'), PROFILE_VERSION)
+        self.assertIn('delete', self.payload)
+        self.assertEqual(self.payload['delete'].get('editors'), ['*'])
+        self.assertEqual(self.payload['delete'].get('nodedefs'), ['*'])
+        self.assertEqual(self.payload['delete'].get('linkdefs'), ['*'])
+        self.assertEqual(len(self.editors), 20)
+        self.assertEqual(len(self.nodedefs), 4)
+
+    def test_no_unused_editors(self):
+        """Verifies that every editor in the dynamic profile is actively referenced by a property or command parameter."""
+        used_editors = set()
+        for nd in self.nodedefs:
+            for prop in nd.get('properties', []):
+                used_editors.add(prop['editor'])
+            for cmd in nd.get('cmds', {}).get('accepts', []):
+                for param in cmd.get('parameters', []):
+                    used_editors.add(param['editor'])
+        defined_editors = {e['id'] for e in self.editors}
+        unused = defined_editors - used_editors
+        self.assertFalse(unused, f"Dynamic profile contains unused editors: {unused}")
 
     def test_dynamic_editors_standards(self):
-        """Verifies dynamic JSON editors comply with PG3x conventions (uppercase, no underscore, no reserved words)."""
-        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        """Verifies dynamic JSON editors comply with PG3x conventions (uppercase, no underscore, no reserved words, inline names for UOM 25)."""
         seen = set()
-        for ed in data['editors']:
+        for ed in self.editors:
             eid = ed.get('id', '')
             self.assertTrue(eid, "Editor missing id")
             self.assertNotIn(eid, seen, f"Duplicate editor ID: {eid}")
@@ -802,7 +867,10 @@ class TestDynamicJsonProfile(unittest.TestCase):
             self.assertEqual(eid, eid.upper(), f"Editor ID '{eid}' is not uppercase")
             self.assertNotIn('_', eid, f"Editor ID '{eid}' contains underscore")
             self.assertNotIn(eid, self.reserved_words, f"Editor ID '{eid}' is reserved word")
-            for r in ed.get('range', []):
+
+            ranges = ed.get('ranges', [])
+            self.assertTrue(isinstance(ranges, list) and len(ranges) > 0, f"Editor '{eid}' missing ranges list")
+            for r in ranges:
                 subset = r.get('subset')
                 if subset is not None:
                     self.assertNotIn('-', str(subset), f"Editor '{eid}' subset has range hyphen: '{subset}'")
@@ -810,13 +878,19 @@ class TestDynamicJsonProfile(unittest.TestCase):
                     for p in parts:
                         self.assertTrue(p.isdigit(), f"Editor '{eid}' non-integer subset value: '{p}'")
 
+                # UOM 25 ranges MUST have inline names dictionary for mapped text display
+                if str(r.get('uom')) == '25':
+                    names = r.get('names')
+                    self.assertIsInstance(names, dict, f"Editor '{eid}' UOM 25 range missing names dict")
+                    self.assertTrue(len(names) > 0, f"Editor '{eid}' UOM 25 range names dict is empty")
+                    for k, v in names.items():
+                        self.assertTrue(str(k).isdigit(), f"Editor '{eid}' name key '{k}' must be integer value")
+                        self.assertTrue(isinstance(v, str) and len(v.strip()) > 0, f"Editor '{eid}' name value for '{k}' must be non-empty string")
+
     def test_dynamic_nodedefs_standards(self):
-        """Verifies dynamic JSON nodedefs reference valid editors and follow naming rules."""
-        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        editor_ids = {e['id'] for e in data['editors']}
+        """Verifies dynamic JSON nodedefs reference valid editors, commands, and follow naming rules."""
         seen = set()
-        for nd in data['nodedefs']:
+        for nd in self.nodedefs:
             nid = nd.get('id', '')
             self.assertTrue(nid, "NodeDef missing id")
             self.assertNotIn(nid, seen, f"Duplicate nodeDef ID: {nid}")
@@ -824,25 +898,59 @@ class TestDynamicJsonProfile(unittest.TestCase):
             self.assertEqual(nid, nid.upper(), f"NodeDef ID '{nid}' is not uppercase")
             self.assertNotIn('_', nid, f"NodeDef ID '{nid}' contains underscore")
             self.assertNotIn(nid, self.reserved_words, f"NodeDef ID '{nid}' is reserved word")
-            for st in nd.get('sts', []):
-                ed_ref = st.get('editor')
-                if ed_ref:
-                    self.assertIn(ed_ref, editor_ids, f"NodeDef '{nid}' references missing editor '{ed_ref}'")
-            for cmd in nd.get('cmds', {}).get('accepts', []):
-                for p in cmd.get('params', []):
-                    ed_ref = p.get('editor')
-                    if ed_ref:
-                        self.assertIn(ed_ref, editor_ids, f"NodeDef '{nid}' param references missing editor '{ed_ref}'")
+            self.assertTrue(nd.get('name'), f"NodeDef '{nid}' missing human-readable name")
+            self.assertTrue(nd.get('icon'), f"NodeDef '{nid}' missing icon")
 
-    def test_dynamic_nls_covers_nodedefs(self):
-        """Verifies dynamic JSON NLS entries contain name and icon for each nodedef."""
-        with open(self.base_profile_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        nls = data['nls']
-        for nd in data['nodedefs']:
-            nid = nd['id']
-            self.assertIn(f"ND-{nid}-NAME", nls, f"Missing ND-{nid}-NAME in dynamic NLS")
-            self.assertIn(f"ND-{nid}-ICON", nls, f"Missing ND-{nid}-ICON in dynamic NLS")
+            # Properties validation
+            for prop in nd.get('properties', []):
+                pid = prop.get('id')
+                pname = prop.get('name')
+                ed_ref = prop.get('editor')
+                self.assertTrue(pid, f"NodeDef '{nid}' property missing id")
+                self.assertTrue(pname, f"NodeDef '{nid}' property '{pid}' missing name")
+                self.assertIn(ed_ref, self.editor_map, f"NodeDef '{nid}' property '{pid}' references missing editor '{ed_ref}'")
+
+            # Commands validation
+            cmds = nd.get('cmds', {})
+            for cmd in cmds.get('accepts', []):
+                cid = cmd.get('id')
+                cname = cmd.get('name')
+                self.assertTrue(cid, f"NodeDef '{nid}' accept cmd missing id")
+                self.assertTrue(cname, f"NodeDef '{nid}' accept cmd '{cid}' missing name")
+                for p in cmd.get('parameters', []):
+                    ped_ref = p.get('editor')
+                    self.assertIn(ped_ref, self.editor_map, f"NodeDef '{nid}' param references missing editor '{ped_ref}'")
+
+            # UDI Release requirement: commands under 'sends' (DON, DOF) must not have 'name' attribute
+            for cmd in cmds.get('sends', []):
+                cid = cmd.get('id')
+                self.assertIn(cid, ('DON', 'DOF'), f"Unexpected command '{cid}' in sends")
+                self.assertNotIn('name', cmd, f"NodeDef '{nid}' sends command '{cid}' must not have a 'name' attribute")
+
+    def test_driver_uom_consistency_with_dynamic_profile(self):
+        """Verifies Python Node class driver UOMs match their dynamic profile editor range UOMs."""
+        node_classes = {
+            'CONTROLLER': TeslaPWController,
+            'PWSTATUS': teslaPWStatusNode,
+            'PWHISTORY': teslaPWHistoryNode,
+            'PWSETUP': teslaPWSetupNode,
+        }
+
+        for nid, cls in node_classes.items():
+            nd = self.nodedef_map[nid]
+            nd_props = {p['id']: p['editor'] for p in nd.get('properties', [])}
+            py_drivers = {d['driver']: str(d.get('uom', '')) for d in getattr(cls, 'drivers', [])}
+
+            for drv, py_uom in py_drivers.items():
+                ed_id = nd_props.get(drv)
+                self.assertIsNotNone(ed_id, f"Node {nid} driver '{drv}' not found in dynamic profile properties")
+                editor = self.editor_map[ed_id]
+                allowed_uoms = [str(r.get('uom')) for r in editor.get('ranges', [])]
+                self.assertIn(
+                    py_uom,
+                    allowed_uoms,
+                    f"{nid} driver '{drv}' has uom={py_uom} in Python, but dynamic editor '{ed_id}' only allows uoms={allowed_uoms}"
+                )
 
     def test_controller_dynamic_profile_update(self):
         """Tests controller update_dynamic_profile calling updateJsonProfile with version caching."""
@@ -861,7 +969,7 @@ class TestDynamicJsonProfile(unittest.TestCase):
         # First call: sends updateJsonProfile and records version
         controller.update_dynamic_profile()
         self.assertEqual(len(poly.json_profile_updates), 1)
-        self.assertEqual(poly._ifaceData.profile_version, '0.2.0')
+        self.assertEqual(poly._ifaceData.profile_version, PROFILE_VERSION)
 
         # Second call (idempotent): should NOT re-send because version is identical
         controller.update_dynamic_profile()
@@ -870,6 +978,21 @@ class TestDynamicJsonProfile(unittest.TestCase):
         # Forced update: sends updateJsonProfile even when version matches
         controller.update_dynamic_profile(force=True)
         self.assertEqual(len(poly.json_profile_updates), 2)
+
+    def test_controller_profiles_match_method(self):
+        """Tests controller._profiles_match helper method."""
+        poly = MockPolyglotInterface()
+        mock_cloud = types.SimpleNamespace(
+            customDataHandlerDone=True,
+            customNsHandler=lambda *a: None,
+            oauthHandler=lambda *a: None
+        )
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', mock_cloud)
+        p1 = build_profile_definition()
+        p2 = build_profile_definition()
+        self.assertTrue(controller._profiles_match(p1, p2))
+        self.assertFalse(controller._profiles_match(p1, {}))
+        self.assertFalse(controller._profiles_match(None, p2))
 
     def test_update_profile_done_handler(self):
         """Tests controller updateProfileDoneHandler runs without exception."""
@@ -989,39 +1112,20 @@ def run_simulation_demo():
     if hist_node:
         hist_node.start()
 
-    # Parse en_us.txt or base_profile.json for driver descriptions
-    nls_names = {}
-    base_json_path = os.path.join(ROOT_DIR, 'data', 'base_profile.json')
-    if os.path.exists(base_json_path):
-        with open(base_json_path, 'r', encoding='utf-8') as f:
-            prof_data = json.load(f)
-            for k, v in prof_data.get('nls', {}).items():
-                if k.startswith('ST-'):
-                    parts = k.split('-')
-                    if len(parts) >= 3:
-                        nls_names[(parts[1], parts[2])] = v
-    else:
-        for cand in ['profile', 'profile.static']:
-            nls_path = os.path.join(ROOT_DIR, cand, 'nls', 'en_us.txt')
-            if os.path.exists(nls_path):
-                with open(nls_path, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        if '=' in line and line.strip().startswith('ST-'):
-                            k, v = line.split('=', 1)
-                            parts = k.strip().split('-')
-                            if len(parts) >= 3:
-                                nls_names[(parts[1], parts[2])] = v.strip()
-                break
-
-    nls_tags = {'PWSTATUS': 'nlspwstatus', 'PWSETUP': 'nlspwsetup', 'PWHISTORY': 'nlspwhist', 'CONTROLLER': 'nlscontroller'}
+    # Extract driver descriptions from dynamic profile definition in code
+    driver_descriptions = {}
+    profile_payload = build_profile_definition()
+    for nd in profile_payload.get('nodedefs', []):
+        nid = nd.get('id')
+        for prop in nd.get('properties', []):
+            driver_descriptions[(nid, prop.get('id'))] = prop.get('name')
 
     def print_node_table(node, title):
         print(f"\n--- {title} (ID: {node.id}, Address: {node.address}) ---")
         print(f"{'Driver':<7} | {'Description':<28} | {'Value':<10} | {'UOM':<6}")
         print("-" * 60)
-        tag = nls_tags.get(node.id, '')
         for drv, info in sorted(node._driver_values.items()):
-            desc = nls_names.get((tag, drv), drv)[:28]
+            desc = driver_descriptions.get((node.id, drv), drv)[:28]
             uom_str = str(info['uom']) if info['uom'] is not None else '-'
             val_str = str(info['value'])
             print(f"{drv:<7} | {desc:<28} | {val_str:<10} | {uom_str:<6}")

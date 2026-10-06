@@ -15,18 +15,16 @@
   <editor id = "CONNECTIONTYPE" > 
      <range  uom="25" subset="0,1,2,3,99" nls="CONNECTIONSTATE" />
   </editor>
-  <editor id = "HOURS" > 
-     <range  uom="20" min="0" max="100" prec="2" />
-      <range uom="25" subset="98,99" nls="ERROR" />
-  </editor>
   
   <editor id = "PERCENT" > 
      <range  uom="51" min="0" max="100" prec="0" />
      <range uom="25" subset="98,99" nls="ERROR" />
   </editor>
+
   <editor id = "TOGGLE" > 
      <range  uom="25" subset="0,1,99" nls="ENTOGGLE" />
   </editor>
+
   <editor id = "SETTOGGLE" > 
      <range  uom="25" subset="0,1" nls="ENTOGGLE" />
   </editor>
@@ -47,10 +45,6 @@
      <range  uom="25" subset="0,1,2,3,99" nls="ENGRIDSTATUS" />
   </editor>
 
-  <!--<editor id = "TOUMODE" > 
-     <range  uom="25" subset="0,1,99" nls="ENTOUMODE" />
-  </editor> -->
-
   <editor id = "GRIDIMPMODE" > 
      <range  uom="25" subset="0,1,99" nls="GRIDIMPMODE" />
   </editor>
@@ -58,24 +52,17 @@
   <editor id = "SETGRIDIMPMODE" > 
      <range  uom="25" subset="0,1" nls="GRIDIMPMODE" />
   </editor>
+
   <editor id = "GRIDEXPMODE" > 
      <range  uom="25" subset="0,1,2,99" nls="GRIDEXPMODE" />
   </editor>
+
   <editor id = "SETGRIDEXPMODE" > 
      <range  uom="25" subset="0,1,2" nls="GRIDEXPMODE" />
   </editor>  
 
-  <editor id = "SETTOUMODE" > 
-     <range  uom="25" subset="0,1" nls="ENTOUMODE" />
-  </editor>
-
   <editor id = "ONLINE" > 
      <range  uom="25" subset="0,1,99" nls="ENONLINE" />
-  </editor>
-
-  <editor id = "KWHLOW" > 
-     <range  uom="33" min="0" max="20" prec="2" />
-     <range uom="25" subset="98,99" nls="ERROR" />
   </editor>
 
   <editor id = "KWH" > 
@@ -88,32 +75,13 @@
      <range uom="25" subset="98,99" nls="NODATA" />
   </editor>
 
-  <editor id = "KWH20" > 
-     <range  uom="33" min="-20" max="20" prec="2" />
-     <range uom="25" subset="98,99" nls="NODATA" />
-  </editor>
-
   <editor id = "UNIXTIME" > 
      <range  uom="58" min="0" max="86400" prec="0" />
       <range uom="25" subset="98,99" nls="NODATA" />
   </editor>
 
-  <editor id = "UNIXTIMESET" > 
-     <range  uom="58" min="0" max="86400" prec="0" />
-     <range uom="25" subset="98,99" nls="NODATA" />
-  </editor>
-  <editor id = "SEASON" > 
-     <range  uom="25" subset="0,1,2,99" nls="SEASON" />
-  </editor>
-   <editor id = "PERIOD" > 
-     <range  uom="25" subset="0,1,2,99" nls="PERIOD" />
-  </editor>
-  <editor id = "DOLLAR" > 
-     <range  uom="103" min="0" max="5" prec="2" />
-     <range uom="25" subset="98,99" nls="ERROR" />
-  </editor>  
   <editor id = "COUNT" > 
      <range  uom="0" min="0" max="100" prec="0" />
      <range uom="25" subset="98,99" nls="NODATA" />
   </editor>  
-</editors> 
+</editors>
