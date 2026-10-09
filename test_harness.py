@@ -534,6 +534,16 @@ class TestProfileXmlAndNls(unittest.TestCase):
                     key = line.split('=', 1)[0].strip()
                     self.assertNotIn('_', key, f"en_us.txt line {line_no} key '{key}' contains underscore")
 
+    def test_no_spaces_around_equals_in_profile_files(self):
+        """Verifies that editors.xml, nodedefs.xml, and en_us.txt contain no spaces around '='."""
+        for path in [self.editors_xml, self.nodedefs_xml, self.nls_txt]:
+            with open(path, 'r', encoding='utf-8') as f:
+                for line_no, line in enumerate(f, 1):
+                    line = line.strip()
+                    if '=' in line:
+                        self.assertNotIn(' =', line, f"{os.path.basename(path)} line {line_no} contains space before '=': {line}")
+                        self.assertNotIn('= ', line, f"{os.path.basename(path)} line {line_no} contains space after '=': {line}")
+
     def test_specific_driver_uoms(self):
         """Verifies specific critical driver UOMs match hardware definitions."""
         status_drivers = {d['driver']: d['uom'] for d in teslaPWStatusNode.drivers}

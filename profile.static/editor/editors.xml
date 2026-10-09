@@ -1,88 +1,88 @@
-<editors> 
-  <editor id = "UPDN" > 
-     <range  uom="25" subset="0,1" nls="UPDN" />
+<editors>
+  <editor id="UPDN">
+     <range uom="25" subset="0,1" nls="UPDN" />
   </editor>
 
-  <editor id = "CONNECTION" > 
-     <range  uom="25" subset="0,1" nls="CONNECTION" />
+  <editor id="CONNECTION">
+     <range uom="25" subset="0,1" nls="CONNECTION" />
   </editor>
 
-  <editor id = "MISS" > 
-       <range  uom="55" min="0" max="255" prec="0" />
-       <range uom="25" subset="98,99" nls="ERROR" />
-  </editor>     
-
-  <editor id = "CONNECTIONTYPE" > 
-     <range  uom="25" subset="0,1,2,3,99" nls="CONNECTIONSTATE" />
-  </editor>
-  
-  <editor id = "PERCENT" > 
-     <range  uom="51" min="0" max="100" prec="0" />
+  <editor id="MISS">
+     <range uom="55" min="0" max="255" prec="0" />
      <range uom="25" subset="98,99" nls="ERROR" />
   </editor>
 
-  <editor id = "TOGGLE" > 
-     <range  uom="25" subset="0,1,99" nls="ENTOGGLE" />
+  <editor id="CONNECTIONTYPE">
+     <range uom="25" subset="0,1,2,3,99" nls="CONNECTIONSTATE" />
   </editor>
 
-  <editor id = "SETTOGGLE" > 
-     <range  uom="25" subset="0,1" nls="ENTOGGLE" />
+  <editor id="PERCENT">
+     <range uom="51" min="0" max="100" prec="0" />
+     <range uom="25" subset="98,99" nls="ERROR" />
   </editor>
 
-  <editor id = "GRIDMODE" > 
-     <range  uom="25" subset="0,1,99" nls="ENTOGGLE" />
+  <editor id="TOGGLE">
+     <range uom="25" subset="0,1,99" nls="ENTOGGLE" />
   </editor>
 
-  <editor id = "OPMODE" > 
-     <range  uom="25" subset="0,1,2,99" nls="OPMODE" />
+  <editor id="SETTOGGLE">
+     <range uom="25" subset="0,1" nls="ENTOGGLE" />
   </editor>
 
-  <editor id = "SETOPMODE" > 
-     <range  uom="25" subset="1,2" nls="OPMODE" />
+  <editor id="GRIDMODE">
+     <range uom="25" subset="0,1,99" nls="ENTOGGLE" />
   </editor>
 
-  <editor id = "GRIDST" > 
-     <range  uom="25" subset="0,1,2,3,99" nls="ENGRIDSTATUS" />
+  <editor id="OPMODE">
+     <range uom="25" subset="0,1,2,99" nls="OPMODE" />
   </editor>
 
-  <editor id = "GRIDIMPMODE" > 
-     <range  uom="25" subset="0,1,99" nls="GRIDIMPMODE" />
+  <editor id="SETOPMODE">
+     <range uom="25" subset="1,2" nls="OPMODE" />
   </editor>
 
-  <editor id = "SETGRIDIMPMODE" > 
-     <range  uom="25" subset="0,1" nls="GRIDIMPMODE" />
+  <editor id="GRIDST">
+     <range uom="25" subset="0,1,2,3,99" nls="ENGRIDSTATUS" />
   </editor>
 
-  <editor id = "GRIDEXPMODE" > 
-     <range  uom="25" subset="0,1,2,99" nls="GRIDEXPMODE" />
+  <editor id="GRIDIMPMODE">
+     <range uom="25" subset="0,1,99" nls="GRIDIMPMODE" />
   </editor>
 
-  <editor id = "SETGRIDEXPMODE" > 
-     <range  uom="25" subset="0,1,2" nls="GRIDEXPMODE" />
-  </editor>  
-
-  <editor id = "ONLINE" > 
-     <range  uom="25" subset="0,1,99" nls="ENONLINE" />
+  <editor id="SETGRIDIMPMODE">
+     <range uom="25" subset="0,1" nls="GRIDIMPMODE" />
   </editor>
 
-  <editor id = "KWH" > 
+  <editor id="GRIDEXPMODE">
+     <range uom="25" subset="0,1,2,99" nls="GRIDEXPMODE" />
+  </editor>
+
+  <editor id="SETGRIDEXPMODE">
+     <range uom="25" subset="0,1,2" nls="GRIDEXPMODE" />
+  </editor>
+
+  <editor id="ONLINE">
+     <range uom="25" subset="0,1,99" nls="ENONLINE" />
+  </editor>
+
+  <editor id="KWH">
      <range uom="33" min="-100" max="100" prec="1" />
      <range uom="25" subset="98,99" nls="NODATA" />
   </editor>
 
-  <editor id = "KW" > 
+  <editor id="KW">
      <range uom="30" min="-100" max="100" prec="1" />
      <range uom="25" subset="98,99" nls="NODATA" />
   </editor>
 
-  <editor id = "UNIXTIME" > 
-     <range  uom="58" min="0" max="86400" prec="0" />
-     <range  uom="151" min="0" max="2147483647" prec="0" />
-      <range uom="25" subset="98,99" nls="NODATA" />
+  <editor id="UNIXTIME">
+     <range uom="58" min="0" max="86400" prec="0" />
+     <range uom="151" min="0" max="2147483647" prec="0" />
+     <range uom="25" subset="98,99" nls="NODATA" />
   </editor>
 
-  <editor id = "COUNT" > 
-     <range  uom="0" min="0" max="100" prec="0" />
+  <editor id="COUNT">
+     <range uom="0" min="0" max="100" prec="0" />
      <range uom="25" subset="98,99" nls="NODATA" />
-  </editor>  
+  </editor>
 </editors>
