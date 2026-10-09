@@ -172,14 +172,24 @@ class TeslaPWController(udi_interface.Node):
             self.customParameters['cloud_access_en'] = 'True/False'
 
         if self.cloud_access_enabled and hasattr(self, 'TPW_cloud'):
-            if not self.TPW_cloud.authenticated():
-                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
-            else:
-                if 'auth' in self.poly.Notices:
-                    self.poly.Notices.delete('auth')
+            if self.TPW_cloud.customNsDone():
+                if not self.TPW_cloud.authenticated():
+                    self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+                else:
+                    if 'auth' in self.poly.Notices:
+                        self.poly.Notices.delete('auth')
         elif not self.cloud_access_enabled:
             if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
                 self.poly.Notices.delete('auth')
+
+        if 'client_secret' in self.customParameters and self.customParameters['client_secret']:
+            c_secret = str(self.customParameters['client_secret']).strip()
+            if c_secret and hasattr(self, 'TPW_cloud'):
+                self.TPW_cloud.updateOauthSettings({'client_secret': c_secret})
+        elif 'clientSecret' in self.customParameters and self.customParameters['clientSecret']:
+            c_secret = str(self.customParameters['clientSecret']).strip()
+            if c_secret and hasattr(self, 'TPW_cloud'):
+                self.TPW_cloud.updateOauthSettings({'client_secret': c_secret})
 
         if 'LOCAL_USER_EMAIL' in self.customParameters:
             if self.customParameters['LOCAL_USER_EMAIL'] != '':
@@ -192,8 +202,6 @@ class TeslaPWController(udi_interface.Node):
         if 'LOCAL_USER_PASSWORD' in self.customParameters:
             if self.customParameters['LOCAL_USER_PASSWORD'] != '':
                 self.LOCAL_USER_PASSWORD= str(self.customParameters['LOCAL_USER_PASSWORD'] )
-                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                #secret_ok = True
         else:
             logging.warning('No LOCAL_USER_PASSWORD found')
             self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
@@ -202,8 +210,6 @@ class TeslaPWController(udi_interface.Node):
         if 'LOCAL_IP_ADDRESS' in self.customParameters:
             if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
                 self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] ).strip().replace(',', '.')
-                #oauthSettingsUpdate['client_secret'] = self.customParameters['clientSecret']
-                #secret_ok = True
         else:
             logging.warning('No LOCAL_IP_ADDRESS found')
             self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'

@@ -103,6 +103,18 @@ class teslaAccess(udi_interface.OAuth):
         logging.debug('customerNSHandler results: {}'.format(super().customNsHandler(key, data)))
         if key in ['oauth', 'oauthTokens']: # stored oauth / oauthToken values processed
             self.customNsHandlerDone = True
+        if key == 'oauthTokens' and isinstance(data, dict):
+            # If we received stored tokens with access_token or refresh_token, ensure expiry is set if missing
+            if 'expiry' not in data and 'expires_in' in data:
+                try:
+                    self._setExpiry(data)
+                    self._oauthTokens.load(data, save=True)
+                except Exception as ex:
+                    logging.debug(f'Could not set expiry: {ex}')
+            # Clear authentication notice if we have valid tokens loaded from DB
+            if data.get('access_token') or data.get('refresh_token'):
+                if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+                    self.poly.Notices.delete('auth')
         logging.debug('customNsHandler Finished')
 
     def oauthHandler(self, token):
@@ -193,18 +205,29 @@ class teslaAccess(udi_interface.OAuth):
 
 
     def authenticated(self):
-        #self.apiLock.acquire()
-        logging.debug('authenticated : {} {}'.format(self._oauthTokens.get('expiry') != None, self._oauthTokens))
-        #if not self._oauthTokens:
-        #   time.sleep(1)
-        #   logging.debug('Waiting for system to initialize')
-        #   self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+        logging.debug('authenticated : tokens={}'.format(self._oauthTokens))
+        if not self._oauthTokens or not isinstance(self._oauthTokens, dict):
+            return False
+
+        has_tokens = bool(self._oauthTokens.get('access_token') or self._oauthTokens.get('refresh_token'))
+        if not has_tokens:
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+            return False
+
+        # If expiry is not in tokens, populate it to avoid refresh errors
+        if 'expiry' not in self._oauthTokens:
+            if 'expires_in' in self._oauthTokens:
+                try:
+                    self._setExpiry(self._oauthTokens)
+                except Exception:
+                    pass
+            elif self._oauthTokens.get('access_token'):
+                self._oauthTokens['expiry'] = (datetime.now() + timedelta(seconds=28800)).isoformat()
+
         try:
-            if 'expiry' not in self._oauthTokens:            
-                self.getAccessToken()
-                #time.sleep(2)
-            #self.apiLock.release()
-            is_auth = (self._oauthTokens.get('expiry') != None)
+            token = self.getAccessToken()
+            is_auth = bool(token)
             if is_auth:
                 if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
                     self.poly.Notices.delete('auth')
@@ -213,24 +236,21 @@ class teslaAccess(udi_interface.OAuth):
                     self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             return is_auth
         except ValueError as err:
+            if self._oauthTokens.get('access_token'):
+                if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
+                    self.poly.Notices.delete('auth')
+                return True
             logging.warning('Access token is not yet available. Please authenticate.')
             if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
                 self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             logging.debug('_callAPI oauth error: {}'.format(err))
-            return (False)
-
-        #return('expiry' in self._oauthTokens)
- 
+            return False
 
     # Call your external service API
     def _callApi(self, method='GET', url=None, body=''):
         # When calling an API, get the access token (it will be refreshed if necessary)
-        #self.apiLock.acquire()
         try:
-            #self._oAuthTokensRefresh()  #force refresh
             accessToken = self.getAccessToken()
-            #refresh_token = self._oauthTokens.get('refresh_token')
-            #logging.debug('call api tokens: {} {}'.format(refresh_token, accessToken))
             if hasattr(self, 'poly') and hasattr(self.poly, 'Notices') and 'auth' in self.poly.Notices:
                 self.poly.Notices.delete('auth')
         except ValueError as err:
@@ -239,7 +259,7 @@ class teslaAccess(udi_interface.OAuth):
                 self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             logging.debug('_callAPI oauth error: {}'.format(err))
             accessToken = None
-            return
+            return None
         if accessToken is None:
             logging.error('Access token is not available')
             return None
@@ -253,7 +273,6 @@ class teslaAccess(udi_interface.OAuth):
         headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer { accessToken }'
-            
         }
 
         if method in [ 'PATCH', 'POST'] and body is None:
@@ -273,7 +292,6 @@ class teslaAccess(udi_interface.OAuth):
                 response = requests.put(completeUrl, headers=headers)
 
             response.raise_for_status()
-            #self.apiLock.release()
             
             try:
                 return response.json()
@@ -282,6 +300,33 @@ class teslaAccess(udi_interface.OAuth):
 
         except requests.exceptions.HTTPError as error:
             logging.error(f"Call { method } { completeUrl } failed: { error }")
-            #self.apiLock.release()
+            # If 401 Unauthorized, token might be expired. Attempt refresh once.
+            if error.response is not None and error.response.status_code == 401:
+                logging.info("Received 401 Unauthorized. Attempting token refresh...")
+                try:
+                    self._oAuthTokensRefresh()
+                    new_token = self._oauthTokens.get('access_token')
+                    if new_token and new_token != accessToken:
+                        headers['Authorization'] = f'Bearer {new_token}'
+                        logging.info("Retrying API call with refreshed token...")
+                        if method == 'GET':
+                            retry_resp = requests.get(completeUrl, headers=headers, json=body)
+                        elif method == 'DELETE':
+                            retry_resp = requests.delete(completeUrl, headers=headers)
+                        elif method == 'PATCH':
+                            retry_resp = requests.patch(completeUrl, headers=headers, json=body)
+                        elif method == 'POST':
+                            retry_resp = requests.post(completeUrl, headers=headers, json=body)
+                        elif method == 'PUT':
+                            retry_resp = requests.put(completeUrl, headers=headers)
+                        retry_resp.raise_for_status()
+                        try:
+                            return retry_resp.json()
+                        except requests.exceptions.JSONDecodeError:
+                            return retry_resp.text
+                except Exception as refresh_err:
+                    logging.warning(f"Failed to refresh/retry after 401: {refresh_err}")
+                    if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                        self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
             return None
         

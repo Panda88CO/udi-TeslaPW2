@@ -217,18 +217,15 @@ class MockPolyglotInterface:
         pass
 
 
-class MockCustom:
+class MockCustom(dict):
     def __init__(self, poly, name):
+        super().__init__()
         self.poly = poly
         self.name = name
-        self.data = {}
-    def __setitem__(self, k, v): self.data[k] = v
-    def __getitem__(self, k): return self.data.get(k)
-    def __contains__(self, k): return k in self.data
-    def delete(self, k): self.data.pop(k, None)
-    def clear(self): self.data.clear()
-    def load(self, d, save=False): self.data = d or {}
-    def get(self, k, default=None): return self.data.get(k, default)
+    def delete(self, k): self.pop(k, None)
+    def load(self, d, save=False):
+        self.clear()
+        if d: self.update(d)
 
 
 class MockOAuthBase:
@@ -251,10 +248,22 @@ class MockOAuthBase:
         self._oauthTokens.load(token)
         return True
 
+    def _setExpiry(self, token):
+        from datetime import datetime, timedelta
+        if 'expires_in' in token:
+            token['expiry'] = (datetime.now() + timedelta(seconds=token['expires_in'])).isoformat()
+
     def getAccessToken(self):
         if self._oauthTokens and self._oauthTokens.get('access_token'):
             return self._oauthTokens.get('access_token')
         raise ValueError('Access token is not available')
+
+    def updateOauthSettings(self, update):
+        if hasattr(self, '_oauthConfig') and isinstance(update, dict):
+            self._oauthConfig.update(update)
+
+    def getOauthSettings(self):
+        return dict(self._oauthConfig)
 
 
 # Inject mock udi_interface into sys.modules if not already present
@@ -1189,6 +1198,47 @@ class TestStartupSequence(unittest.TestCase):
         
         # Notice must be cleared
         self.assertNotIn('auth', poly.Notices)
+
+    def test_oauth_tokens_restored_from_db_clears_auth_notice(self):
+        """Verifies that when stored tokens arrive from PG3 via customNsHandler, any existing auth notice is cleared."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+
+        # Startup triggers configDone before tokens arrive -> notice posted
+        controller.customParamsHandler({'cloud_access_en': 'True', 'region': 'NA'})
+        controller.configDoneHandler()
+        self.assertIn('auth', poly.Notices)
+
+        # PG3 delivers stored tokens from database
+        oauth.customNsHandler('oauthTokens', {'access_token': 'restored_token', 'refresh_token': 'ref_123', 'expires_in': 28800})
+        
+        # Stored tokens must clear the notice and authenticated() must be True
+        self.assertNotIn('auth', poly.Notices)
+        self.assertTrue(oauth.authenticated())
+
+    def test_authenticated_handles_missing_expiry(self):
+        """Verifies authenticated() handles token dictionary lacking 'expiry' without error or false negative."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        
+        # Load raw tokens with expires_in but no expiry
+        oauth.customNsHandler('oauthTokens', {'access_token': 'my_token', 'refresh_token': 'ref', 'expires_in': 28800})
+        self.assertTrue(oauth.authenticated())
+        self.assertIn('expiry', oauth._oauthTokens)
+
+    def test_custom_params_updates_client_secret(self):
+        """Verifies customParamsHandler applies client_secret or clientSecret to oauth settings."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+
+        controller.customParamsHandler({'client_secret': 'super_secret_123'})
+        settings = oauth.getOauthSettings()
+        self.assertEqual(settings.get('client_secret'), 'super_secret_123')
 
 
 # ---------------------------------------------------------------------------
