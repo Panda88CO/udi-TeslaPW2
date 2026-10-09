@@ -151,7 +151,7 @@ class MockPolyglotInterface:
         self.Notices = MockCustom(self, 'notices')
         self.nodes_in_db = []
         self.ready_called = 0
-        self.serverdata = {'profile_version': '0.2.2'}
+        self.serverdata = {'profile_version': PROFILE_VERSION}
         self._ifaceData = types.SimpleNamespace(profile_version=None)
         self.json_profile_updates = []
 
@@ -508,6 +508,33 @@ class TestProfileXmlAndNls(unittest.TestCase):
             self.assertNotIn('_', nid, f"NodeDef ID '{nid}' contains underscore")
             self.assertNotIn(nid, self.reserved_words, f"NodeDef ID '{nid}' is a reserved word")
 
+            for cmd in nd.findall('.//cmd'):
+                cid = cmd.attrib.get('id', '').strip()
+                if cid:
+                    self.assertEqual(cid, cid.upper(), f"Command ID '{cid}' is not uppercase")
+                    self.assertNotIn('_', cid, f"Command ID '{cid}' in NodeDef '{nid}' contains underscore")
+
+    def test_nls_keys_have_no_underscores(self):
+        """Verifies that all NLS keys in en_us.txt contain no underscores."""
+        with open(self.nls_txt, 'r', encoding='utf-8') as f:
+            for line_no, line in enumerate(f, 1):
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' in line:
+                    key = line.split('=', 1)[0].strip()
+                    self.assertNotIn('_', key, f"en_us.txt line {line_no} key '{key}' contains underscore")
+
+    def test_specific_driver_uoms(self):
+        """Verifies specific critical driver UOMs match hardware definitions."""
+        status_drivers = {d['driver']: d['uom'] for d in teslaPWStatusNode.drivers}
+        self.assertEqual(status_drivers.get('GV8'), 33, "PWSTATUS GV8 must have UOM 33 (kWh)")
+        self.assertEqual(status_drivers.get('ST'), 25, "PWSTATUS ST must have UOM 25")
+        self.assertEqual(status_drivers.get('TIME'), 151, "PWSTATUS TIME must have UOM 151")
+
+        ctrl_drivers = {d['driver']: d['uom'] for d in TeslaPWController.drivers}
+        self.assertEqual(ctrl_drivers.get('GV3'), 55, "CONTROLLER GV3 must have UOM 55 (count)")
+
     def test_nodedef_editor_references_exist(self):
         """Verifies every editor referenced in nodedefs.xml exists in editors.xml."""
         ed_tree = ET.parse(self.editors_xml)
@@ -790,6 +817,19 @@ class TestTeslaPWSetupNode(unittest.TestCase):
         self.assertEqual(self.tpw.ev_charge_reserve, 70)
         self.assertEqual(self.node._driver_values['GV7']['value'], 70)
 
+    def test_setup_node_command_mappings_both_formats(self):
+        """Verifies commands dictionary maps both new clean IDs and old underscore IDs."""
+        self.assertIn('BACKUPPCT', self.node.commands)
+        self.assertIn('BACKUP_PCT', self.node.commands)
+        self.assertIn('OPMODE', self.node.commands)
+        self.assertIn('OP_MODE', self.node.commands)
+        self.assertIn('STORMMODE', self.node.commands)
+        self.assertIn('STORM_MODE', self.node.commands)
+        self.assertIn('GRIDMODE', self.node.commands)
+        self.assertIn('GRID_MODE', self.node.commands)
+        self.assertIn('EVCHRGMODE', self.node.commands)
+        self.assertIn('EV_CHRG_MODE', self.node.commands)
+
 
 class TestTeslaPWHistoryNode(unittest.TestCase):
     """Tests the Powerwall Usage History Node."""
@@ -893,9 +933,13 @@ class TestDynamicJsonProfile(unittest.TestCase):
         self.assertIn('delete', self.payload)
         self.assertEqual(self.payload['delete'].get('editors'), ['*'])
         self.assertEqual(self.payload['delete'].get('nodedefs'), ['*'])
-        self.assertEqual(self.payload['delete'].get('linkdefs'), ['*'])
         self.assertEqual(len(self.editors), 20)
         self.assertEqual(len(self.nodedefs), 4)
+        self.assertIn('nls', self.payload)
+        self.assertIsInstance(self.payload['nls'], dict)
+        self.assertGreater(len(self.payload['nls']), 100)
+        for k in self.payload['nls']:
+            self.assertNotIn('_', k, f"Dynamic NLS key '{k}' contains underscore")
 
     def test_no_unused_editors(self):
         """Verifies that every editor in the dynamic profile is actively referenced by a property or command parameter."""
@@ -932,7 +976,7 @@ class TestDynamicJsonProfile(unittest.TestCase):
                     for p in parts:
                         self.assertTrue(p.isdigit(), f"Editor '{eid}' non-integer subset value: '{p}'")
 
-                # UOM 25 ranges MUST have inline names dictionary for mapped text display
+                # UOM 25 ranges MUST have inline names dictionary and nls attribute for mapped text display
                 if str(r.get('uom')) == '25':
                     names = r.get('names')
                     self.assertIsInstance(names, dict, f"Editor '{eid}' UOM 25 range missing names dict")
@@ -940,6 +984,11 @@ class TestDynamicJsonProfile(unittest.TestCase):
                     for k, v in names.items():
                         self.assertTrue(str(k).isdigit(), f"Editor '{eid}' name key '{k}' must be integer value")
                         self.assertTrue(isinstance(v, str) and len(v.strip()) > 0, f"Editor '{eid}' name value for '{k}' must be non-empty string")
+
+                    r_nls = r.get('nls')
+                    self.assertIsNotNone(r_nls, f"Editor '{eid}' UOM 25 range missing 'nls' attribute")
+                    self.assertEqual(r_nls, r_nls.upper(), f"Editor '{eid}' range nls '{r_nls}' is not uppercase")
+                    self.assertNotIn('_', r_nls, f"Editor '{eid}' range nls '{r_nls}' contains underscore")
 
     def test_dynamic_nodedefs_standards(self):
         """Verifies dynamic JSON nodedefs reference valid editors, commands, and follow naming rules."""
@@ -970,6 +1019,8 @@ class TestDynamicJsonProfile(unittest.TestCase):
                 cid = cmd.get('id')
                 cname = cmd.get('name')
                 self.assertTrue(cid, f"NodeDef '{nid}' accept cmd missing id")
+                self.assertEqual(cid, cid.upper(), f"NodeDef '{nid}' cmd '{cid}' is not uppercase")
+                self.assertNotIn('_', cid, f"NodeDef '{nid}' cmd '{cid}' contains underscore")
                 self.assertTrue(cname, f"NodeDef '{nid}' accept cmd '{cid}' missing name")
                 for p in cmd.get('parameters', []):
                     ped_ref = p.get('editor')

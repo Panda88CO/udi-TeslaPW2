@@ -1,5 +1,5 @@
 {
-  "version": "0.2.2",
+  "version": "0.2.3",
   "delete": {
     "editors": [
       "*"
@@ -18,6 +18,7 @@
         {
           "uom": "25",
           "subset": "0,1",
+          "nls": "UPDN",
           "names": {
             "0": "Down",
             "1": "Up"
@@ -31,6 +32,7 @@
         {
           "uom": "25",
           "subset": "0,1",
+          "nls": "CONNECTION",
           "names": {
             "0": "Not Connected",
             "1": "connected"
@@ -50,6 +52,7 @@
         {
           "uom": "25",
           "subset": "98,99",
+          "nls": "ERROR",
           "names": {
             "98": "Not defined",
             "99": "Unknown"
@@ -63,6 +66,7 @@
         {
           "uom": "25",
           "subset": "0,1,2,3,99",
+          "nls": "CONNECTIONSTATE",
           "names": {
             "0": "No Connection",
             "1": "Cloud only",
@@ -85,6 +89,7 @@
         {
           "uom": "25",
           "subset": "98,99",
+          "nls": "ERROR",
           "names": {
             "98": "Not defined",
             "99": "Unknown"
@@ -98,6 +103,7 @@
         {
           "uom": "25",
           "subset": "0,1,99",
+          "nls": "ENTOGGLE",
           "names": {
             "0": "Disabled",
             "1": "Enabled",
@@ -112,6 +118,7 @@
         {
           "uom": "25",
           "subset": "0,1",
+          "nls": "ENTOGGLE",
           "names": {
             "0": "Disabled",
             "1": "Enabled"
@@ -125,6 +132,7 @@
         {
           "uom": "25",
           "subset": "0,1,99",
+          "nls": "ENTOGGLE",
           "names": {
             "0": "Disabled",
             "1": "Enabled",
@@ -139,6 +147,7 @@
         {
           "uom": "25",
           "subset": "0,1,2,99",
+          "nls": "OPMODE",
           "names": {
             "0": "backup",
             "1": "self consumption",
@@ -154,6 +163,7 @@
         {
           "uom": "25",
           "subset": "1,2",
+          "nls": "OPMODE",
           "names": {
             "1": "self consumption",
             "2": "autonomous"
@@ -167,6 +177,7 @@
         {
           "uom": "25",
           "subset": "0,1,2,3,99",
+          "nls": "ENGRIDSTATUS",
           "names": {
             "0": "on grid",
             "1": "islanded ready",
@@ -183,6 +194,7 @@
         {
           "uom": "25",
           "subset": "0,1,99",
+          "nls": "GRIDIMPMODE",
           "names": {
             "0": "Allowed",
             "1": "Not Allowed",
@@ -197,6 +209,7 @@
         {
           "uom": "25",
           "subset": "0,1",
+          "nls": "GRIDIMPMODE",
           "names": {
             "0": "Allowed",
             "1": "Not Allowed"
@@ -210,6 +223,7 @@
         {
           "uom": "25",
           "subset": "0,1,2,99",
+          "nls": "GRIDEXPMODE",
           "names": {
             "0": "PV-only",
             "1": "Battery-ok",
@@ -225,6 +239,7 @@
         {
           "uom": "25",
           "subset": "0,1,2",
+          "nls": "GRIDEXPMODE",
           "names": {
             "0": "PV-only",
             "1": "Battery-ok",
@@ -239,6 +254,7 @@
         {
           "uom": "25",
           "subset": "0,1,99",
+          "nls": "ENONLINE",
           "names": {
             "0": "offline",
             "1": "online",
@@ -259,6 +275,7 @@
         {
           "uom": "25",
           "subset": "98,99",
+          "nls": "NODATA",
           "names": {
             "98": "No Data",
             "99": "No Data"
@@ -278,6 +295,7 @@
         {
           "uom": "25",
           "subset": "98,99",
+          "nls": "NODATA",
           "names": {
             "98": "No Data",
             "99": "No Data"
@@ -303,6 +321,7 @@
         {
           "uom": "25",
           "subset": "98,99",
+          "nls": "NODATA",
           "names": {
             "98": "No Data",
             "99": "No Data"
@@ -322,6 +341,7 @@
         {
           "uom": "25",
           "subset": "98,99",
+          "nls": "NODATA",
           "names": {
             "98": "No Data",
             "99": "No Data"
@@ -333,6 +353,7 @@
   "nodedefs": [
     {
       "id": "CONTROLLER",
+      "nls": "nlscontroller",
       "name": "Tesla PowerWall Info",
       "icon": "Electricity",
       "properties": [
@@ -380,6 +401,7 @@
     },
     {
       "id": "PWSTATUS",
+      "nls": "nlspwstatus",
       "name": "Power Wall Status",
       "icon": "Electricity",
       "properties": [
@@ -490,6 +512,7 @@
     },
     {
       "id": "PWHISTORY",
+      "nls": "nlspwhist",
       "name": "Power Wall History",
       "icon": "Electricity",
       "properties": [
@@ -635,6 +658,7 @@
     },
     {
       "id": "PWSETUP",
+      "nls": "nlspwsetup",
       "name": "Power Wall Control Parameters",
       "icon": "Electricity",
       "properties": [
@@ -676,7 +700,7 @@
             "name": "Update System Data"
           },
           {
-            "id": "BACKUP_PCT",
+            "id": "BACKUPPCT",
             "name": "Backup Reserve (%)",
             "parameters": [
               {
@@ -688,7 +712,7 @@
             ]
           },
           {
-            "id": "OP_MODE",
+            "id": "OPMODE",
             "name": "Operating Mode",
             "parameters": [
               {
@@ -700,7 +724,7 @@
             ]
           },
           {
-            "id": "STORM_MODE",
+            "id": "STORMMODE",
             "name": "Storm Mode",
             "parameters": [
               {
@@ -712,7 +736,7 @@
             ]
           },
           {
-            "id": "GRID_MODE",
+            "id": "GRIDMODE",
             "name": "Grid Operation",
             "parameters": [
               {
@@ -730,7 +754,7 @@
             ]
           },
           {
-            "id": "EV_CHRG_MODE",
+            "id": "EVCHRGMODE",
             "name": "EV offgrid charge reserve",
             "parameters": [
               {
@@ -750,5 +774,221 @@
       }
     }
   ],
-  "linkdefs": []
+  "linkdefs": [],
+  "nls": {
+    "ND-CONTROLLER-NAME": "Tesla PowerWall Info",
+    "ND-CONTROLLER-ICON": "Electricity",
+    "ST-nlscontroller-ST-NAME": "Controller Up",
+    "ST-CONTROLLER-ST-NAME": "Controller Up",
+    "ST-nlscontroller-GV2-NAME": "Connected to Tesla Power Wall",
+    "ST-CONTROLLER-GV2-NAME": "Connected to Tesla Power Wall",
+    "ST-nlscontroller-GV3-NAME": "Consecutive missed LongPolls",
+    "ST-CONTROLLER-GV3-NAME": "Consecutive missed LongPolls",
+    "ST-nlscontroller-GV4-NAME": "Connection Status",
+    "ST-CONTROLLER-GV4-NAME": "Connection Status",
+    "CMD-nlscontroller-UPDATE-NAME": "Update System Data",
+    "CMD-CONTROLLER-UPDATE-NAME": "Update System Data",
+    "ND-PWSTATUS-NAME": "Power Wall Status",
+    "ND-PWSTATUS-ICON": "Electricity",
+    "ST-nlspwstatus-ST-NAME": "Connected to Tesla",
+    "ST-PWSTATUS-ST-NAME": "Connected to Tesla",
+    "ST-nlspwstatus-GV0-NAME": "Remaining Battery",
+    "ST-PWSTATUS-GV0-NAME": "Remaining Battery",
+    "ST-nlspwstatus-GV1-NAME": "Inst Solar Export",
+    "ST-PWSTATUS-GV1-NAME": "Inst Solar Export",
+    "ST-nlspwstatus-GV2-NAME": "Inst Battery Export",
+    "ST-PWSTATUS-GV2-NAME": "Inst Battery Export",
+    "ST-nlspwstatus-GV3-NAME": "Inst Home Load",
+    "ST-PWSTATUS-GV3-NAME": "Inst Home Load",
+    "ST-nlspwstatus-GV4-NAME": "Inst Grid Import",
+    "ST-PWSTATUS-GV4-NAME": "Inst Grid Import",
+    "ST-nlspwstatus-GV5-NAME": "Operation Mode",
+    "ST-PWSTATUS-GV5-NAME": "Operation Mode",
+    "ST-nlspwstatus-GV6-NAME": "Grid Status",
+    "ST-PWSTATUS-GV6-NAME": "Grid Status",
+    "ST-nlspwstatus-GV7-NAME": "Grid Services Active",
+    "ST-PWSTATUS-GV7-NAME": "Grid Services Active",
+    "ST-nlspwstatus-GV8-NAME": "Home Total Use Today",
+    "ST-PWSTATUS-GV8-NAME": "Home Total Use Today",
+    "ST-nlspwstatus-GV9-NAME": "Solar Export Today",
+    "ST-PWSTATUS-GV9-NAME": "Solar Export Today",
+    "ST-nlspwstatus-GV10-NAME": "Battery Export Today",
+    "ST-PWSTATUS-GV10-NAME": "Battery Export Today",
+    "ST-nlspwstatus-GV11-NAME": "Battery Import Today",
+    "ST-PWSTATUS-GV11-NAME": "Battery Import Today",
+    "ST-nlspwstatus-GV12-NAME": "Grid Export Today",
+    "ST-PWSTATUS-GV12-NAME": "Grid Export Today",
+    "ST-nlspwstatus-GV13-NAME": "Grid Import Today",
+    "ST-PWSTATUS-GV13-NAME": "Grid Import Today",
+    "ST-nlspwstatus-GV14-NAME": "Grid/House Net Use Today",
+    "ST-PWSTATUS-GV14-NAME": "Grid/House Net Use Today",
+    "ST-nlspwstatus-GV28-NAME": "Generator Today",
+    "ST-PWSTATUS-GV28-NAME": "Generator Today",
+    "ST-nlspwstatus-TIME-NAME": "Last Update Time",
+    "ST-PWSTATUS-TIME-NAME": "Last Update Time",
+    "CMD-nlspwstatus-UPDATE-NAME": "Update System Data",
+    "CMD-PWSTATUS-UPDATE-NAME": "Update System Data",
+    "ND-PWHISTORY-NAME": "Power Wall History",
+    "ND-PWHISTORY-ICON": "Electricity",
+    "ST-nlspwhist-ST-NAME": "Connected to Tesla",
+    "ST-PWHISTORY-ST-NAME": "Connected to Tesla",
+    "ST-nlspwhist-GV1-NAME": "Generator Today",
+    "ST-PWHISTORY-GV1-NAME": "Generator Today",
+    "ST-nlspwhist-GV2-NAME": "Generator Yesterday",
+    "ST-PWHISTORY-GV2-NAME": "Generator Yesterday",
+    "ST-nlspwhist-GV8-NAME": "Home Total Use Today",
+    "ST-PWHISTORY-GV8-NAME": "Home Total Use Today",
+    "ST-nlspwhist-GV9-NAME": "Solar Export Today",
+    "ST-PWHISTORY-GV9-NAME": "Solar Export Today",
+    "ST-nlspwhist-GV10-NAME": "Battery Export Today",
+    "ST-PWHISTORY-GV10-NAME": "Battery Export Today",
+    "ST-nlspwhist-GV11-NAME": "Battery Import Today",
+    "ST-PWHISTORY-GV11-NAME": "Battery Import Today",
+    "ST-nlspwhist-GV12-NAME": "Grid Export Today",
+    "ST-PWHISTORY-GV12-NAME": "Grid Export Today",
+    "ST-nlspwhist-GV13-NAME": "Grid Import Today",
+    "ST-PWHISTORY-GV13-NAME": "Grid Import Today",
+    "ST-nlspwhist-GV14-NAME": "Grid/House Net Use Today",
+    "ST-PWHISTORY-GV14-NAME": "Grid/House Net Use Today",
+    "ST-nlspwhist-GV15-NAME": "Home Total Use Yesterday",
+    "ST-PWHISTORY-GV15-NAME": "Home Total Use Yesterday",
+    "ST-nlspwhist-GV16-NAME": "Solar Export Yesterday",
+    "ST-PWHISTORY-GV16-NAME": "Solar Export Yesterday",
+    "ST-nlspwhist-GV17-NAME": "Battery Export Yesterday",
+    "ST-PWHISTORY-GV17-NAME": "Battery Export Yesterday",
+    "ST-nlspwhist-GV18-NAME": "Battery Import Yesterday",
+    "ST-PWHISTORY-GV18-NAME": "Battery Import Yesterday",
+    "ST-nlspwhist-GV19-NAME": "Grid Export Yesterday",
+    "ST-PWHISTORY-GV19-NAME": "Grid Export Yesterday",
+    "ST-nlspwhist-GV20-NAME": "Grid Import Yesterday",
+    "ST-PWHISTORY-GV20-NAME": "Grid Import Yesterday",
+    "ST-nlspwhist-GV21-NAME": "Grid/House Net Use Yesterday",
+    "ST-PWHISTORY-GV21-NAME": "Grid/House Net Use Yesterday",
+    "ST-nlspwhist-GV22-NAME": "Today nbr backup events",
+    "ST-PWHISTORY-GV22-NAME": "Today nbr backup events",
+    "ST-nlspwhist-GV23-NAME": "Today backup event time",
+    "ST-PWHISTORY-GV23-NAME": "Today backup event time",
+    "ST-nlspwhist-GV24-NAME": "Yesterday nbr backup events",
+    "ST-PWHISTORY-GV24-NAME": "Yesterday nbr backup events",
+    "ST-nlspwhist-GV25-NAME": "Yesterday backup event time",
+    "ST-PWHISTORY-GV25-NAME": "Yesterday backup event time",
+    "ST-nlspwhist-GV26-NAME": "Today charge power",
+    "ST-PWHISTORY-GV26-NAME": "Today charge power",
+    "ST-nlspwhist-GV27-NAME": "Today charge time",
+    "ST-PWHISTORY-GV27-NAME": "Today charge time",
+    "ST-nlspwhist-GV28-NAME": "Yesterday charge power",
+    "ST-PWHISTORY-GV28-NAME": "Yesterday charge power",
+    "ST-nlspwhist-GV29-NAME": "Yesterday charge time",
+    "ST-PWHISTORY-GV29-NAME": "Yesterday charge time",
+    "CMD-nlspwhist-UPDATE-NAME": "Update System Data",
+    "CMD-PWHISTORY-UPDATE-NAME": "Update System Data",
+    "ND-PWSETUP-NAME": "Power Wall Control Parameters",
+    "ND-PWSETUP-ICON": "Electricity",
+    "ST-nlspwsetup-GV1-NAME": "Backup Reserve (%)",
+    "ST-PWSETUP-GV1-NAME": "Backup Reserve (%)",
+    "ST-nlspwsetup-GV2-NAME": "Operating Mode",
+    "ST-PWSETUP-GV2-NAME": "Operating Mode",
+    "ST-nlspwsetup-GV3-NAME": "Storm Mode",
+    "ST-PWSETUP-GV3-NAME": "Storm Mode",
+    "ST-nlspwsetup-GV5-NAME": "Grid Import to battery",
+    "ST-PWSETUP-GV5-NAME": "Grid Import to battery",
+    "ST-nlspwsetup-GV6-NAME": "Grid Export Mode",
+    "ST-PWSETUP-GV6-NAME": "Grid Export Mode",
+    "ST-nlspwsetup-GV7-NAME": "EV offgrid charge reserve (%)",
+    "ST-PWSETUP-GV7-NAME": "EV offgrid charge reserve (%)",
+    "CMD-nlspwsetup-UPDATE-NAME": "Update System Data",
+    "CMD-PWSETUP-UPDATE-NAME": "Update System Data",
+    "CMD-nlspwsetup-BACKUPPCT-NAME": "Backup Reserve (%)",
+    "CMD-PWSETUP-BACKUPPCT-NAME": "Backup Reserve (%)",
+    "CMD-nlspwsetup-OPMODE-NAME": "Operating Mode",
+    "CMD-PWSETUP-OPMODE-NAME": "Operating Mode",
+    "CMD-nlspwsetup-STORMMODE-NAME": "Storm Mode",
+    "CMD-PWSETUP-STORMMODE-NAME": "Storm Mode",
+    "CMD-nlspwsetup-GRIDMODE-NAME": "Grid Operation",
+    "CMD-PWSETUP-GRIDMODE-NAME": "Grid Operation",
+    "CMDP-import-NAME": "Grid Import to battery",
+    "CMDP-export-NAME": "Grid Export Mode",
+    "CMD-nlspwsetup-EVCHRGMODE-NAME": "EV offgrid charge reserve",
+    "CMD-PWSETUP-EVCHRGMODE-NAME": "EV offgrid charge reserve",
+    "UPDN-0": "Down",
+    "UPDN-1": "Up",
+    "CONNECTION-0": "Not Connected",
+    "CONNECTION-1": "connected",
+    "MISS-98": "Not defined",
+    "ERROR-98": "Not defined",
+    "MISS-99": "Unknown",
+    "ERROR-99": "Unknown",
+    "CONNECTIONTYPE-0": "No Connection",
+    "CONNECTIONSTATE-0": "No Connection",
+    "CONNECTIONTYPE-1": "Cloud only",
+    "CONNECTIONSTATE-1": "Cloud only",
+    "CONNECTIONTYPE-2": "Local only",
+    "CONNECTIONSTATE-2": "Local only",
+    "CONNECTIONTYPE-3": "Local and Cloud",
+    "CONNECTIONSTATE-3": "Local and Cloud",
+    "CONNECTIONTYPE-99": "Unknown",
+    "CONNECTIONSTATE-99": "Unknown",
+    "PERCENT-98": "Not defined",
+    "PERCENT-99": "Unknown",
+    "TOGGLE-0": "Disabled",
+    "ENTOGGLE-0": "Disabled",
+    "TOGGLE-1": "Enabled",
+    "ENTOGGLE-1": "Enabled",
+    "TOGGLE-99": "Unknown",
+    "ENTOGGLE-99": "Unknown",
+    "SETTOGGLE-0": "Disabled",
+    "SETTOGGLE-1": "Enabled",
+    "GRIDMODE-0": "Disabled",
+    "GRIDMODE-1": "Enabled",
+    "GRIDMODE-99": "Unknown",
+    "OPMODE-0": "backup",
+    "OPMODE-1": "self consumption",
+    "OPMODE-2": "autonomous",
+    "OPMODE-99": "Unknown",
+    "SETOPMODE-1": "self consumption",
+    "SETOPMODE-2": "autonomous",
+    "GRIDST-0": "on grid",
+    "ENGRIDSTATUS-0": "on grid",
+    "GRIDST-1": "islanded ready",
+    "ENGRIDSTATUS-1": "islanded ready",
+    "GRIDST-2": "islanded",
+    "ENGRIDSTATUS-2": "islanded",
+    "GRIDST-3": "transition to grid",
+    "ENGRIDSTATUS-3": "transition to grid",
+    "GRIDST-99": "Unknown code",
+    "ENGRIDSTATUS-99": "Unknown code",
+    "GRIDIMPMODE-0": "Allowed",
+    "GRIDIMPMODE-1": "Not Allowed",
+    "GRIDIMPMODE-99": "Unknown",
+    "SETGRIDIMPMODE-0": "Allowed",
+    "SETGRIDIMPMODE-1": "Not Allowed",
+    "GRIDEXPMODE-0": "PV-only",
+    "GRIDEXPMODE-1": "Battery-ok",
+    "GRIDEXPMODE-2": "Never",
+    "GRIDEXPMODE-99": "Unknown",
+    "SETGRIDEXPMODE-0": "PV-only",
+    "SETGRIDEXPMODE-1": "Battery-ok",
+    "SETGRIDEXPMODE-2": "Never",
+    "ONLINE-0": "offline",
+    "ENONLINE-0": "offline",
+    "ONLINE-1": "online",
+    "ENONLINE-1": "online",
+    "ONLINE-99": "unknown",
+    "ENONLINE-99": "unknown",
+    "KWH-98": "No Data",
+    "NODATA-98": "No Data",
+    "KWH-99": "No Data",
+    "NODATA-99": "No Data",
+    "KW-98": "No Data",
+    "KW-99": "No Data",
+    "UNIXTIME-98": "No Data",
+    "UNIXTIME-99": "No Data",
+    "COUNT-98": "No Data",
+    "COUNT-99": "No Data",
+    "GRIDSTATUS-0": "on grid",
+    "GRIDSTATUS-1": "islanded ready",
+    "GRIDSTATUS-2": "islanded",
+    "GRIDSTATUS-3": "transition to grid",
+    "GRIDSTATUS-99": "Unknown code"
+  }
 }

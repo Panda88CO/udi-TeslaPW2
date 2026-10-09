@@ -74,7 +74,7 @@ class teslaPWStatusNode(udi_interface.Node):
         logging.debug('StatusNode updateISYdrivers')
         #tmp = self.TPW.getTPW_backup_time_remaining()
         #logging.debug('GV0: {}'.format(tmp))
-        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
+        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()), 25)
 
         # Update TIME only when new data is received (from local meters or cloud)
         data_time = None
@@ -94,9 +94,9 @@ class teslaPWStatusNode(udi_interface.Node):
         self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_load(self.site_id),2), 30)
         self.PW_setDriver('GV4', self.round2ISY(self.TPW.getTPW_gridSupply(self.site_id),2), 30)
                 
-        self.PW_setDriver('GV5', self.TPW.getTPW_operationMode(self.site_id))
-        self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus(self.site_id))
-        self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive(self.site_id))
+        self.PW_setDriver('GV5', self.TPW.getTPW_operationMode(self.site_id), 25)
+        self.PW_setDriver('GV6', self.TPW.getTPW_gridStatus(self.site_id), 25)
+        self.PW_setDriver('GV7', self.TPW.getTPW_gridServiceActive(self.site_id), 25)
 
         self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
         self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
@@ -177,7 +177,7 @@ class teslaPWStatusNode(udi_interface.Node):
             {'driver': 'GV6', 'value': 99, 'uom': 25},  
             {'driver': 'GV7', 'value': 99, 'uom': 25},  
 
-            {'driver': 'GV8', 'value': 99, 'uom': 25}, 
+            {'driver': 'GV8', 'value': 0, 'uom': 33}, 
 
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
             {'driver': 'GV10', 'value': 0, 'uom': 33},  

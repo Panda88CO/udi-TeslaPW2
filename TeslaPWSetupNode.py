@@ -39,9 +39,9 @@ class teslaPWSetupNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('Node updateISYdrivers')
-        self.PW_setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id))
-        self.PW_setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id))
-        self.PW_setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id))
+        self.PW_setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id), 51)
+        self.PW_setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id), 25)
+        self.PW_setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id), 25)
         #self.PW_setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
 
     def node_ready(self):
@@ -54,19 +54,19 @@ class teslaPWSetupNode(udi_interface.Node):
         logging.debug('setStormMode : {}'.format(command))
         value = int(command.get('value'))
         self.TPW.tesla_set_storm_mode(value, self.site_id)
-        self.PW_setDriver('GV3', value)
+        self.PW_setDriver('GV3', value, 25)
         
     def setOperatingMode(self, command):
         logging.debug('setOperatingMode: {}'.format(command))
         value = int(command.get('value'))
         self.TPW.setTPW_operationMode(value, self.site_id)
-        self.PW_setDriver('GV2', value)
+        self.PW_setDriver('GV2', value, 25)
     
     def setBackupPercent(self, command):
         logging.debug('setBackupPercent: {}'.format(command))
         value = float(command.get('value'))
         self.TPW.setTPW_backoffLevel(value, self.site_id)
-        self.PW_setDriver('GV1', value)
+        self.PW_setDriver('GV1', value, 51)
 
     #def setTOUmode(self, command):
     #    logging.debug('setTOUmode')
@@ -81,8 +81,8 @@ class teslaPWSetupNode(udi_interface.Node):
         exp_mode = int(query.get("export.uom25"))
         self.TPW.setTPW_grid_import_export(imp_mode, exp_mode, self.site_id)   
 
-        self.PW_setDriver('GV5', int(query.get("import.uom25")))
-        self.PW_setDriver('GV6', exp_mode)
+        self.PW_setDriver('GV5', imp_mode, 25)
+        self.PW_setDriver('GV6', exp_mode, 25)
 
     def set_EV_charge_reserve(self, command):
         logging.debug('setTPW_EV_offgrid_charge_reserve {}'.format(command))
@@ -100,11 +100,16 @@ class teslaPWSetupNode(udi_interface.Node):
 
     id = 'PWSETUP'
     commands = { 'UPDATE': ISYupdate
+                ,'BACKUPPCT'    : setBackupPercent
                 ,'BACKUP_PCT'   : setBackupPercent
-                ,'STORM_MODE'   :setStormMode
+                ,'STORMMODE'    : setStormMode
+                ,'STORM_MODE'   : setStormMode
+                ,'OPMODE'       : setOperatingMode
                 ,'OP_MODE'      : setOperatingMode
                 #,'TOU_MODE'     :setTOUmode
+                ,'GRIDMODE'     : set_grid_mode
                 ,'GRID_MODE'    : set_grid_mode
+                ,'EVCHRGMODE'   : set_EV_charge_reserve
                 ,'EV_CHRG_MODE' : set_EV_charge_reserve
                 }
 

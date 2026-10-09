@@ -370,7 +370,7 @@ class TeslaPWController(udi_interface.Node):
                     #logging.debug(string)
                     logging.debug('tesla_initialize 3 : {}'.format(self.my_Tesla_PW._oauthTokens))
                     self.TPW = tesla_info(self.TPW_cloud)
-                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, self.TPW , site_id)
+                    teslaPWStatusNode(self.poly, node_address, node_address, node_name, site_id, self.TPW)
                     logging.debug('tesla_initialize 4 : {}'.format(self.my_Tesla_PW._oauthTokens))
                     #self.wait_for_node_done()
 
@@ -536,18 +536,18 @@ class TeslaPWController(udi_interface.Node):
         #   self.longPollCountMissed = self.longPollCountMissed + 1
         #else:
         #   self.longPollCountMissed = 0
-        self.PW_setDriver('ST', self.bool2ISY( self.cloudAccessUp  or self.localAccessUp ))
-        self.PW_setDriver('GV2', self.bool2ISY(self.TPW.getTPW_onLine()))
-        self.PW_setDriver('GV3', self.longPollCountMissed)
+        self.PW_setDriver('ST', self.bool2ISY( self.cloudAccessUp  or self.localAccessUp ), 25)
+        self.PW_setDriver('GV2', self.bool2ISY(self.TPW.getTPW_onLine()), 25)
+        self.PW_setDriver('GV3', self.longPollCountMissed, 55)
         #self.node.setDriver('GV3', self.longPollCountMissed)     
         if self.cloud_access_enabled == False and self.local_access_enabled == False:
-            self.PW_setDriver('GV4', 0)
+            self.PW_setDriver('GV4', 0, 25)
         elif self.cloud_access_enabled == True and self.local_access_enabled == False:
-            self.PW_setDriver('GV4', 1)
+            self.PW_setDriver('GV4', 1, 25)
         elif self.cloud_access_enabled == False and self.local_access_enabled == True:
-            self.PW_setDriver('GV4', 2)
+            self.PW_setDriver('GV4', 2, 25)
         elif self.cloud_access_enabled == True and self.local_access_enabled == True:
-            self.PW_setDriver('GV4', 3)
+            self.PW_setDriver('GV4', 3, 25)
 
         #logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
         #logging.debug('CTRL Update ISY drivers : GV3  value:' + str(self.longPollCountMissed) )
@@ -684,7 +684,7 @@ class TeslaPWController(udi_interface.Node):
     drivers = [
             {'driver': 'ST', 'value':0, 'uom':25},
             {'driver': 'GV2', 'value':0, 'uom':25},
-            {'driver': 'GV3', 'value':99, 'uom':25},
+            {'driver': 'GV3', 'value':0, 'uom':55},
             {'driver': 'GV4', 'value':0, 'uom':25},
             ]
 

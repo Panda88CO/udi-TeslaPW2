@@ -8,7 +8,7 @@
     "notice": "Uses APIs from https://github.com/jrester/tesla_powerwall and aofficial Tesla API.",
     "shortPoll": "60",
     "longPoll": "180",
-    "profile_version": "0.2.2",
+    "profile_version": "0.2.3",
     "logLevel":"INFO",
 	"customParams": {
 		"LOCAL_IP_ADDRESS": "",

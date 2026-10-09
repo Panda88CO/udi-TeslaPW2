@@ -102,20 +102,20 @@
          </sends>
          <accepts>
             <cmd id="UPDATE" /> 
-            <cmd id="BACKUP_PCT" > 
+            <cmd id="BACKUPPCT" > 
                <p id="" editor="PERCENT" init="GV1" /> 
             </cmd> 
-            <cmd id="OP_MODE" > 
+            <cmd id="OPMODE" > 
                <p id="" editor="SETOPMODE" init="GV2" /> 
             </cmd> 
-            <cmd id="STORM_MODE" > 
+            <cmd id="STORMMODE" > 
                <p id="" editor="SETTOGGLE" init="GV3" /> 
             </cmd> 
-            <cmd id="GRID_MODE" > 
+            <cmd id="GRIDMODE" > 
                <p id="import" editor="SETGRIDIMPMODE" init="GV5" /> 
                <p id="export" editor="SETGRIDEXPMODE" init="GV6" /> 
             </cmd> 
-            <cmd id="EV_CHRG_MODE" > 
+            <cmd id="EVCHRGMODE" > 
                <p id="" editor="PERCENT" init="GV7" /> 
             </cmd> 
          </accepts>
