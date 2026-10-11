@@ -11,16 +11,13 @@
     "profile_version": "0.2.3",
     "logLevel":"INFO",
 	"customParams": {
-		"LOCAL_IP_ADDRESS": "",
-		"LOCAL_USER_EMAIL": "",
-		"LOCAL_USER_PASSWORD": "",
-		"REFRESH_TOKEN": ""
+		"region": "NA"
 	},
     "credits": [
         {
             "title": "A NodeServer to integrate Tesla Power Wall Controll system",
             "author": "Panda88CO",
-            "version": "0.2.2",
+            "version": "0.2.3",
             "date": "October 5,  2026",
             "source": "https://github.com/Panda88CO/udi-TeslaPW2",
             "license": "https://github.com/Panda88CO/udi-TeslaPW2/blob/main/license"

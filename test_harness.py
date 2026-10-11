@@ -410,6 +410,9 @@ class MockTeslaService:
     def getTPW_backoffLevel(self, site_id): return self.backup_pct
     def getTPW_stormMode(self, site_id): return self.storm_mode
     def getTPW_touMode(self, site_id): return self.tou_mode
+    def getTPW_gridImportMode(self, site_id): return self.grid_import_mode
+    def getTPW_gridExportMode(self, site_id): return self.grid_export_mode
+    def getTPW_evChargeReserve(self, site_id): return self.ev_charge_reserve
 
     # Setters / Commands
     def pollSystemData(self, site_id, mode='all'):
@@ -799,6 +802,9 @@ class TestTeslaPWSetupNode(unittest.TestCase):
         self.assertEqual(self.node._driver_values['GV1']['value'], 20.0)  # Backup %
         self.assertEqual(self.node._driver_values['GV2']['value'], 1)     # Op mode
         self.assertEqual(self.node._driver_values['GV3']['value'], 0)     # Storm mode
+        self.assertEqual(self.node._driver_values['GV5']['value'], 0)     # Grid import mode
+        self.assertEqual(self.node._driver_values['GV6']['value'], 0)     # Grid export mode
+        self.assertEqual(self.node._driver_values['GV7']['value'], 50)    # EV reserve %
 
     def test_command_storm_mode(self):
         self.node.setStormMode({'value': '1'})
@@ -1249,6 +1255,440 @@ class TestStartupSequence(unittest.TestCase):
         controller.customParamsHandler({'client_secret': 'super_secret_123'})
         settings = oauth.getOauthSettings()
         self.assertEqual(settings.get('client_secret'), 'super_secret_123')
+
+    def test_default_startup_cloud_only_no_local_placeholders(self):
+        """Verifies default startup has cloud_access_enabled=True, local_access_enabled=False, and no placeholder injections."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+
+        controller.customParamsHandler({})
+        self.assertTrue(controller.cloud_access_enabled)
+        self.assertFalse(controller.local_access_enabled)
+        self.assertIsNone(controller.LOCAL_IP_ADDRESS)
+        self.assertIsNone(controller.region)
+        self.assertNotIn('region', poly.Notices)
+        self.assertNotIn('LOCAL_IP_ADDRESS', controller.customParameters)
+        self.assertNotIn('LOCAL_EMAIL', controller.customParameters)
+
+    def test_auto_discover_user_region(self):
+        """Verifies discover_user_region queries /users/region and updates endpoint & region."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+
+        oauth._callApi = lambda method, url: {
+            'response': {
+                'region': 'eu',
+                'fleet_api_base_url': 'https://fleet-api.prd.eu.vn.cloud.tesla.com'
+            }
+        }
+        res = oauth.discover_user_region()
+        self.assertEqual(res, 'EU')
+        self.assertEqual(oauth.region, 'EU')
+        self.assertEqual(oauth.yourApiEndpoint, 'https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1')
+
+
+class TestPhase1BugFixes(unittest.TestCase):
+    """Verifies critical bug fixes implemented in Phase 1."""
+
+    def test_tesla_local_login_failure_graceful(self):
+        """Verifies local login failures do not invoke os.exit() and return False gracefully."""
+        from TeslaLocal import tesla_local
+        local = tesla_local('user@example.com', 'password', '192.168.1.100')
+        class MockFailedPowerwall:
+            def login(self, pwd, email):
+                pass
+            def is_authenticated(self):
+                return False
+        local.PWlocal = MockFailedPowerwall()
+        import TeslaLocal
+        orig_pw = TeslaLocal.Powerwall
+        TeslaLocal.Powerwall = lambda ip: MockFailedPowerwall()
+        try:
+            res = local.loginLocal()
+            self.assertFalse(res)
+            self.assertFalse(local.localAccessUp)
+        finally:
+            TeslaLocal.Powerwall = orig_pw
+
+    def test_grid_export_mode_mapping(self):
+        """Verifies tesla_set_grid_import_export properly maps integer indices and bools."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        calls = []
+        tpw._callApi = lambda method, url, body=None: calls.append((method, url, body))
+
+        # Test integer 0 -> pv_only, solar_charge=1 (enabled) -> disallow=False
+        tpw.tesla_set_grid_import_export('site_123', False, 0)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][0], 'POST')
+        self.assertEqual(calls[0][1], '/energy_sites/site_123/grid_import_export')
+        self.assertEqual(calls[0][2], {
+            'disallow_charge_from_grid_with_solar_installed': False,
+            'customer_preferred_export_rule': 'pv_only'
+        })
+
+        # Test integer 1 -> battery_ok
+        tpw.tesla_set_grid_import_export('site_123', True, 1)
+        self.assertEqual(calls[1][2], {
+            'disallow_charge_from_grid_with_solar_installed': True,
+            'customer_preferred_export_rule': 'battery_ok'
+        })
+
+        # Test integer 2 -> never
+        tpw.tesla_set_grid_import_export('site_123', False, 2)
+        self.assertEqual(calls[2][2], {
+            'disallow_charge_from_grid_with_solar_installed': False,
+            'customer_preferred_export_rule': 'never'
+        })
+
+    def test_tesla_pwoauth_data_integrity(self):
+        """Verifies total_pack_energy does not crash with double index and dictionary is not overwritten."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        
+        tpw.site_live_info['site_123'] = {
+            'total_pack_energy': 13500,
+            'energy_left': 11000,
+            'percentage_charged': 81.5
+        }
+        # Verify tesla_total_battery returns correct scalar without KeyError
+        self.assertEqual(tpw.tesla_total_battery('site_123'), 13500)
+
+        # Verify teslaExtractEnergyRemaining does NOT mutate self.total_pack_energy from dict to scalar
+        rem = tpw.teslaExtractEnergyRemaining('site_123')
+        self.assertEqual(rem, 11000)
+        self.assertIsInstance(tpw.total_pack_energy, dict)
+        self.assertEqual(tpw.total_pack_energy['site_123'], 13500)
+
+    def test_tesla_extract_grid_and_ev_settings(self):
+        """Verifies extracting grid import/export mode and EV reserve from site_info."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+
+        tpw.site_info['site_123'] = {
+            'disallow_charge_from_grid_with_solar_installed': False,
+            'customer_preferred_export_rule': 'battery_ok',
+            'off_grid_vehicle_charging_reserve_percent': 65
+        }
+        self.assertEqual(tpw.teslaExtractGridImportMode('site_123'), 1)
+        self.assertEqual(tpw.teslaExtractGridExportMode('site_123'), 1)
+        self.assertEqual(tpw.teslaExtractEvChargeReserve('site_123'), 65)
+
+        tpw.site_info['site_123']['disallow_charge_from_grid_with_solar_installed'] = True
+        tpw.site_info['site_123']['customer_preferred_export_rule'] = 'pv_only'
+        self.assertEqual(tpw.teslaExtractGridImportMode('site_123'), 0)
+        self.assertEqual(tpw.teslaExtractGridExportMode('site_123'), 0)
+
+
+class TestPhase2BugFixes(unittest.TestCase):
+    """Verifies math, polling optimization, and caching bug fixes implemented in Phase 2."""
+
+    def test_shortpoll_does_not_call_calendar_history(self):
+        """Verifies shortPoll ('critical') queries live status but does NOT fetch calendar_history."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        
+        history_calls = []
+        tpw.tesla_get_today_history = lambda site_id, kind: history_calls.append((site_id, kind))
+        tpw.tesla_get_live_status = lambda site_id: {'energy_left': 12000}
+        
+        access = tpw.teslaUpdateCloudData('site_123', 'critical')
+        self.assertTrue(access)
+        self.assertEqual(len(history_calls), 0)
+
+    def test_yesterday_caching_and_typo_fixed(self):
+        """Verifies that yesterday's data does not re-fetch when already cached (typo yesteday fixed)."""
+        from datetime import datetime
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        
+        tpw.previous_date_str = datetime.now().strftime('%Y-%m-%d')
+        tpw.date_changed = False
+        tpw.history_data['site_123'] = {
+            'energy': {
+                'yesterday': {
+                    'consumer_energy_imported_from_battery': 1500
+                }
+            }
+        }
+        tpw.tesla_get_live_status = lambda site_id: {}
+        tpw.tesla_get_site_info = lambda site_id: {}
+        tpw.tesla_get_today_history = lambda site_id, kind: None
+        
+        yesterday_calls = []
+        tpw.tesla_get_yesterday_history = lambda site_id, kind: yesterday_calls.append((site_id, kind))
+        
+        tpw.teslaUpdateCloudData('site_123', 'all')
+        self.assertEqual(len(yesterday_calls), 0)
+
+    def test_local_battery_import_and_yesterday_import_return_values(self):
+        """Verifies getTPW_daysBattery_import and getTPW_yesterdayBattery_import return values, not None."""
+        from TeslaInfoV2 import tesla_info
+        tpw_cloud = types.SimpleNamespace()
+        info = tesla_info(tpw_cloud)
+        info.localAccessUp = True
+        info.firstPollCompleted = True
+        
+        info.batteryMeter = types.SimpleNamespace(energy_imported=15000)
+        info.DSbatteryMeter = types.SimpleNamespace(energy_imported=10000)
+        
+        val = info.getTPW_daysBattery_import('local')
+        self.assertEqual(val, 5.0)
+
+        info.yesterdayTotalBattery_imp = 6200
+        y_val = info.getTPW_yesterdayBattery_import('local')
+        self.assertEqual(y_val, 6.2)
+
+    def test_midnight_rollover_logic(self):
+        """Verifies midnight rollover updates lastDay and preserves daysTotalGrid in yesterdayTotalGrid."""
+        from datetime import date, timedelta
+        from TeslaInfoV2 import tesla_info
+        tpw_cloud = types.SimpleNamespace()
+        tpw_cloud.teslaUpdateCloudData = lambda s, m: True
+        info = tesla_info(tpw_cloud)
+        
+        info.lastDay = date.today() - timedelta(days=1)
+        info.daysTotalGrid = 15.5
+        info.daysTotalGridServices = 2.0
+        info.daysTotalSolar = 20.0
+        info.daysTotalConsumption = 18.0
+        info.daysTotalGeneraton = 5.0
+        info.daysTotalBattery = 4.0
+        info.daysTotalBattery_imp = 3.0
+        info.daysTotalBattery_exp = 7.0
+        info.daysTotalGenerator = 0.0
+        info.daysTotalSite_imp = 12.0
+        
+        info.pollSystemData('site_123', 'critical')
+        
+        self.assertEqual(info.lastDay, date.today())
+        self.assertEqual(info.yesterdayTotalGrid, 15.5)
+        self.assertEqual(info.yesterdayTotalGridServices, 2.0)
+
+
+class TestPhase3BugFixes(unittest.TestCase):
+    """Verifies Phase 3 Fleet API modernization, network hardening, timeouts, and error handling."""
+
+    def test_oauth_scope_string_uses_openid(self):
+        """Verifies that TeslaPW2main and POLYGLOT_CONFIG specify 'openid' instead of 'open_id'."""
+        with open(os.path.join(ROOT_DIR, 'TeslaPW2main.py'), 'r') as f:
+            content = f.read()
+        self.assertIn("'energy_device_data energy_cmds openid offline_access'", content)
+        self.assertNotIn("open_id", content)
+
+    def test_cloud_set_region_fleet_token_endpoint(self):
+        """Verifies cloud_set_region updates token_endpoint to the Fleet API endpoint."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data energy_cmds openid offline_access')
+        oauth.cloud_set_region('NA')
+        settings = oauth.getOauthSettings()
+        self.assertEqual(settings.get('token_endpoint'), 'https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token')
+        self.assertEqual(settings.get('auth_endpoint'), 'https://auth.tesla.com/oauth2/v3/authorize')
+        self.assertIn('openid', settings.get('scope', ''))
+
+    def test_session_pooling_and_timeout_parameters(self):
+        """Verifies _callApi uses session with connect/read timeout."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        self.assertTrue(hasattr(oauth, '_session'))
+        self.assertEqual(oauth.timeout, (5.0, 15.0))
+
+        oauth.getAccessToken = lambda: 'test_token'
+        recorded_calls = []
+
+        class MockSession:
+            def get(self, url, headers=None, json=None, timeout=None):
+                recorded_calls.append(('GET', url, headers, json, timeout))
+                return types.SimpleNamespace(raise_for_status=lambda: None, json=lambda: {'result': 'ok'})
+
+        oauth._session = MockSession()
+        res = oauth._callApi('GET', '/products')
+        self.assertEqual(res, {'result': 'ok'})
+        self.assertEqual(len(recorded_calls), 1)
+        method, url, headers, body, timeout = recorded_calls[0]
+        self.assertEqual(method, 'GET')
+        self.assertEqual(timeout, (5.0, 15.0))
+        self.assertEqual(headers.get('Authorization'), 'Bearer test_token')
+
+    def test_call_api_429_rate_limit_handling(self):
+        """Verifies _callApi handles 429 rate limit with notice and warning without exception."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.getAccessToken = lambda: 'test_token'
+
+        import requests
+        resp = types.SimpleNamespace(status_code=429, headers={'Retry-After': '60'})
+        err = requests.exceptions.HTTPError('429 Client Error', response=resp)
+
+        class MockSession:
+            def get(self, url, **kwargs):
+                raise err
+
+        oauth._session = MockSession()
+        res = oauth._callApi('GET', '/products')
+        self.assertIsNone(res)
+        self.assertIn('rate_limit', poly.Notices)
+        self.assertIn('60', poly.Notices['rate_limit'])
+
+    def test_call_api_412_precondition_failed_handling(self):
+        """Verifies _callApi handles 412 Precondition Failed with region notice without exception."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.region = 'NA'
+        oauth.getAccessToken = lambda: 'test_token'
+
+        import requests
+        resp = types.SimpleNamespace(status_code=412, headers={})
+        err = requests.exceptions.HTTPError('412 Precondition Failed', response=resp)
+
+        class MockSession:
+            def get(self, url, **kwargs):
+                raise err
+
+        oauth._session = MockSession()
+        res = oauth._callApi('GET', '/products')
+        self.assertIsNone(res)
+        self.assertIn('region_error', poly.Notices)
+        self.assertIn('NA', poly.Notices['region_error'])
+
+    def test_call_api_timeout_and_network_exceptions(self):
+        """Verifies _callApi catches Timeout and ConnectionError gracefully."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.getAccessToken = lambda: 'test_token'
+
+        import requests
+
+        class MockTimeoutSession:
+            def get(self, url, **kwargs):
+                raise requests.exceptions.Timeout('Connection timed out')
+
+        oauth._session = MockTimeoutSession()
+        res = oauth._callApi('GET', '/products')
+        self.assertIsNone(res)
+
+        class MockConnSession:
+            def get(self, url, **kwargs):
+                raise requests.exceptions.ConnectionError('Network unreachable')
+
+        oauth._session = MockConnSession()
+        res2 = oauth._callApi('GET', '/products')
+        self.assertIsNone(res2)
+
+    def test_session_close_method(self):
+        """Verifies close() closes the session safely."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        closed = []
+        oauth._session = types.SimpleNamespace(close=lambda: closed.append(True))
+        oauth.close()
+        self.assertEqual(len(closed), 1)
+
+
+class TestPhase4BugFixes(unittest.TestCase):
+    """Verifies Phase 4 Wall Connector/EV charging telemetry, safe history getters, and drivers."""
+
+    def test_ev_charge_telemetry_history_query(self):
+        """Verifies tesla_get_today_history queries telemetry_history for charge kind."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        tpw.installation_tz['site_123'] = 'America/New_York'
+
+        api_calls = []
+        def mock_call(method, url, body=''):
+            api_calls.append(url)
+            return {'response': {'charge_history': []}}
+
+        tpw._callApi = mock_call
+        tpw.tesla_get_today_history('site_123', 'charge')
+        self.assertTrue(len(api_calls) >= 1)
+        self.assertIn('telemetry_history?kind=charge', api_calls[0])
+
+    def test_process_charge_data_calculation(self):
+        """Verifies process_charge_data parses events and populates history_data with totals."""
+        from TeslaPWOauth import teslaPWAccess
+        from datetime import datetime
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        tpw.installation_tz['site_123'] = 'America/New_York'
+        tpw.update_date_time('site_123')
+
+        # Mock payload matching today's timestamp
+        now_ts = int(datetime.now().timestamp())
+        charge_payload = {
+            'charge_history': [
+                {
+                    'charge_start_time': {'seconds': now_ts},
+                    'charge_duration': {'seconds': 3600},
+                    'energy_added_wh': 12500
+                },
+                {
+                    'charge_start_time': {'seconds': now_ts},
+                    'charge_duration': {'seconds': 1800},
+                    'energy_added_wh': 7500
+                }
+            ]
+        }
+        tpw.process_history_data('site_123', 'charge', charge_payload)
+        self.assertIn('site_123', tpw.history_data)
+        self.assertIn('charge', tpw.history_data['site_123'])
+        self.assertIn('today', tpw.history_data['site_123']['charge'])
+
+        today_charge = tpw.history_data['site_123']['charge']['today']
+        self.assertEqual(today_charge['total_events'], 2)
+        self.assertEqual(today_charge['total_duration'], 5400)
+        self.assertEqual(today_charge['total_energy'], 20000)
+
+        self.assertEqual(tpw.tesla_evcharge_power('site_123', 'today'), 20000)
+        self.assertEqual(tpw.tesla_evcharge_time('site_123', 'today'), 5400)
+
+    def test_safe_history_getters_missing_site_or_keys(self):
+        """Verifies history getters return 0 instead of raising KeyError when site or day is absent."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+
+        self.assertEqual(tpw.tesla_evcharge_power('missing_site', 'today'), 0)
+        self.assertEqual(tpw.tesla_evcharge_time('missing_site', 'today'), 0)
+        self.assertEqual(tpw.tesla_backup_events('missing_site', 'today'), 0)
+        self.assertEqual(tpw.tesla_backup_time('missing_site', 'today'), 0)
+        self.assertEqual(tpw.tesla_home_energy_total('missing_site', 'today'), 0)
+        self.assertEqual(tpw.tesla_battery_energy_import('missing_site', 'today'), 0)
+        self.assertEqual(tpw.tesla_grid_energy_export('missing_site', 'today'), 0)
+
+    def test_history_node_ev_charging_drivers(self):
+        """Verifies teslaPWHistoryNode updates GV26-GV29 drivers with EV charge values."""
+        from TeslaPWHistoryNode import teslaPWHistoryNode
+        poly = MockPolyglotInterface()
+        tpw = MockTeslaService()
+
+        tpw.days_evcharge_power = 22.0
+        tpw.days_evcharge_time = 120.0
+        tpw.yesterday_evcharge_power = 18.0
+        tpw.yesterday_evcharge_time = 90.0
+
+        hist_node = teslaPWHistoryNode(poly, 'controller', 'pwhistory', 'Powerwall History', 'site_123', tpw)
+        hist_node.updateISYdrivers()
+
+        self.assertEqual(hist_node._driver_values['GV26']['value'], 22.0)
+        self.assertEqual(hist_node._driver_values['GV27']['value'], 120.0)
+        self.assertEqual(hist_node._driver_values['GV28']['value'], 18.0)
+        self.assertEqual(hist_node._driver_values['GV29']['value'], 90.0)
 
 
 # ---------------------------------------------------------------------------

@@ -28,12 +28,18 @@ The local data is based on API (not officeial) https://github.com/jrester/tesla_
 
 
 ## Installation
-To run node server user must first select data source - from Local Power Wall and/or Tesla Cloud. 
-For local access:
-Enter IP address and user_eamil/password for local and user_email/password as well as set local_sccess to True
+Cloud access via the official Tesla Fleet API is enabled by default with zero configuration required. The node server automatically discovers your account region directly through the Tesla Fleet API.
 
-For cloud access:
-Enter region for the power wall (NA, EU or CN) and set cloud_access to True. Save and press Authentication. Follow inpt procesure and allow access to data 
+1. Install the node server in PG3x.
+2. Click the **Authenticate** button and follow the Tesla OAuth prompt to grant access.
+
+### Optional: Local LAN Access (Powerwall 2 only)
+If you have a Powerwall 2 with a gateway supporting local customer API access (`/api/login/Basic`), you may optionally configure:
+- `LOCAL_IP_ADDRESS`: Gateway local IP address
+- `LOCAL_USER_EMAIL`: Gateway login email
+- `LOCAL_USER_PASSWORD`: Gateway login password
+
+The node server will test local connectivity on startup and use local LAN data if available, automatically falling back to Cloud access if local access is unsupported or fails.
 
 ## Notes 
 

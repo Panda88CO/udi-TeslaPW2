@@ -23,7 +23,7 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-VERSION = '0.2.2'
+VERSION = '0.2.3'
 class TeslaPWController(udi_interface.Node):
     from  udiLib import node_queue, wait_for_node_done, mask2key, heartbeat, bool2ISY, PW_setDriver
 
@@ -141,35 +141,49 @@ class TeslaPWController(udi_interface.Node):
         oauthSettingsUpdate['token_parameters'] = {}
         # Example for a boolean field
 
-        if userParams and 'region' in userParams:
-            if self.customParameters['region'] not in ['Input region (NA, EU, CN)', 'Input region NA, EU, CN']:
-                self.region = str(self.customParameters['region']).strip()
-                if self.region.upper() not in ['NA', 'EU', 'CN']:
-                    logging.error('Unsupported region {}'.format(self.region))
-                    self.poly.Notices['region'] = 'Unknown Region specified (NA = North America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
-                    self.region = None
-                else:
-                    if 'region' in self.poly.Notices:
-                        self.poly.Notices.delete('region')
+        if userParams and 'region' in userParams and userParams['region']:
+            candidate_region = str(userParams['region']).strip().upper()
+            if candidate_region in ['NA', 'EU', 'CN']:
+                self.region = candidate_region
+                if 'region' in self.poly.Notices:
+                    self.poly.Notices.delete('region')
+            elif candidate_region not in ['INPUT REGION (NA, EU, CN)', 'INPUT REGION NA, EU, CN', 'NONE', '']:
+                logging.warning('Configured region {} not recognized; auto-discovery will be used.'.format(candidate_region))
+                self.region = None
+            else:
+                self.region = None
         else:
-            logging.warning('No region found')
-            self.customParameters['region'] = 'Input region (NA, EU, CN)'
             self.region = None
-            self.poly.Notices['region'] = 'Region not specified (NA = Nort America + Asia (-China), EU = Europe. middle East, Africa, CN = China)'
    
-        if 'local_access_en' in self.customParameters:
-            if self.customParameters['local_access_en'] != '':
-                self.local_access_enabled = self.customParameters['local_access_en'].upper() == 'TRUE'
+        raw_ip = str(self.customParameters.get('LOCAL_IP_ADDRESS', '')).strip().replace(',', '.')
+        if raw_ip and raw_ip not in ('x.x.x.x', 'enter LOCAL_IP_ADDRESS', 'enter LOCAL_IP', 'None'):
+            self.LOCAL_IP_ADDRESS = raw_ip
         else:
-            logging.warning('No local_access_enabled found')
-            self.customParameters['local_access_en'] = 'True/False'
+            self.LOCAL_IP_ADDRESS = None
 
-        if 'cloud_access_en' in self.customParameters:      
-            if self.customParameters['cloud_access_en'] != '':
-                self.cloud_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
+        raw_email = str(self.customParameters.get('LOCAL_USER_EMAIL', '')).strip()
+        if not raw_email or raw_email in ('enter LOCAL_EMAIL', 'enter LOCAL_USER_EMAIL', 'None'):
+            raw_email = str(self.customParameters.get('LOCAL_EMAIL', '')).strip()
+        if raw_email and raw_email not in ('enter LOCAL_EMAIL', 'enter LOCAL_USER_EMAIL', 'None'):
+            self.LOCAL_USER_EMAIL = raw_email
         else:
-            logging.warning('No cloud_access_en found')
-            self.customParameters['cloud_access_en'] = 'True/False'
+            self.LOCAL_USER_EMAIL = None
+
+        raw_pwd = str(self.customParameters.get('LOCAL_USER_PASSWORD', '')).strip()
+        if raw_pwd and raw_pwd not in ('enter LOCAL_USER_PASSWORD', 'None'):
+            self.LOCAL_USER_PASSWORD = raw_pwd
+        else:
+            self.LOCAL_USER_PASSWORD = None
+
+        if 'local_access_en' in self.customParameters and self.customParameters['local_access_en'] != '':
+            self.local_access_enabled = (self.customParameters['local_access_en'].upper() == 'TRUE')
+        else:
+            self.local_access_enabled = bool(self.LOCAL_IP_ADDRESS and self.LOCAL_USER_EMAIL and self.LOCAL_USER_PASSWORD)
+
+        if 'cloud_access_en' in self.customParameters and self.customParameters['cloud_access_en'] != '':
+            self.cloud_access_enabled = self.customParameters['cloud_access_en'].upper() == 'TRUE'
+        else:
+            self.cloud_access_enabled = True
 
         if self.cloud_access_enabled and hasattr(self, 'TPW_cloud'):
             if self.TPW_cloud.customNsDone():
@@ -191,29 +205,6 @@ class TeslaPWController(udi_interface.Node):
             if c_secret and hasattr(self, 'TPW_cloud'):
                 self.TPW_cloud.updateOauthSettings({'client_secret': c_secret})
 
-        if 'LOCAL_USER_EMAIL' in self.customParameters:
-            if self.customParameters['LOCAL_USER_EMAIL'] != '':
-                self.LOCAL_USER_EMAIL= str(self.customParameters['LOCAL_USER_EMAIL'])
-        else:
-            logging.warning('No LOCAL_USER_EMAIL found')
-            self.customParameters['LOCAL_EMAIL'] = 'enter LOCAL_EMAIL'
-            self.LOCAL_USER_EMAIL = None
-
-        if 'LOCAL_USER_PASSWORD' in self.customParameters:
-            if self.customParameters['LOCAL_USER_PASSWORD'] != '':
-                self.LOCAL_USER_PASSWORD= str(self.customParameters['LOCAL_USER_PASSWORD'] )
-        else:
-            logging.warning('No LOCAL_USER_PASSWORD found')
-            self.customParameters['LOCAL_USER_PASSWORD'] = 'enter LOCAL_USER_PASSWORD'
-            self.LOCAL_USER_PASSWORD = None
-
-        if 'LOCAL_IP_ADDRESS' in self.customParameters:
-            if self.customParameters['LOCAL_IP_ADDRESS'] != 'x.x.x.x':
-                self.LOCAL_IP_ADDRESS= str(self.customParameters['LOCAL_IP_ADDRESS'] ).strip().replace(',', '.')
-        else:
-            logging.warning('No LOCAL_IP_ADDRESS found')
-            self.customParameters['LOCAL_IP_ADDRESS'] = 'enter LOCAL_IP_ADDRESS'
-            self.LOCAL_IP_ADDRESS = None
         logging.debug('customParamsHandler finish ')
         self.customParam_done = True
 
@@ -221,7 +212,6 @@ class TeslaPWController(udi_interface.Node):
     def start(self):
         site_string = ''
         logging.debug('start TPW_cloud:{}'.format(self.TPW_cloud))
-        #while not self.customParam_done or not self.TPW_cloud.customNsHandlerDone or not self.TPW_cloud.customDataHandlerDone:
         while not (self.config_done and self.customParam_done and (self.TPW_cloud.customNsDone() or not self.cloud_access_enabled)):
             logging.info('Waiting for node to initialize')
             logging.debug(' 1 2 3: {} {} {}'.format(self.customParam_done ,self.TPW_cloud.customNsDone(), self.config_done))
@@ -235,17 +225,22 @@ class TeslaPWController(udi_interface.Node):
             self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
     
         if self.local_access_enabled:
-            count = 1
-            self.localAccessUp = self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
-            while not self.localAccessUp and count <= 10:
-                logging.error('local access not available - keep trying for 5 min')
-                time.sleep(30)
-                count += 1
-                self.localAccessUp = self.TPW.init_local(self.LOCAL_USER_EMAIL,self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS )
-            if count >= 10:
+            if self.LOCAL_IP_ADDRESS and self.LOCAL_USER_EMAIL and self.LOCAL_USER_PASSWORD:
+                logging.info('Attempting local Powerwall connection to {}'.format(self.LOCAL_IP_ADDRESS))
+                self.localAccessUp = self.TPW.init_local(self.LOCAL_USER_EMAIL, self.LOCAL_USER_PASSWORD, self.LOCAL_IP_ADDRESS)
+                if not self.localAccessUp:
+                    logging.warning('Local access not available or unsupported by Powerwall gateway - continuing with Cloud access.')
+                    self.local_access_enabled = False
+                    if 'local' in self.poly.Notices:
+                        self.poly.Notices.delete('local')
+                else:
+                    logging.info('Local Powerwall access established successfully.')
+                    if 'local' in self.poly.Notices:
+                        self.poly.Notices.delete('local')
+            else:
+                logging.info('Local access parameters incomplete; using Cloud access only.')
                 self.local_access_enabled = False
-                logging.error('Local access not possible - disabling it')
-                self.poly.Notices['local']  = 'local access fails - disabling local access'
+                self.localAccessUp = False
 
             #self.TPW_local.loginLocal()
             #self.Gateway= self.TPW.get_GWserial_number()
@@ -282,6 +277,9 @@ class TeslaPWController(udi_interface.Node):
             #logging.debug('local loging - accessUP {}'.format(self.localAccessUpUp ))
             #self.poly.Notices.clear()     
             self.cloudAccessUp = self.TPW.init_cloud(self.region)
+            if hasattr(self.TPW, 'region') and self.TPW.region:
+                self.region = self.TPW.region
+                logging.info('Active Tesla Fleet API region: {}'.format(self.region))
 
         self.PowerWalls = self.TPW.tesla_get_products()
         self.PWs_installed = {}
@@ -484,6 +482,11 @@ class TeslaPWController(udi_interface.Node):
                 self.TPW.disconnectTPW()
         except Exception as e:
             logging.debug('Local logout failed {}'.format(e))
+        try:
+            if hasattr(self, 'TPW_cloud') and self.TPW_cloud and hasattr(self.TPW_cloud, 'close'):
+                self.TPW_cloud.close()
+        except Exception as e:
+            logging.debug('Cloud session close failed {}'.format(e))
         self.node.setDriver('ST', 0 )
         self.poly.stop()
         logging.debug('stop - Cleaning up')
@@ -702,7 +705,7 @@ if __name__ == "__main__":
         #polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
 
-        TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds open_id offline_access')
+        TPW_cloud = teslaPWAccess(polyglot, 'energy_device_data energy_cmds openid offline_access')
 
         logging.debug('TPW_Cloud {}'.format(TPW_cloud))
         TPW =TeslaPWController(polyglot, 'controller', 'controller', 'Tesla PowerWalls', TPW_cloud)

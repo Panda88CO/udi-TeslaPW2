@@ -43,6 +43,18 @@ class teslaPWSetupNode(udi_interface.Node):
         self.PW_setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id), 25)
         self.PW_setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id), 25)
         #self.PW_setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
+        if hasattr(self.TPW, 'getTPW_gridImportMode'):
+            imp = self.TPW.getTPW_gridImportMode(self.site_id)
+            if imp is not None:
+                self.PW_setDriver('GV5', imp, 25)
+        if hasattr(self.TPW, 'getTPW_gridExportMode'):
+            exp = self.TPW.getTPW_gridExportMode(self.site_id)
+            if exp is not None:
+                self.PW_setDriver('GV6', exp, 25)
+        if hasattr(self.TPW, 'getTPW_evChargeReserve'):
+            ev_pct = self.TPW.getTPW_evChargeReserve(self.site_id)
+            if ev_pct is not None:
+                self.PW_setDriver('GV7', ev_pct, 51)
 
     def node_ready(self):
         return(self.node_ok)

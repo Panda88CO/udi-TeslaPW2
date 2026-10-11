@@ -63,11 +63,20 @@ class teslaAccess(udi_interface.OAuth):
         self.authendication_done = False
         self.apiLock = Lock()
         self.temp_unit = 'C'
+        self.timeout = (5.0, 15.0)
+        self._session = requests.Session() if hasattr(requests, 'Session') else requests
         #self.poly.subscribe(self.poly.CUSTOMNS, self.customNsHandler)
         #self.poly.subscribe(self.poly.OAUTH, self.oauthHandler)
         self.poly = polyglot
 
         logging.info('External service connectivity initialized...')
+
+    def close(self):
+        try:
+            if hasattr(self, '_session') and hasattr(self._session, 'close'):
+                self._session.close()
+        except Exception as e:
+            logging.debug('Error closing cloud session: {}'.format(e))
 
         #time.sleep(1)
 
@@ -167,40 +176,51 @@ class teslaAccess(udi_interface.OAuth):
 
                 
     def cloud_set_region(self, region):
-        #self.customParameters.load(userParams)
-        #logging.debug('customParamsHandler called {}'.format(userParams))
-
         oauthSettingsUpdate = {}
-        #oauthSettingsUpdate['parameters'] = {}
         oauthSettingsUpdate['token_parameters'] = {}
-        # Example for a boolean field
 
-        logging.debug('region {}'.format(self.region))
+        if not region:
+            region = 'NA'
+        self.region = region.upper()
+        logging.debug('cloud_set_region: {}'.format(self.region))
         oauthSettingsUpdate['scope'] = self.scope 
         oauthSettingsUpdate['auth_endpoint'] = 'https://auth.tesla.com/oauth2/v3/authorize'
-        oauthSettingsUpdate['token_endpoint'] = 'https://auth.tesla.com/oauth2/v3/token'
-        #oauthSettingsUpdate['redirect_uri'] = 'https://my.isy.io/api/cloudlink/redirect'
-        #oauthSettingsUpdate['cloudlink'] = True
+        oauthSettingsUpdate['token_endpoint'] = 'https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token'
         oauthSettingsUpdate['addRedirect'] = True
-        #oauthSettingsUpdate['state'] = self.state
-        if region.upper() == 'NA':
+
+        if self.region == 'NA':
             endpoint = self.EndpointNA
-        elif region.upper() == 'EU':
+        elif self.region == 'EU':
             endpoint = self.EndpointEU
-        elif region.upper() == 'CN':
+        elif self.region == 'CN':
             endpoint = self.EndpointCN
         else:
-            logging.error('Unknow region specified {}'.format(self.region))
+            logging.error('Unknown region specified: {}'.format(self.region))
             return
            
-        self.yourApiEndpoint = endpoint+self.api 
+        self.yourApiEndpoint = endpoint + self.api 
         oauthSettingsUpdate['token_parameters']['audience'] = endpoint
         self.updateOauthSettings(oauthSettingsUpdate)
-        #time.sleep(0.1)
         logging.debug('getOauthSettings: {}'.format(self.getOauthSettings()))
-        #logging.debug('Updated oAuth config 2: {}'.format(temp))
-        #self.handleCustomParamsDone = True
-        #self.poly.Notices.clear()
+
+    def discover_user_region(self):
+        """Auto-discovers the user's registered Fleet API region via GET /api/1/users/region."""
+        try:
+            res = self._callApi('GET', '/users/region')
+            if res and isinstance(res, dict) and 'response' in res:
+                user_info = res['response']
+                detected_region = user_info.get('region', '').upper()
+                base_url = user_info.get('fleet_api_base_url')
+                logging.info(f"Tesla Fleet API auto-detected user region: {detected_region} (base_url: {base_url})")
+                if base_url:
+                    self.yourApiEndpoint = base_url.rstrip('/') + self.api
+                if detected_region in ['NA', 'EU', 'CN'] and detected_region != self.region:
+                    self.region = detected_region
+                    self.cloud_set_region(self.region)
+                return self.region
+        except Exception as e:
+            logging.warning(f"Unable to auto-detect user region from /users/region: {e}")
+        return self.region
 
 
 
@@ -281,52 +301,86 @@ class teslaAccess(udi_interface.OAuth):
 
         try:
             if method == 'GET':
-                response = requests.get(completeUrl, headers=headers, json=body)
+                response = self._session.get(completeUrl, headers=headers, json=body, timeout=self.timeout)
             elif method == 'DELETE':
-                response = requests.delete(completeUrl, headers=headers)
+                response = self._session.delete(completeUrl, headers=headers, timeout=self.timeout)
             elif method == 'PATCH':
-                response = requests.patch(completeUrl, headers=headers, json=body)
+                response = self._session.patch(completeUrl, headers=headers, json=body, timeout=self.timeout)
             elif method == 'POST':
-                response = requests.post(completeUrl, headers=headers, json=body)
+                response = self._session.post(completeUrl, headers=headers, json=body, timeout=self.timeout)
             elif method == 'PUT':
-                response = requests.put(completeUrl, headers=headers)
+                response = self._session.put(completeUrl, headers=headers, timeout=self.timeout)
 
             response.raise_for_status()
+
+            if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                if 'rate_limit' in self.poly.Notices:
+                    self.poly.Notices.delete('rate_limit')
+                if 'region_error' in self.poly.Notices:
+                    self.poly.Notices.delete('region_error')
             
             try:
                 return response.json()
-            except requests.exceptions.JSONDecodeError:
+            except (requests.exceptions.JSONDecodeError, ValueError):
                 return response.text
 
         except requests.exceptions.HTTPError as error:
-            logging.error(f"Call { method } { completeUrl } failed: { error }")
-            # If 401 Unauthorized, token might be expired. Attempt refresh once.
-            if error.response is not None and error.response.status_code == 401:
+            status_code = error.response.status_code if error.response is not None else None
+            logging.error(f"Call { method } { completeUrl } failed: { error } (Status: { status_code })")
+            
+            if status_code == 429:
+                retry_after = 'unknown'
+                if error.response is not None and hasattr(error.response, 'headers') and error.response.headers:
+                    retry_after = error.response.headers.get('Retry-After', 'unknown')
+                logging.warning(f"Tesla Fleet API rate limit reached (429 Too Many Requests). Retry-After: {retry_after}s.")
+                if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                    self.poly.Notices['rate_limit'] = f"Tesla API rate limit reached. Backing off (Retry-After: {retry_after}s)."
+                return None
+            elif status_code == 412:
+                logging.warning(f"Tesla Fleet API Precondition Failed (412). The requested site may belong to a different region than '{self.region}'.")
+                if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                    self.poly.Notices['region_error'] = f"Tesla API 412 Precondition Failed. Check region setting ({self.region})."
+                return None
+            elif status_code == 401:
                 logging.info("Received 401 Unauthorized. Attempting token refresh...")
                 try:
                     self._oAuthTokensRefresh()
-                    new_token = self._oauthTokens.get('access_token')
+                    new_token = self._oauthTokens.get('access_token') if isinstance(self._oauthTokens, dict) else None
                     if new_token and new_token != accessToken:
                         headers['Authorization'] = f'Bearer {new_token}'
                         logging.info("Retrying API call with refreshed token...")
                         if method == 'GET':
-                            retry_resp = requests.get(completeUrl, headers=headers, json=body)
+                            retry_resp = self._session.get(completeUrl, headers=headers, json=body, timeout=self.timeout)
                         elif method == 'DELETE':
-                            retry_resp = requests.delete(completeUrl, headers=headers)
+                            retry_resp = self._session.delete(completeUrl, headers=headers, timeout=self.timeout)
                         elif method == 'PATCH':
-                            retry_resp = requests.patch(completeUrl, headers=headers, json=body)
+                            retry_resp = self._session.patch(completeUrl, headers=headers, json=body, timeout=self.timeout)
                         elif method == 'POST':
-                            retry_resp = requests.post(completeUrl, headers=headers, json=body)
+                            retry_resp = self._session.post(completeUrl, headers=headers, json=body, timeout=self.timeout)
                         elif method == 'PUT':
-                            retry_resp = requests.put(completeUrl, headers=headers)
+                            retry_resp = self._session.put(completeUrl, headers=headers, timeout=self.timeout)
                         retry_resp.raise_for_status()
+                        if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
+                            if 'rate_limit' in self.poly.Notices:
+                                self.poly.Notices.delete('rate_limit')
+                            if 'region_error' in self.poly.Notices:
+                                self.poly.Notices.delete('region_error')
                         try:
                             return retry_resp.json()
-                        except requests.exceptions.JSONDecodeError:
+                        except (requests.exceptions.JSONDecodeError, ValueError):
                             return retry_resp.text
                 except Exception as refresh_err:
                     logging.warning(f"Failed to refresh/retry after 401: {refresh_err}")
                     if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
                         self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
+            return None
+        except requests.exceptions.Timeout as error:
+            logging.error(f"Call { method } { completeUrl } timed out after {self.timeout}s: {error}")
+            return None
+        except requests.exceptions.ConnectionError as error:
+            logging.error(f"Call { method } { completeUrl } connection error: {error}")
+            return None
+        except requests.exceptions.RequestException as error:
+            logging.error(f"Call { method } { completeUrl } network error: {error}")
             return None
         

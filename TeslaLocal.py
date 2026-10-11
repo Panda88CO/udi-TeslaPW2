@@ -47,33 +47,38 @@ class tesla_local:
     def loginLocal (self):
         logging.debug('Local Access Supported')
 
-        self.PWlocal = Powerwall(self.IPaddress)
-
-        #logging.debug('self.TPWlocal - {}'.format(self.TPWlocal))
-        self.PWlocal.login(self.localPassword, self.localEmail)
-        logging.debug('self.TPWlocal ')
-        loginAttempts = 0
-        #temp = self.TPWlocal.is_authenticated()
-        #logging.debug('authenticated = {} '.format(temp))
-        while not(self.PWlocal.is_authenticated()) and loginAttempts < 10:            
-            logging.info('Trying to log into Tesla Power Wall') 
-            time.sleep(30)
+        try:
+            self.PWlocal = Powerwall(self.IPaddress)
             self.PWlocal.login(self.localPassword, self.localEmail)
+        except Exception as e:
+            logging.error(f'Initial local login attempt error: {e}')
+
+        loginAttempts = 0
+        while not self.is_authenticated() and loginAttempts < 3:            
+            logging.info('Trying to log into Tesla Power Wall locally') 
+            time.sleep(2)
+            try:
+                self.PWlocal.login(self.localPassword, self.localEmail)
+            except Exception as e:
+                logging.error(f'Local login retry failed: {e}')
             loginAttempts = loginAttempts + 1
             self.localAccessUp = False
-            if loginAttempts == 10: 
-                logging.error('Local Loging failed after 10 attempts - check credentials.')
-                logging.error('Powerwall may need to be turned on and off during this.  ')
-                os.exit()
-                break
+            if loginAttempts >= 3: 
+                logging.error('Local Login failed after 3 attempts - check credentials and gateway IP.')
+                self.localAccessUp = False
+                return False
         
-        self.localAccessUp = True
+        self.localAccessUp = self.is_authenticated()
         return(self.localAccessUp)
 
-
-
     def is_authenticated(self):
-        return(self.PWlocal.is_authenticated())
+        if hasattr(self, 'PWlocal') and self.PWlocal is not None:
+            try:
+                return bool(self.PWlocal.is_authenticated())
+            except Exception as e:
+                logging.debug(f'Error checking local authentication: {e}')
+                return False
+        return False
 
 
     def get_GWserial_number(self):

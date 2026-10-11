@@ -162,8 +162,13 @@ class teslaPWAccess(teslaAccess):
     def tesla_set_grid_import_export(self, site_id, solar_charge, pref_export):
         logging.debug('tesla_set_grid_import_export : {} {}'.format(solar_charge, pref_export))
         try:
+            # Map integer if provided (0: pv_only, 1: battery_ok, 2: never)
+            export_map = {0: 'pv_only', 1: 'battery_ok', 2: 'never'}
+            if isinstance(pref_export, int) or (isinstance(pref_export, str) and pref_export.isdigit()):
+                pref_export = export_map.get(int(pref_export), pref_export)
+
             if pref_export in self.EXPORT_RULES:
-                body = {'disallow_charge_from_grid_with_solar_installed' : solar_charge,
+                body = {'disallow_charge_from_grid_with_solar_installed' : bool(solar_charge),
                         'customer_preferred_export_rule': pref_export}
                 temp = self._callApi('POST','/energy_sites/'+site_id +'/grid_import_export', body )
                 logging.debug('operation: {} '.format(temp))               
@@ -202,11 +207,10 @@ class teslaPWAccess(teslaAccess):
         #self.tz_str = t_now.tzname()
         t_yesterday = t_now - timedelta(days = 1)
         self.t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
-        logging.debug('timezone info : {}'.format(self.installation_tz))
-        if self.installation_tz[site_id]:
+        if self.installation_tz.get(site_id):
             self.tz_str = self.installation_tz[site_id]
         else:
-            self.tz_str = t_now.tzname()
+            self.tz_str = t_now.tzname() or 'UTC'
 
         #t_now = datetime.now(get_localzone())
         #t_yesterday = t_now - timedelta(days = 1)
@@ -236,8 +240,12 @@ class teslaPWAccess(teslaAccess):
                         #'time_zone'     : 'America/Los_Angeles'
                         }
                 logging.debug('body = {}'.format(params))
-                hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
-                #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
+                if type == 'charge':
+                    hist_data = self._callApi('GET', f'/energy_sites/{site_id}/telemetry_history?kind=charge&start_date={t_start_str}&end_date={t_end_str}&time_zone={self.tz_str}')
+                    if not hist_data or 'response' not in hist_data:
+                        hist_data = self._callApi('GET', f'/energy_sites/{site_id}/calendar_history?kind=charge&start_date={t_start_str}&end_date={t_end_str}&period=day&time_zone={self.tz_str}')
+                else:
+                    hist_data = self._callApi('GET', f'/energy_sites/{site_id}/calendar_history?kind={str(type)}&start_date={t_start_str}&end_date={t_end_str}&period=day&time_zone={self.tz_str}')
                 logging.debug('result ({}) = {}'.format(type, hist_data))
                 if hist_data:
                     if 'response' in hist_data:
@@ -272,8 +280,12 @@ class teslaPWAccess(teslaAccess):
                         #'time_zone'     : 'America/Los_Angeles'
                         }
                 logging.debug('body = {}'.format(params))
-                hist_data = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+'kind='+str(type)+'&start_date='+t_start_str+'&end_date='+t_end_str+'&period=day'+'&time_zone='+self.tz_str  )
-                #temp = self._callApi('GET','/energy_sites/'+site_id +'/calendar_history?'+ urllib.parse.urlencode(params) )
+                if type == 'charge':
+                    hist_data = self._callApi('GET', f'/energy_sites/{site_id}/telemetry_history?kind=charge&start_date={t_start_str}&end_date={t_end_str}&time_zone={self.tz_str}')
+                    if not hist_data or 'response' not in hist_data:
+                        hist_data = self._callApi('GET', f'/energy_sites/{site_id}/calendar_history?kind=charge&start_date={t_start_str}&end_date={t_end_str}&period=day&time_zone={self.tz_str}')
+                else:
+                    hist_data = self._callApi('GET', f'/energy_sites/{site_id}/calendar_history?kind={str(type)}&start_date={t_start_str}&end_date={t_end_str}&period=day&time_zone={self.tz_str}')
                 logging.debug('result ({})= {}'.format(type, hist_data))
                 if hist_data:
                     if 'response' in hist_data:
@@ -368,60 +380,91 @@ class teslaPWAccess(teslaAccess):
             logging.debug('Parsing energy data exception : {}'.format(e))
     def process_backup_data(self, site_id, hist_data) -> None:
         logging.debug('process_backup_data: {}'.format(hist_data))
-        backup_data = hist_data
+        backup_data = hist_data if isinstance(hist_data, dict) else {}
         total_duration = 0
+        total_events = int(backup_data.get('total_events', 0))
         date_key = 'unknown' 
-        if int(backup_data['events_count']) > 0:
-            time_str = backup_data['events'][0]['timestamp'] # all days should be the same
-            dt_object = datetime.fromisoformat(time_str)
-            date_str = dt_object.strftime('%Y-%m-%d')
-            if date_str == self.t_now_date:
-                date_key = 'today'                
-            elif date_str == self.t_yesterday_date:
-                date_key = 'yesterday'
-            else:
-                date_key = 'unknown'
-            for indx in range(0,len(backup_data['events'])):
-                event = backup_data['events'][indx]
-                total_duration = total_duration + event['duration']
-        temp = {}
-        temp['total_duration'] = total_duration
-        temp['total_events'] = int(backup_data['total_events'])
+        events = backup_data.get('events', [])
+        if int(backup_data.get('events_count', 0)) > 0 and len(events) > 0:
+            time_str = events[0].get('timestamp')
+            if time_str:
+                try:
+                    dt_object = datetime.fromisoformat(time_str)
+                    date_str = dt_object.strftime('%Y-%m-%d')
+                    if date_str == self.t_now_date:
+                        date_key = 'today'                
+                    elif date_str == self.t_yesterday_date:
+                        date_key = 'yesterday'
+                except Exception:
+                    pass
+            for event in events:
+                total_duration += event.get('duration', 0)
+        temp = {
+            'total_duration': total_duration,
+            'total_events': total_events
+        }
         if date_key != 'unknown':
+            if 'backup' not in self.history_data[site_id]:
+                self.history_data[site_id]['backup'] = {}
             self.history_data[site_id]['backup'][date_key] = temp
-
-        # need to figure put how to deal with dates
-            
 
 
     def process_charge_data(self, site_id, hist_data) -> None:
         logging.debug('process_charge_data: {}'.format(hist_data))
-        charge_data = hist_data
+        charge_data = hist_data if isinstance(hist_data, dict) else {}
         total_duration = 0
         total_events = 0
         total_energy = 0
         date_key = 'unknown' 
-        if 'charge_history' in charge_data:
-            if len(charge_data['charge_history']) >  0:
-                epoch_time = charge_data['charge_history'][0]['charge_start_time']['seconds'] # all days should be the same
-                dt_object = datetime.fromtimestamp(epoch_time)
+
+        history_list = charge_data.get('charge_history') or charge_data.get('time_series') or []
+        if isinstance(history_list, list) and len(history_list) > 0:
+            first_event = history_list[0]
+            start_time = first_event.get('charge_start_time') or first_event.get('timestamp')
+            dt_object = None
+            if isinstance(start_time, dict) and 'seconds' in start_time:
+                try:
+                    dt_object = datetime.fromtimestamp(start_time['seconds'])
+                except Exception:
+                    pass
+            elif isinstance(start_time, (int, float)):
+                try:
+                    dt_object = datetime.fromtimestamp(start_time)
+                except Exception:
+                    pass
+            elif isinstance(start_time, str):
+                try:
+                    dt_object = datetime.fromisoformat(start_time)
+                except Exception:
+                    pass
+
+            if dt_object:
                 date_str = dt_object.strftime('%Y-%m-%d')
                 if date_str == self.t_now_date:
-                    date_key = 'today'                
+                    date_key = 'today'
                 elif date_str == self.t_yesterday_date:
                     date_key = 'yesterday'
-                else:
-                    date_key = 'unknown'
-                total_events = len(charge_data['charge_history'])
-                for indx in range(0,len(charge_data['charge_history'])):                    
-                    #event = charge_data['charge_history'][indx]
-                    total_duration = total_duration + charge_data['charge_history'][indx]['charge_duration']['seconds']
-                    total_energy = total_energy + charge_data['charge_history'][indx]['energy_added_wh']
-        temp = {}
-        temp['total_duration'] = total_duration
-        temp['total_events'] = total_events
-        temp['total_energy'] = total_energy
+
+            total_events = len(history_list)
+            for event in history_list:
+                dur = event.get('charge_duration', 0)
+                if isinstance(dur, dict) and 'seconds' in dur:
+                    total_duration += dur['seconds']
+                elif isinstance(dur, (int, float)):
+                    total_duration += dur
+
+                energy = event.get('energy_added_wh') or event.get('energy_added') or event.get('charging_energy_imported', 0)
+                if isinstance(energy, (int, float)):
+                    total_energy += energy
+
+        temp = {
+            'total_duration': total_duration,
+            'total_events': total_events,
+            'total_energy': total_energy
+        }
         if date_key != 'unknown':
+            if 'charge' not in self.history_data[site_id]:
+                self.history_data[site_id]['charge'] = {}
             self.history_data[site_id]['charge'][date_key] = temp
 
 
@@ -459,22 +502,21 @@ class teslaPWAccess(teslaAccess):
         #    time.sleep(5)
         
         if mode == 'critical':
-            temp =self.tesla_get_live_status(site_id)
-            self.tesla_get_today_history(site_id, 'energy')
-            if temp != None:
+            temp = self.tesla_get_live_status(site_id)
+            if temp is not None:
                 self.site_live_info[site_id] = temp
                 access = True
             else:
                 access = False
         elif mode == 'all':
             access = False
-            temp =self.tesla_get_live_status(site_id)
-            if temp != None:
-                self.site_live_info[site_id]  = temp
+            temp = self.tesla_get_live_status(site_id)
+            if temp is not None:
+                self.site_live_info[site_id] = temp
                 access = True
             logging.debug('sitelive : {}'.format(self.site_live_info))
             temp = self.tesla_get_site_info(site_id)
-            if temp != None:
+            if temp is not None:
                 self.site_info = temp
                 access = True
             logging.debug('site info: {}'.format(self.site_info ))        
@@ -482,24 +524,22 @@ class teslaPWAccess(teslaAccess):
             
             self.tesla_get_today_history(site_id, 'energy')
             self.tesla_get_today_history(site_id, 'backup')
-            #self.tesla_get_today_history(site_id, 'charge')
+            self.tesla_get_today_history(site_id, 'charge')
             if self.date_changed:
                 self.tesla_get_yesterday_history(site_id, 'energy')
                 self.tesla_get_yesterday_history(site_id, 'backup')
-                #self.tesla_get_yesterday_history(site_id, 'charge')
-            try:
-                tmp = self.history_data[site_id]['energy']['yesteday']['consumer_energy_imported_from_battery']
-                if not isinstance(tmp, numbers.Number):
+                self.tesla_get_yesterday_history(site_id, 'charge')
+            else:
+                try:
+                    tmp = self.history_data.get(site_id, {}).get('energy', {}).get('yesterday', {}).get('consumer_energy_imported_from_battery')
+                    yesterday_data_needed = not isinstance(tmp, numbers.Number)
+                except Exception:
                     yesterday_data_needed = True
-                else:
-                    yesterday_data_needed = False
-            except Exception:
-                yesterday_data_needed = True
 
-            if yesterday_data_needed:
-                self.tesla_get_yesterday_history(site_id, 'energy')
-                self.tesla_get_yesterday_history(site_id, 'backup')
-                #self.tesla_get_yesterday_history(site_id, 'charge')
+                if yesterday_data_needed:
+                    self.tesla_get_yesterday_history(site_id, 'energy')
+                    self.tesla_get_yesterday_history(site_id, 'backup')
+                    self.tesla_get_yesterday_history(site_id, 'charge')
                 
             logging.debug('history_data : {}'.format(self.history_data))
         return(access)
@@ -531,7 +571,11 @@ class teslaPWAccess(teslaAccess):
         return(self.site_info[site_id]['backup_reserve_percent'])
     
     def tesla_total_battery(self, site_id):
-        return(self.site_live_info[site_id][site_id]['total_pack_energy'])
+        if site_id in self.site_live_info and isinstance(self.site_live_info[site_id], dict):
+            return self.site_live_info[site_id].get('total_pack_energy')
+        if isinstance(self.total_pack_energy, dict) and site_id in self.total_pack_energy:
+            return self.total_pack_energy[site_id]
+        return None
         
     def tesla_remaining_battery (self, site_id):
         return(self.site_live_info[site_id]['energy_left'])
@@ -598,13 +642,78 @@ class teslaPWAccess(teslaAccess):
         return(self.site_live_info[site_id]['grid_power'])
 
     def teslaExtractEnergyRemaining(self, site_id): 
-        if 'total_pack_energy' in self.site_live_info[site_id]:
-            self.total_pack_energy = self.site_live_info[site_id]['total_pack_energy']
-            return(self.site_live_info[site_id]['energy_left'])
-        elif self.total_pack_energy != self.NaN:
-            return(self.total_pack_energy)
-        else:
-            return(None)
+        if site_id in self.site_live_info and isinstance(self.site_live_info[site_id], dict):
+            if 'total_pack_energy' in self.site_live_info[site_id]:
+                if isinstance(self.total_pack_energy, dict):
+                    self.total_pack_energy[site_id] = self.site_live_info[site_id]['total_pack_energy']
+            if 'energy_left' in self.site_live_info[site_id]:
+                return self.site_live_info[site_id]['energy_left']
+        if isinstance(self.total_pack_energy, dict) and site_id in self.total_pack_energy:
+            val = self.total_pack_energy[site_id]
+            if val != self.NaN:
+                return val
+        return None
+
+    def teslaExtractGridImportMode(self, site_id):
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            disallow = self.site_info[site_id].get('disallow_charge_from_grid_with_solar_installed')
+            if disallow is None and 'components' in self.site_info[site_id]:
+                disallow = self.site_info[site_id]['components'].get('disallow_charge_from_grid_with_solar_installed')
+            if disallow is not None:
+                return 0 if disallow else 1
+            return 1
+        return None
+
+    def teslaExtractGridExportMode(self, site_id):
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            rule = self.site_info[site_id].get('customer_preferred_export_rule')
+            if rule is None and 'components' in self.site_info[site_id]:
+                rule = self.site_info[site_id]['components'].get('customer_preferred_export_rule')
+            if rule:
+                rule_str = str(rule).strip().lower()
+                if rule_str == 'pv_only':
+                    return 0
+                elif rule_str == 'battery_ok':
+                    return 1
+                elif rule_str == 'never':
+                    return 2
+        return None
+
+    def teslaExtractEvChargeReserve(self, site_id):
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            pct = self.site_info[site_id].get('off_grid_vehicle_charging_reserve_percent')
+            if pct is None and 'components' in self.site_info[site_id]:
+                pct = self.site_info[site_id]['components'].get('off_grid_vehicle_charging_reserve_percent')
+            if pct is not None:
+                return int(pct)
+        return None
+
+    def teslaGet_backup_time_remaining(self, site_id):
+        try:
+            temp = self._callApi('GET', f'/energy_sites/{site_id}/backup_time_remaining')
+            if temp and 'response' in temp and isinstance(temp['response'], dict):
+                return temp['response'].get('time_remaining_hours')
+        except Exception as e:
+            logging.debug(f'teslaGet_backup_time_remaining error: {e}')
+        return None
+
+    def teslaGet_tariff_rate(self, site_id):
+        try:
+            temp = self._callApi('GET', f'/energy_sites/{site_id}/tariff_rate')
+            if temp and 'response' in temp:
+                return temp['response']
+        except Exception as e:
+            logging.debug(f'teslaGet_tariff_rate error: {e}')
+        return None
+
+    def TeslaGet_current_rate_state(self, site_id):
+        try:
+            temp = self._callApi('GET', f'/energy_sites/{site_id}/tariff_rate')
+            if temp and 'response' in temp and isinstance(temp['response'], dict):
+                return temp['response'].get('rate_plan')
+        except Exception as e:
+            logging.debug(f'TeslaGet_current_rate_state error: {e}')
+        return None
 
     def teslaExtractGeneratorSupply (self, site_id):
         return(self.site_live_info[site_id]['generator_power'])
@@ -641,74 +750,98 @@ class teslaPWAccess(teslaAccess):
     '''
     def tesla_grid_energy_import(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_energy_imported'])
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('grid_energy_imported', 0)
+        return 0
         
     def tesla_grid_energy_export(self, site_id, day):    
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_energy_exported_from_solar'] + self.history_data[site_id]['energy'][day]['grid_energy_exported_from_generator'] + self.history_data[site_id]['energy'][day]['grid_energy_exported_from_battery'])
+            d = self.history_data.get(site_id, {}).get('energy', {}).get(day, {})
+            return (d.get('grid_energy_exported_from_solar', 0) +
+                    d.get('grid_energy_exported_from_generator', 0) +
+                    d.get('grid_energy_exported_from_battery', 0))
+        return 0
 
     def tesla_solar_to_grid_energy(self, site_id, day): 
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_energy_exported_from_solar'])
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('grid_energy_exported_from_solar', 0)
+        return 0
 
     def tesla_solar_energy_exported(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['solar_energy_exported'])
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('solar_energy_exported', 0)
+        return 0
 
     def tesla_home_energy_total(self, site_id, day):    
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_grid'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_solar'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_battery'] + self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_generator'] )
+            d = self.history_data.get(site_id, {}).get('energy', {}).get(day, {})
+            return (d.get('consumer_energy_imported_from_grid', 0) +
+                    d.get('consumer_energy_imported_from_solar', 0) +
+                    d.get('consumer_energy_imported_from_battery', 0) +
+                    d.get('consumer_energy_imported_from_generator', 0))
+        return 0
 
-
-    def  tesla_home_energy_solar(self, site_id, day):   
+    def tesla_home_energy_solar(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_solar'])
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('consumer_energy_imported_from_solar', 0)
+        return 0
         
-    def  tesla_home_energy_battery(self, site_id, day):   
+    def tesla_home_energy_battery(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_battery'])   
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('consumer_energy_imported_from_battery', 0)
+        return 0
         
-    def  tesla_home_energy_grid(self, site_id, day):   
+    def tesla_home_energy_grid(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_grid'])          
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('consumer_energy_imported_from_grid', 0)
+        return 0
 
-    def  tesla_home_energy_generator(self, site_id, day):   
+    def tesla_home_energy_generator(self, site_id, day):   
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['consumer_energy_imported_from_generator'])            
-
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('consumer_energy_imported_from_generator', 0)
+        return 0
 
     def tesla_battery_energy_import(self, site_id, day):        
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['battery_energy_imported_from_grid'] + self.history_data[site_id]['energy'][day]['battery_energy_imported_from_solar'] + self.history_data[site_id]['energy'][day]['battery_energy_imported_from_generator']  )
+            d = self.history_data.get(site_id, {}).get('energy', {}).get(day, {})
+            return (d.get('battery_energy_imported_from_grid', 0) +
+                    d.get('battery_energy_imported_from_solar', 0) +
+                    d.get('battery_energy_imported_from_generator', 0))
+        return 0
 
     def tesla_battery_energy_export(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['battery_energy_exported'])
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('battery_energy_exported', 0)
+        return 0
         
     def tesla_grid_service_export(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_services_energy_exported'])   
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('grid_services_energy_exported', 0)
+        return 0
 
     def tesla_grid_service_import(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['energy'][day]['grid_services_energy_imported'])
-        
+            return self.history_data.get(site_id, {}).get('energy', {}).get(day, {}).get('grid_services_energy_imported', 0)
+        return 0
 
     def tesla_backup_events(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['backup'][day]['total_events'])
+            return self.history_data.get(site_id, {}).get('backup', {}).get(day, {}).get('total_events', 0)
+        return 0
         
     def tesla_backup_time(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['backup'][day]['total_duration'])
+            return self.history_data.get(site_id, {}).get('backup', {}).get(day, {}).get('total_duration', 0)
+        return 0
 
     def tesla_evcharge_power(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['charge'][day]['total_energy'])
+            return self.history_data.get(site_id, {}).get('charge', {}).get(day, {}).get('total_energy', 0)
+        return 0
         
     def tesla_evcharge_time(self, site_id, day):
         if day in self.DAY_HISTORY:
-            return(self.history_data[site_id]['charge'][day]['total_duration'])
+            return self.history_data.get(site_id, {}).get('charge', {}).get(day, {}).get('total_duration', 0)
+        return 0
 
 
 
