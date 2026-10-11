@@ -554,6 +554,45 @@ class teslaPWAccess(teslaAccess):
 
 
    
+    def tesla_battery_type(self, site_id) -> str:
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            info = self.site_info[site_id]
+            comps = info.get('components', {}) if isinstance(info.get('components'), dict) else {}
+            b_type = comps.get('battery_type') or info.get('battery_type')
+            if b_type:
+                return str(b_type).lower()
+        return ''
+
+    def tesla_gateway_type(self, site_id) -> str:
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            info = self.site_info[site_id]
+            comps = info.get('components', {}) if isinstance(info.get('components'), dict) else {}
+            g_type = comps.get('gateway_type') or info.get('gateway_type')
+            if g_type:
+                return str(g_type).lower()
+        return ''
+
+    def tesla_supports_local_access(self, site_id) -> bool:
+        """Determines if the site uses Powerwall hardware supporting local customer LAN API."""
+        b_type = self.tesla_battery_type(site_id)
+        g_type = self.tesla_gateway_type(site_id)
+        
+        # Explicit PW3 / neop check: Powerwall 3 does not offer customer local API
+        if 'powerwall3' in b_type or 'pw3' in b_type or 'pw3' in g_type or 'neop' in g_type:
+            return False
+            
+        # Explicit Powerwall 2 / Backup Gateway detection
+        if 'ac_powerwall' in b_type or 'powerwall2' in b_type or g_type in ('teg', 'gateway2', 'gateway1'):
+            return True
+            
+        # Default for existing Powerwall battery installations if not explicitly PW3
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            comps = self.site_info[site_id].get('components', {})
+            if isinstance(comps, dict) and comps.get('battery'):
+                return True
+                
+        return False
+
     def teslaSolarInstalled(self, site_id) -> bool:
         return(self.site_info[site_id]['components']['solar'])
 

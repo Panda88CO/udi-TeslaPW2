@@ -1164,3 +1164,19 @@ class tesla_info():
             return(self.TPWcloud.tesla_set_off_grid_vehicle_charging(site_id, percent))           
         except Exception:
             return(None)               
+
+    def getTPW_supports_local_access(self, site_id) -> bool:
+        try:
+            if hasattr(self.TPWcloud, 'tesla_supports_local_access'):
+                return self.TPWcloud.tesla_supports_local_access(site_id)
+        except Exception:
+            pass
+        return False
+
+    def getTPW_battery_type(self, site_id) -> str:
+        try:
+            if hasattr(self.TPWcloud, 'tesla_battery_type'):
+                return self.TPWcloud.tesla_battery_type(site_id)
+        except Exception:
+            pass
+        return ''

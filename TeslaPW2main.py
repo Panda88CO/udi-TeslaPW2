@@ -219,7 +219,8 @@ class TeslaPWController(udi_interface.Node):
         logging.debug('access {} {}'.format(self.local_access_enabled, self.cloud_access_enabled))
         
 
-        self.TPW = tesla_info(self.TPW_cloud)
+        if not hasattr(self, 'TPW') or self.TPW is None:
+            self.TPW = tesla_info(self.TPW_cloud)
 
         if self.cloud_access_enabled and not self.TPW.cloud_authenticated():
             self.poly.Notices['auth'] = 'Please initiate authentication - press Authenticate button'
@@ -305,11 +306,37 @@ class TeslaPWController(udi_interface.Node):
 
         logging.debug('Access: {} {}'.format(self.localAccessUp, self.cloudAccessUp))
 
+        # Check if connected Powerwall hardware supports local LAN API
+        local_candidate_found = False
+        pw3_found = False
+        for PW_site in self.PowerWalls:
+            if hasattr(self.TPW, 'getTPW_supports_local_access') and self.TPW.getTPW_supports_local_access(PW_site):
+                local_candidate_found = True
+            elif hasattr(self.TPW, 'getTPW_battery_type') and 'powerwall3' in self.TPW.getTPW_battery_type(PW_site):
+                pw3_found = True
+
+        if local_candidate_found and not self.LOCAL_IP_ADDRESS:
+            logging.info('Powerwall 2 detected with local API support. Presenting local configuration parameters.')
+            for param in ('LOCAL_IP_ADDRESS', 'LOCAL_USER_EMAIL', 'LOCAL_USER_PASSWORD'):
+                if param not in self.customParameters:
+                    self.customParameters[param] = ''
+            if hasattr(self.poly, 'Notices'):
+                self.poly.Notices['local_opt'] = (
+                    'Powerwall 2 detected with local API support. If you want fast local LAN polling, '
+                    'enter your Gateway IP, Email, and Password under Custom Configuration.'
+                )
+        elif self.LOCAL_IP_ADDRESS and hasattr(self.poly, 'Notices') and 'local_opt' in self.poly.Notices:
+            self.poly.Notices.delete('local_opt')
+        elif pw3_found and not local_candidate_found:
+            logging.info('Powerwall 3 detected. Local customer LAN API is not supported on PW3; using Tesla Cloud Fleet API.')
+            if hasattr(self.poly, 'Notices') and 'local_opt' in self.poly.Notices:
+                self.poly.Notices.delete('local_opt')
+
         if self.cloudAccessUp or self.localAccessUp:            
             #logging.debug('start 3: {}'.format(self.TPW_cloud._oauthTokens))
             self.longPoll()
         else:
-            self.poly.Notices['cfg'] = 'Tesla PowerWall NS needs configuration and/or LOCAL_EMAIL, LOCAL_PASSWORD, LOCAL_IP_ADDRESS'
+            self.poly.Notices['cfg'] = 'Please click Authenticate to connect to your Tesla account.'
         
         while not self.config_done:
             time.sleep(5)

@@ -366,6 +366,8 @@ class MockTeslaService:
         self.generatorInstalled = False
         self.poll_calls = []
         self.last_update_time = 1728148800
+        self.supports_local_access = True
+        self.battery_type = 'ac_powerwall'
 
     # Getters
     def getTPW_onLine(self): return self.online
@@ -437,6 +439,24 @@ class MockTeslaService:
 
     def disconnectTPW(self):
         self.online = False
+
+    def getTPW_supports_local_access(self, site_id=None):
+        return self.supports_local_access
+
+    def getTPW_battery_type(self, site_id=None):
+        return self.battery_type
+
+    def cloud_authenticated(self):
+        return True
+
+    def init_cloud(self, region=None):
+        return True
+
+    def init_cloud_data(self, site_id):
+        return True
+
+    def tesla_get_products(self):
+        return {'site_12345678': {'energy_site_id': '12345678', 'site_name': 'Power Wall Status'}}
 
 
 # ---------------------------------------------------------------------------
@@ -1288,6 +1308,155 @@ class TestStartupSequence(unittest.TestCase):
         self.assertEqual(res, 'EU')
         self.assertEqual(oauth.region, 'EU')
         self.assertEqual(oauth.yourApiEndpoint, 'https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1')
+
+    def test_tesla_pwoauth_supports_local_access_detection(self):
+        """Verifies tesla_supports_local_access detects Powerwall 2 vs Powerwall 3 accurately."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+
+        # Powerwall 2 (ac_powerwall + teg)
+        tpw.site_info['site_pw2'] = {
+            'components': {'battery_type': 'ac_powerwall', 'gateway_type': 'teg', 'battery': True}
+        }
+        self.assertEqual(tpw.tesla_battery_type('site_pw2'), 'ac_powerwall')
+        self.assertEqual(tpw.tesla_gateway_type('site_pw2'), 'teg')
+        self.assertTrue(tpw.tesla_supports_local_access('site_pw2'))
+
+        # Powerwall 2 (powerwall2 name + gateway2)
+        tpw.site_info['site_pw2_alt'] = {
+            'battery_type': 'powerwall2',
+            'gateway_type': 'gateway2',
+            'components': {'battery': True}
+        }
+        self.assertEqual(tpw.tesla_battery_type('site_pw2_alt'), 'powerwall2')
+        self.assertEqual(tpw.tesla_gateway_type('site_pw2_alt'), 'gateway2')
+        self.assertTrue(tpw.tesla_supports_local_access('site_pw2_alt'))
+
+        # Powerwall 3 (powerwall3 + pw3)
+        tpw.site_info['site_pw3'] = {
+            'components': {'battery_type': 'powerwall3', 'gateway_type': 'pw3', 'battery': True}
+        }
+        self.assertEqual(tpw.tesla_battery_type('site_pw3'), 'powerwall3')
+        self.assertEqual(tpw.tesla_gateway_type('site_pw3'), 'pw3')
+        self.assertFalse(tpw.tesla_supports_local_access('site_pw3'))
+
+        # Powerwall 3 variant with neop gateway
+        tpw.site_info['site_neop'] = {
+            'components': {'gateway_type': 'neop', 'battery': True}
+        }
+        self.assertFalse(tpw.tesla_supports_local_access('site_neop'))
+
+        # Non-battery site / empty info
+        tpw.site_info['site_solar_only'] = {'components': {'solar': True}}
+        self.assertFalse(tpw.tesla_supports_local_access('site_solar_only'))
+        self.assertFalse(tpw.tesla_supports_local_access('nonexistent_site'))
+
+    def test_tesla_info_supports_local_access_delegation(self):
+        """Verifies tesla_info wrappers delegate to TPWcloud and handle errors safely."""
+        from TeslaInfoV2 import tesla_info
+        tpw = tesla_info(None)
+
+        class MockCloud:
+            def tesla_supports_local_access(self, site_id):
+                return site_id == 'pw2'
+            def tesla_battery_type(self, site_id):
+                return 'ac_powerwall' if site_id == 'pw2' else 'powerwall3'
+
+        tpw.TPWcloud = MockCloud()
+        self.assertTrue(tpw.getTPW_supports_local_access('pw2'))
+        self.assertFalse(tpw.getTPW_supports_local_access('pw3'))
+        self.assertEqual(tpw.getTPW_battery_type('pw2'), 'ac_powerwall')
+        self.assertEqual(tpw.getTPW_battery_type('pw3'), 'powerwall3')
+
+        # None / missing method error safety
+        tpw.TPWcloud = None
+        self.assertFalse(tpw.getTPW_supports_local_access('pw2'))
+        self.assertEqual(tpw.getTPW_battery_type('pw2'), '')
+
+    def test_controller_start_pw2_presents_local_params_and_notice(self):
+        """Verifies controller start() detects PW2 and dynamically presents local params and notice."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.customNsHandlerDone = True
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+
+        mock_svc = MockTeslaService()
+        mock_svc.supports_local_access = True
+        mock_svc.battery_type = 'ac_powerwall'
+
+        controller.TPW = mock_svc
+        controller.config_done = True
+        controller.customParam_done = True
+        controller.nodes_in_db = []
+        controller.region = 'NA'
+        controller.LOCAL_IP_ADDRESS = None
+        controller.customParameters = {}
+
+        controller.start()
+
+        self.assertIn('LOCAL_IP_ADDRESS', controller.customParameters)
+        self.assertIn('LOCAL_USER_EMAIL', controller.customParameters)
+        self.assertIn('LOCAL_USER_PASSWORD', controller.customParameters)
+        self.assertEqual(controller.customParameters['LOCAL_IP_ADDRESS'], '')
+        self.assertIn('local_opt', poly.Notices)
+        self.assertIn('Powerwall 2 detected with local API support', poly.Notices['local_opt'])
+
+    def test_controller_start_pw3_suppresses_local_params_and_clears_notice(self):
+        """Verifies controller start() detects PW3, suppresses local params, and removes local_opt notice."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.customNsHandlerDone = True
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+
+        mock_svc = MockTeslaService()
+        mock_svc.supports_local_access = False
+        mock_svc.battery_type = 'powerwall3'
+
+        controller.TPW = mock_svc
+        controller.config_done = True
+        controller.customParam_done = True
+        controller.nodes_in_db = []
+        controller.region = 'NA'
+        controller.LOCAL_IP_ADDRESS = None
+        controller.customParameters = {}
+        poly.Notices['local_opt'] = 'previous notice'
+
+        controller.start()
+
+        self.assertNotIn('LOCAL_IP_ADDRESS', controller.customParameters)
+        self.assertNotIn('LOCAL_USER_EMAIL', controller.customParameters)
+        self.assertNotIn('LOCAL_USER_PASSWORD', controller.customParameters)
+        self.assertNotIn('local_opt', poly.Notices)
+
+    def test_controller_start_configured_local_ip_clears_notice(self):
+        """Verifies that when LOCAL_IP_ADDRESS is already configured, local_opt notice is deleted."""
+        from TeslaOauth import teslaAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaAccess(poly, 'energy_device_data')
+        oauth.customNsHandlerDone = True
+        controller = TeslaPWController(poly, 'controller', 'controller', 'Tesla PowerWall Info', oauth)
+
+        mock_svc = MockTeslaService()
+        mock_svc.supports_local_access = True
+        mock_svc.battery_type = 'ac_powerwall'
+
+        controller.TPW = mock_svc
+        controller.config_done = True
+        controller.customParam_done = True
+        controller.nodes_in_db = []
+        controller.region = 'NA'
+        controller.LOCAL_IP_ADDRESS = '192.168.1.150'
+        controller.customParameters = {'LOCAL_IP_ADDRESS': '192.168.1.150'}
+        poly.Notices['local_opt'] = 'old notice'
+
+        controller.start()
+
+        self.assertEqual(controller.customParameters['LOCAL_IP_ADDRESS'], '192.168.1.150')
+        self.assertNotIn('local_opt', poly.Notices)
+
 
 
 class TestPhase1BugFixes(unittest.TestCase):
