@@ -45,11 +45,29 @@ if 'requests' not in sys.modules:
         import requests
     except ImportError:
         mock_req = types.ModuleType('requests')
+        class MockRequestException(IOError):
+            def __init__(self, *args, response=None, **kwargs):
+                super().__init__(*args)
+                self.response = response
+
+        class MockHTTPError(MockRequestException):
+            pass
+
+        class MockConnectionError(MockRequestException):
+            pass
+
+        class MockTimeout(MockRequestException):
+            pass
+
+        class MockJSONDecodeError(ValueError):
+            pass
+
         mock_req.exceptions = types.SimpleNamespace(
-            HTTPError=Exception,
-            RequestException=Exception,
-            ConnectionError=Exception,
-            Timeout=Exception,
+            RequestException=MockRequestException,
+            HTTPError=MockHTTPError,
+            ConnectionError=MockConnectionError,
+            Timeout=MockTimeout,
+            JSONDecodeError=MockJSONDecodeError,
         )
         mock_req.post = lambda *a, **k: types.SimpleNamespace(raise_for_status=lambda: None, json=lambda: {})
         mock_req.get = lambda *a, **k: types.SimpleNamespace(raise_for_status=lambda: None, json=lambda: {})

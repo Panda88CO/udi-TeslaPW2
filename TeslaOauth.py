@@ -325,13 +325,14 @@ class teslaAccess(udi_interface.OAuth):
                 return response.text
 
         except requests.exceptions.HTTPError as error:
-            status_code = error.response.status_code if error.response is not None else None
+            resp = getattr(error, 'response', None)
+            status_code = getattr(resp, 'status_code', None)
             logging.error(f"Call { method } { completeUrl } failed: { error } (Status: { status_code })")
             
             if status_code == 429:
                 retry_after = 'unknown'
-                if error.response is not None and hasattr(error.response, 'headers') and error.response.headers:
-                    retry_after = error.response.headers.get('Retry-After', 'unknown')
+                if resp is not None and hasattr(resp, 'headers') and resp.headers:
+                    retry_after = resp.headers.get('Retry-After', 'unknown')
                 logging.warning(f"Tesla Fleet API rate limit reached (429 Too Many Requests). Retry-After: {retry_after}s.")
                 if hasattr(self, 'poly') and hasattr(self.poly, 'Notices'):
                     self.poly.Notices['rate_limit'] = f"Tesla API rate limit reached. Backing off (Retry-After: {retry_after}s)."

@@ -16,7 +16,7 @@ import json
 import os
 from typing import Any, Dict, List
 
-PROFILE_VERSION = "0.2.3"
+PROFILE_VERSION = "0.2.4"
 
 
 def _profile_editors() -> List[Dict[str, Any]]:
