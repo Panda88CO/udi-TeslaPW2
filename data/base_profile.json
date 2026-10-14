@@ -1,5 +1,5 @@
 {
-  "version": "0.2.4",
+  "version": "0.2.5",
   "delete": {
     "editors": [
       "*"
@@ -486,11 +486,6 @@
           "editor": "KWH"
         },
         {
-          "id": "GV28",
-          "name": "Generator Today",
-          "editor": "KWH"
-        },
-        {
           "id": "TIME",
           "name": "Last Update Time",
           "editor": "UNIXTIME"
@@ -520,16 +515,6 @@
           "id": "ST",
           "name": "Connected to Tesla",
           "editor": "ONLINE"
-        },
-        {
-          "id": "GV1",
-          "name": "Generator Today",
-          "editor": "KWH"
-        },
-        {
-          "id": "GV2",
-          "name": "Generator Yesterday",
-          "editor": "KWH"
         },
         {
           "id": "GV8",
@@ -663,14 +648,14 @@
       "icon": "Electricity",
       "properties": [
         {
+          "id": "ST",
+          "name": "Operating Mode",
+          "editor": "OPMODE"
+        },
+        {
           "id": "GV1",
           "name": "Backup Reserve (%)",
           "editor": "PERCENT"
-        },
-        {
-          "id": "GV2",
-          "name": "Operating Mode",
-          "editor": "OPMODE"
         },
         {
           "id": "GV3",
@@ -719,7 +704,7 @@
                 "id": "",
                 "name": "Operating Mode",
                 "editor": "SETOPMODE",
-                "init": "GV2"
+                "init": "ST"
               }
             ]
           },
@@ -884,10 +869,10 @@
     "CMD-PWHISTORY-UPDATE-NAME": "Update System Data",
     "ND-PWSETUP-NAME": "Power Wall Control Parameters",
     "ND-PWSETUP-ICON": "Electricity",
+    "ST-nlspwsetup-ST-NAME": "Operating Mode",
+    "ST-PWSETUP-ST-NAME": "Operating Mode",
     "ST-nlspwsetup-GV1-NAME": "Backup Reserve (%)",
     "ST-PWSETUP-GV1-NAME": "Backup Reserve (%)",
-    "ST-nlspwsetup-GV2-NAME": "Operating Mode",
-    "ST-PWSETUP-GV2-NAME": "Operating Mode",
     "ST-nlspwsetup-GV3-NAME": "Storm Mode",
     "ST-PWSETUP-GV3-NAME": "Storm Mode",
     "ST-nlspwsetup-GV5-NAME": "Grid Import to battery",

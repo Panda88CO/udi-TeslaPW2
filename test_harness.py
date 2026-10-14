@@ -837,8 +837,8 @@ class TestTeslaPWSetupNode(unittest.TestCase):
 
     def test_node_id_and_initial_drivers(self):
         self.assertEqual(self.node.id, 'PWSETUP')
+        self.assertEqual(self.node._driver_values['ST']['value'], 1)      # Op mode
         self.assertEqual(self.node._driver_values['GV1']['value'], 20.0)  # Backup %
-        self.assertEqual(self.node._driver_values['GV2']['value'], 1)     # Op mode
         self.assertEqual(self.node._driver_values['GV3']['value'], 0)     # Storm mode
         self.assertEqual(self.node._driver_values['GV5']['value'], 0)     # Grid import mode
         self.assertEqual(self.node._driver_values['GV6']['value'], 0)     # Grid export mode
@@ -856,7 +856,7 @@ class TestTeslaPWSetupNode(unittest.TestCase):
     def test_command_op_mode(self):
         self.node.setOperatingMode({'value': '2'})  # autonomous
         self.assertEqual(self.tpw.operation_mode, 2)
-        self.assertEqual(self.node._driver_values['GV2']['value'], 2)
+        self.assertEqual(self.node._driver_values['ST']['value'], 2)
 
     def test_command_backup_percent(self):
         self.node.setBackupPercent({'value': '35.5'})
@@ -983,7 +983,7 @@ class TestDynamicJsonProfile(unittest.TestCase):
     """
 
     def setUp(self):
-        self.payload = build_profile_definition()
+        self.payload = build_profile_definition(generator_installed=True)
         self.editors = self.payload['editors']
         self.editor_map = {e['id']: e for e in self.editors}
         self.nodedefs = self.payload['nodedefs']
@@ -1876,6 +1876,148 @@ class TestPhase4BugFixes(unittest.TestCase):
         self.assertEqual(hist_node._driver_values['GV27']['value'], 120.0)
         self.assertEqual(hist_node._driver_values['GV28']['value'], 18.0)
         self.assertEqual(hist_node._driver_values['GV29']['value'], 90.0)
+
+
+class TestPhase5Features(unittest.TestCase):
+    """Tests for Phase 5 features: conditional generator drivers and PWSETUP ST operating mode."""
+
+    def test_dynamic_profile_generator_conditional(self):
+        """Verifies build_profile_definition includes/omits generator drivers based on generator_installed."""
+        from profile_def import build_profile_definition
+
+        # Without generator
+        p_no_gen = build_profile_definition(generator_installed=False)
+        pwstatus_no = next(nd for nd in p_no_gen['nodedefs'] if nd['id'] == 'PWSTATUS')
+        pwhist_no = next(nd for nd in p_no_gen['nodedefs'] if nd['id'] == 'PWHISTORY')
+
+        pwstatus_no_drivers = [prop['id'] for prop in pwstatus_no['properties']]
+        pwhist_no_drivers = [prop['id'] for prop in pwhist_no['properties']]
+
+        self.assertNotIn('GV28', pwstatus_no_drivers)
+        self.assertNotIn('GV1', pwhist_no_drivers)
+        self.assertNotIn('GV2', pwhist_no_drivers)
+
+        # With generator
+        p_gen = build_profile_definition(generator_installed=True)
+        pwstatus_gen = next(nd for nd in p_gen['nodedefs'] if nd['id'] == 'PWSTATUS')
+        pwhist_gen = next(nd for nd in p_gen['nodedefs'] if nd['id'] == 'PWHISTORY')
+
+        pwstatus_gen_drivers = [prop['id'] for prop in pwstatus_gen['properties']]
+        pwhist_gen_drivers = [prop['id'] for prop in pwhist_gen['properties']]
+
+        self.assertIn('GV28', pwstatus_gen_drivers)
+        self.assertIn('GV1', pwhist_gen_drivers)
+        self.assertIn('GV2', pwhist_gen_drivers)
+
+    def test_pwsetup_st_operating_mode_in_profile(self):
+        """Verifies PWSETUP uses ST for operating mode and removes GV2."""
+        from profile_def import build_profile_definition
+        payload = build_profile_definition()
+        pwsetup = next(nd for nd in payload['nodedefs'] if nd['id'] == 'PWSETUP')
+
+        props = {p['id']: p['editor'] for p in pwsetup['properties']}
+        self.assertIn('ST', props)
+        self.assertEqual(props['ST'], 'OPMODE')
+        self.assertNotIn('GV2', props)
+
+        # Verify OPMODE cmd inits from ST
+        opmode_cmd = next(c for c in pwsetup['cmds']['accepts'] if c['id'] == 'OPMODE')
+        self.assertEqual(opmode_cmd['parameters'][0]['init'], 'ST')
+
+    def test_tesla_generator_installed_detection(self):
+        """Verifies teslaGeneratorInstalled accurately checks components dict."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        oauth = teslaPWAccess(poly, 'energy_device_data')
+
+        oauth.site_info['site_gen'] = {'components': {'generator': True}}
+        self.assertTrue(oauth.teslaGeneratorInstalled('site_gen'))
+
+        oauth.site_info['site_no_gen'] = {'components': {'generator': False}}
+        self.assertFalse(oauth.teslaGeneratorInstalled('site_no_gen'))
+
+        oauth.site_info['site_empty'] = {'components': {}}
+        self.assertFalse(oauth.teslaGeneratorInstalled('site_empty'))
+
+    def test_generator_override_methods(self):
+        """Verifies TeslaInfoV2 generator override methods."""
+        from TeslaInfoV2 import tesla_info
+        tpw = tesla_info(None)
+        self.assertFalse(tpw.is_generator_installed())
+
+        tpw.set_generator_override(True)
+        self.assertTrue(tpw.is_generator_installed())
+        self.assertTrue(tpw.generatorInstalled)
+
+        tpw.set_generator_override(False)
+        self.assertFalse(tpw.is_generator_installed())
+        self.assertFalse(tpw.generatorInstalled)
+
+        tpw.set_generator_override(None)
+        self.assertFalse(tpw.is_generator_installed())
+
+    def test_status_and_history_nodes_omit_generator_drivers(self):
+        """Verifies status and history nodes filter out generator drivers when generator not installed."""
+        poly = MockPolyglotInterface()
+        tpw = MockTeslaService()
+        tpw.generatorInstalled = False
+
+        st_node = teslaPWStatusNode(poly, 'controller', 'pwstatus_test', 'Status Node', 'site_123', tpw)
+        st_driver_ids = [d['driver'] for d in st_node.drivers]
+        self.assertNotIn('GV28', st_driver_ids)
+
+        hist_node = teslaPWHistoryNode(poly, 'controller', 'pwhist_test', 'History Node', 'site_123', tpw)
+        hist_driver_ids = [d['driver'] for d in hist_node.drivers]
+        self.assertNotIn('GV1', hist_driver_ids)
+        self.assertNotIn('GV2', hist_driver_ids)
+
+        # When generator is installed
+        poly2 = MockPolyglotInterface()
+        tpw_gen = MockTeslaService()
+        tpw_gen.generatorInstalled = True
+
+        st_node_gen = teslaPWStatusNode(poly2, 'controller', 'pwstatus_gen', 'Status Node Gen', 'site_123', tpw_gen)
+        st_gen_driver_ids = [d['driver'] for d in st_node_gen.drivers]
+        self.assertIn('GV28', st_gen_driver_ids)
+
+        hist_node_gen = teslaPWHistoryNode(poly2, 'controller', 'pwhist_gen', 'History Node Gen', 'site_123', tpw_gen)
+        hist_gen_driver_ids = [d['driver'] for d in hist_node_gen.drivers]
+        self.assertIn('GV1', hist_gen_driver_ids)
+        self.assertIn('GV2', hist_gen_driver_ids)
+
+    def test_poll_system_data_solar_not_installed_local_polling(self):
+        """Verifies pollSystemData safely handles solarInstalled=False without AttributeError."""
+        from TeslaInfoV2 import tesla_info
+        tpw = tesla_info(None)
+        tpw.solarInstalled = False
+        tpw.localAccessUp = True
+        tpw.TPWcloudAccess = False
+
+        class MockMeter:
+            def __init__(self, exp=10.0, imp=5.0):
+                self.energy_exported = exp
+                self.energy_imported = imp
+        class MockMeters:
+            def get_meter(self, mtype):
+                return MockMeter()
+        class MockLocal:
+            def get_sitemaster(self):
+                return {}
+            def get_meters(self):
+                return MockMeters()
+            def is_authenticated(self):
+                return True
+
+        tpw.TPWlocal = MockLocal()
+        tpw.meters = MockMeters()
+        tpw.DSbatteryMeter = MockMeter()
+        tpw.DSloadMeter = MockMeter()
+        tpw.DSsiteMeter = MockMeter()
+
+        result = tpw.pollSystemData('site_123', 'all')
+        self.assertTrue(result)
+        self.assertEqual(tpw.daysTotalSolar, 0.0)
+
 
 
 # ---------------------------------------------------------------------------

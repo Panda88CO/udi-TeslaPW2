@@ -160,8 +160,6 @@ class teslaAccess(udi_interface.OAuth):
     def customDataDone(self):
         return self.customDataHandlerDone
 
-    def customDateDone(self):
-        return self.customDataHandlerDone
 
 
     #def customOauthDone(self):

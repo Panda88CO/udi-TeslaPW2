@@ -486,7 +486,10 @@ class tesla_info():
                     # any of this that we got from the cloud calculations is
                     # overwritten here because local data takes priority
                     # Need to correlate to APP!!!!
-                    self.daysTotalSolar =  (self.solarMeter.energy_exported - self.DSsolarMeter.energy_exported)
+                    if self.solarInstalled and hasattr(self, 'solarMeter') and hasattr(self, 'DSsolarMeter'):
+                        self.daysTotalSolar =  (self.solarMeter.energy_exported - self.DSsolarMeter.energy_exported)
+                    else:
+                        self.daysTotalSolar = 0.0
                     self.daysTotalConsumption = (self.loadMeter.energy_imported - self.DSloadMeter.energy_imported)
                     self.daysTotalGeneraton = (self.siteMeter.energy_exported - self.DSsiteMeter.energy_exported )
                     self.daysTotalSite_imp =self.siteMeter.energy_imported - self.DSsiteMeter.energy_imported
@@ -496,7 +499,10 @@ class tesla_info():
                     self.daysTotalGrid = -self.daysTotalConsumption - self.daysTotalGeneraton 
                     if not self.TPWcloudAccess:
                         self.daysTotalGridServices = 0.0 #Does not seem to exist
-                        self.daysTotalGenerator = 0.0 #needs to be updated - may not exist
+                        if self.generatorInstalled and hasattr(self, 'generatorMeter') and hasattr(self, 'DSgeneratorMeter'):
+                            self.daysTotalGenerator = float(self.generatorMeter.energy_exported - self.DSgeneratorMeter.energy_exported)
+                        else:
+                            self.daysTotalGenerator = 0.0 #needs to be updated - may not exist
             self.last_data_receive_time = int(time.time())
             self.firstPollCompleted = True
             return True

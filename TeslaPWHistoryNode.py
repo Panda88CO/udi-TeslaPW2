@@ -29,6 +29,14 @@ class teslaPWHistoryNode(udi_interface.Node):
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.poly.subscribe(self.poly.START, self.start, address)
 
+        gen_installed = False
+        if hasattr(self.TPW, 'is_generator_installed'):
+            gen_installed = self.TPW.is_generator_installed()
+        elif hasattr(self.TPW, 'generatorInstalled'):
+            gen_installed = bool(self.TPW.generatorInstalled)
+        if not gen_installed:
+            self.drivers = [d for d in self.drivers if d.get('driver') not in ('GV1', 'GV2')]
+
         self.poly.addNode(self)
         self.wait_for_node_done()
         self.node = self
@@ -87,8 +95,14 @@ class teslaPWHistoryNode(udi_interface.Node):
     #def update_PW_data(self, level):
     #    pass
         #self.PW_setDriver('GV0', self.round2ISY(self.TPW.getTPW_daysGrid_import(self.site_id) - self.TPW.getTPW_daysGrid_export(self.site_id),2), 33)
-        self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id),2), 33)
-        self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(self.site_id),2), 33)
+        gen_installed = False
+        if hasattr(self.TPW, 'is_generator_installed'):
+            gen_installed = self.TPW.is_generator_installed()
+        elif hasattr(self.TPW, 'generatorInstalled'):
+            gen_installed = bool(self.TPW.generatorInstalled)
+        if gen_installed:
+            self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id), 2), 33)
+            self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(self.site_id), 2), 33)
         #self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id) - self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33)
 
 

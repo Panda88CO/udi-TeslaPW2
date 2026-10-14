@@ -16,7 +16,7 @@ import json
 import os
 from typing import Any, Dict, List
 
-PROFILE_VERSION = "0.2.4"
+PROFILE_VERSION = "0.2.5"
 
 
 def _profile_editors() -> List[Dict[str, Any]]:
@@ -362,8 +362,63 @@ def _profile_editors() -> List[Dict[str, Any]]:
     ]
 
 
-def _profile_nodedefs() -> List[Dict[str, Any]]:
+def _profile_nodedefs(generator_installed: bool = False) -> List[Dict[str, Any]]:
     """Return all active nodedef definitions for the Tesla Powerwall Node Server."""
+    pwstatus_props = [
+        {"id": "ST", "name": "Connected to Tesla", "editor": "ONLINE"},
+        {"id": "GV0", "name": "Remaining Battery", "editor": "PERCENT"},
+        {"id": "GV1", "name": "Inst Solar Export", "editor": "KW"},
+        {"id": "GV2", "name": "Inst Battery Export", "editor": "KW"},
+        {"id": "GV3", "name": "Inst Home Load", "editor": "KW"},
+        {"id": "GV4", "name": "Inst Grid Import", "editor": "KW"},
+        {"id": "GV5", "name": "Operation Mode", "editor": "OPMODE"},
+        {"id": "GV6", "name": "Grid Status", "editor": "GRIDST"},
+        {"id": "GV7", "name": "Grid Services Active", "editor": "GRIDMODE"},
+        {"id": "GV8", "name": "Home Total Use Today", "editor": "KWH"},
+        {"id": "GV9", "name": "Solar Export Today", "editor": "KWH"},
+        {"id": "GV10", "name": "Battery Export Today", "editor": "KWH"},
+        {"id": "GV11", "name": "Battery Import Today", "editor": "KWH"},
+        {"id": "GV12", "name": "Grid Export Today", "editor": "KWH"},
+        {"id": "GV13", "name": "Grid Import Today", "editor": "KWH"},
+        {"id": "GV14", "name": "Grid/House Net Use Today", "editor": "KWH"},
+    ]
+    if generator_installed:
+        pwstatus_props.append({"id": "GV28", "name": "Generator Today", "editor": "KWH"})
+    pwstatus_props.append({"id": "TIME", "name": "Last Update Time", "editor": "UNIXTIME"})
+
+    pwhistory_props = [
+        {"id": "ST", "name": "Connected to Tesla", "editor": "ONLINE"},
+    ]
+    if generator_installed:
+        pwhistory_props.extend([
+            {"id": "GV1", "name": "Generator Today", "editor": "KWH"},
+            {"id": "GV2", "name": "Generator Yesterday", "editor": "KWH"},
+        ])
+    pwhistory_props.extend([
+        {"id": "GV8", "name": "Home Total Use Today", "editor": "KWH"},
+        {"id": "GV9", "name": "Solar Export Today", "editor": "KWH"},
+        {"id": "GV10", "name": "Battery Export Today", "editor": "KWH"},
+        {"id": "GV11", "name": "Battery Import Today", "editor": "KWH"},
+        {"id": "GV12", "name": "Grid Export Today", "editor": "KWH"},
+        {"id": "GV13", "name": "Grid Import Today", "editor": "KWH"},
+        {"id": "GV14", "name": "Grid/House Net Use Today", "editor": "KWH"},
+        {"id": "GV15", "name": "Home Total Use Yesterday", "editor": "KWH"},
+        {"id": "GV16", "name": "Solar Export Yesterday", "editor": "KWH"},
+        {"id": "GV17", "name": "Battery Export Yesterday", "editor": "KWH"},
+        {"id": "GV18", "name": "Battery Import Yesterday", "editor": "KWH"},
+        {"id": "GV19", "name": "Grid Export Yesterday", "editor": "KWH"},
+        {"id": "GV20", "name": "Grid Import Yesterday", "editor": "KWH"},
+        {"id": "GV21", "name": "Grid/House Net Use Yesterday", "editor": "KWH"},
+        {"id": "GV22", "name": "Today nbr backup events", "editor": "COUNT"},
+        {"id": "GV23", "name": "Today backup event time", "editor": "UNIXTIME"},
+        {"id": "GV24", "name": "Yesterday nbr backup events", "editor": "COUNT"},
+        {"id": "GV25", "name": "Yesterday backup event time", "editor": "UNIXTIME"},
+        {"id": "GV26", "name": "Today charge power", "editor": "KWH"},
+        {"id": "GV27", "name": "Today charge time", "editor": "UNIXTIME"},
+        {"id": "GV28", "name": "Yesterday charge power", "editor": "KWH"},
+        {"id": "GV29", "name": "Yesterday charge time", "editor": "UNIXTIME"},
+    ])
+
     return [
         {
             "id": "CONTROLLER",
@@ -392,26 +447,7 @@ def _profile_nodedefs() -> List[Dict[str, Any]]:
             "nls": "nlspwstatus",
             "name": "Power Wall Status",
             "icon": "Electricity",
-            "properties": [
-                {"id": "ST", "name": "Connected to Tesla", "editor": "ONLINE"},
-                {"id": "GV0", "name": "Remaining Battery", "editor": "PERCENT"},
-                {"id": "GV1", "name": "Inst Solar Export", "editor": "KW"},
-                {"id": "GV2", "name": "Inst Battery Export", "editor": "KW"},
-                {"id": "GV3", "name": "Inst Home Load", "editor": "KW"},
-                {"id": "GV4", "name": "Inst Grid Import", "editor": "KW"},
-                {"id": "GV5", "name": "Operation Mode", "editor": "OPMODE"},
-                {"id": "GV6", "name": "Grid Status", "editor": "GRIDST"},
-                {"id": "GV7", "name": "Grid Services Active", "editor": "GRIDMODE"},
-                {"id": "GV8", "name": "Home Total Use Today", "editor": "KWH"},
-                {"id": "GV9", "name": "Solar Export Today", "editor": "KWH"},
-                {"id": "GV10", "name": "Battery Export Today", "editor": "KWH"},
-                {"id": "GV11", "name": "Battery Import Today", "editor": "KWH"},
-                {"id": "GV12", "name": "Grid Export Today", "editor": "KWH"},
-                {"id": "GV13", "name": "Grid Import Today", "editor": "KWH"},
-                {"id": "GV14", "name": "Grid/House Net Use Today", "editor": "KWH"},
-                {"id": "GV28", "name": "Generator Today", "editor": "KWH"},
-                {"id": "TIME", "name": "Last Update Time", "editor": "UNIXTIME"},
-            ],
+            "properties": pwstatus_props,
             "cmds": {
                 "accepts": [
                     {"id": "UPDATE", "name": "Update System Data"},
@@ -425,33 +461,7 @@ def _profile_nodedefs() -> List[Dict[str, Any]]:
             "nls": "nlspwhist",
             "name": "Power Wall History",
             "icon": "Electricity",
-            "properties": [
-                {"id": "ST", "name": "Connected to Tesla", "editor": "ONLINE"},
-                {"id": "GV1", "name": "Generator Today", "editor": "KWH"},
-                {"id": "GV2", "name": "Generator Yesterday", "editor": "KWH"},
-                {"id": "GV8", "name": "Home Total Use Today", "editor": "KWH"},
-                {"id": "GV9", "name": "Solar Export Today", "editor": "KWH"},
-                {"id": "GV10", "name": "Battery Export Today", "editor": "KWH"},
-                {"id": "GV11", "name": "Battery Import Today", "editor": "KWH"},
-                {"id": "GV12", "name": "Grid Export Today", "editor": "KWH"},
-                {"id": "GV13", "name": "Grid Import Today", "editor": "KWH"},
-                {"id": "GV14", "name": "Grid/House Net Use Today", "editor": "KWH"},
-                {"id": "GV15", "name": "Home Total Use Yesterday", "editor": "KWH"},
-                {"id": "GV16", "name": "Solar Export Yesterday", "editor": "KWH"},
-                {"id": "GV17", "name": "Battery Export Yesterday", "editor": "KWH"},
-                {"id": "GV18", "name": "Battery Import Yesterday", "editor": "KWH"},
-                {"id": "GV19", "name": "Grid Export Yesterday", "editor": "KWH"},
-                {"id": "GV20", "name": "Grid Import Yesterday", "editor": "KWH"},
-                {"id": "GV21", "name": "Grid/House Net Use Yesterday", "editor": "KWH"},
-                {"id": "GV22", "name": "Today nbr backup events", "editor": "COUNT"},
-                {"id": "GV23", "name": "Today backup event time", "editor": "UNIXTIME"},
-                {"id": "GV24", "name": "Yesterday nbr backup events", "editor": "COUNT"},
-                {"id": "GV25", "name": "Yesterday backup event time", "editor": "UNIXTIME"},
-                {"id": "GV26", "name": "Today charge power", "editor": "KWH"},
-                {"id": "GV27", "name": "Today charge time", "editor": "UNIXTIME"},
-                {"id": "GV28", "name": "Yesterday charge power", "editor": "KWH"},
-                {"id": "GV29", "name": "Yesterday charge time", "editor": "UNIXTIME"},
-            ],
+            "properties": pwhistory_props,
             "cmds": {
                 "accepts": [
                     {"id": "UPDATE", "name": "Update System Data"},
@@ -466,8 +476,8 @@ def _profile_nodedefs() -> List[Dict[str, Any]]:
             "name": "Power Wall Control Parameters",
             "icon": "Electricity",
             "properties": [
+                {"id": "ST", "name": "Operating Mode", "editor": "OPMODE"},
                 {"id": "GV1", "name": "Backup Reserve (%)", "editor": "PERCENT"},
-                {"id": "GV2", "name": "Operating Mode", "editor": "OPMODE"},
                 {"id": "GV3", "name": "Storm Mode", "editor": "TOGGLE"},
                 {"id": "GV5", "name": "Grid Import to battery", "editor": "GRIDIMPMODE"},
                 {"id": "GV6", "name": "Grid Export Mode", "editor": "GRIDEXPMODE"},
@@ -487,7 +497,7 @@ def _profile_nodedefs() -> List[Dict[str, Any]]:
                         "id": "OPMODE",
                         "name": "Operating Mode",
                         "parameters": [
-                            {"id": "", "name": "Operating Mode", "editor": "SETOPMODE", "init": "GV2"},
+                            {"id": "", "name": "Operating Mode", "editor": "SETOPMODE", "init": "ST"},
                         ],
                     },
                     {
@@ -524,8 +534,8 @@ def _build_nls_dictionary() -> Dict[str, str]:
     """Build the comprehensive NLS lookup dictionary for IoX / eisy-ui translation."""
     nls: Dict[str, str] = {}
 
-    # 1. NodeDefs metadata, properties, and commands
-    for nd in _profile_nodedefs():
+    # 1. NodeDefs metadata, properties, and commands (include all possible drivers)
+    for nd in _profile_nodedefs(generator_installed=True):
         nid = nd["id"]
         nls_scope = nd.get("nls", nid)
         nls[f"ND-{nid}-NAME"] = nd["name"]
@@ -565,6 +575,8 @@ def _build_nls_dictionary() -> Dict[str, str]:
 
     # Additional standard aliases for legacy / hybrid lookup paths
     aliases = {
+        "ST-nlspwsetup-ST-NAME": "Operating Mode",
+        "ST-PWSETUP-ST-NAME": "Operating Mode",
         "GRIDSTATUS-0": "on grid",
         "GRIDSTATUS-1": "islanded ready",
         "GRIDSTATUS-2": "islanded",
@@ -612,7 +624,7 @@ def _build_nls_dictionary() -> Dict[str, str]:
     return nls
 
 
-def build_profile_definition(version: str = PROFILE_VERSION) -> Dict[str, Any]:
+def build_profile_definition(version: str = PROFILE_VERSION, generator_installed: bool = False) -> Dict[str, Any]:
     """Build the complete PG3/PG3x dynamic JSON profile payload."""
     return {
         "version": version,
@@ -622,15 +634,15 @@ def build_profile_definition(version: str = PROFILE_VERSION) -> Dict[str, Any]:
             "linkdefs": ["*"],
         },
         "editors": _profile_editors(),
-        "nodedefs": _profile_nodedefs(),
+        "nodedefs": _profile_nodedefs(generator_installed=generator_installed),
         "linkdefs": [],
         "nls": _build_nls_dictionary(),
     }
 
 
-def dynamic_profile_payload(version: str = PROFILE_VERSION) -> Dict[str, Any]:
+def dynamic_profile_payload(version: str = PROFILE_VERSION, generator_installed: bool = False) -> Dict[str, Any]:
     """Alias for build_profile_definition matching udi-kidde naming."""
-    return build_profile_definition(version=version)
+    return build_profile_definition(version=version, generator_installed=generator_installed)
 
 
 if __name__ == "__main__":
