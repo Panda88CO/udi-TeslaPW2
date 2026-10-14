@@ -64,10 +64,10 @@ class teslaPWHistoryNode(udi_interface.Node):
     def updateISYdrivers(self):
         logging.debug('HistoryNode updateISYdrivers')
         
-        self.PW_setDriver('ST', self.bool2ISY(self.TPW.getTPW_onLine()))
-
-
+        self.PW_setDriver('ST', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
+        self.PW_setDriver('GV0', self.bool2ISY(self.TPW.getTPW_onLine()), 25)
         self.PW_setDriver('GV8', self.round2ISY(self.TPW.getTPW_daysConsumption(self.site_id),2), 33)
+
         self.PW_setDriver('GV9', self.round2ISY(self.TPW.getTPW_daysSolar(self.site_id),2), 33)
         self.PW_setDriver('GV10', self.round2ISY(self.TPW.getTPW_daysBattery_export(self.site_id),2), 33)       
         self.PW_setDriver('GV11', self.round2ISY(self.TPW.getTPW_daysBattery_import(self.site_id),2), 33)
@@ -101,7 +101,6 @@ class teslaPWHistoryNode(udi_interface.Node):
         elif hasattr(self.TPW, 'generatorInstalled'):
             gen_installed = bool(self.TPW.generatorInstalled)
         if gen_installed:
-            self.PW_setDriver('GV1', self.round2ISY(self.TPW.getTPW_daysGeneratorUse(self.site_id), 2), 33)
             self.PW_setDriver('GV2', self.round2ISY(self.TPW.getTPW_yesterdayGeneratorUse(self.site_id), 2), 33)
         #self.PW_setDriver('GV3', self.round2ISY(self.TPW.getTPW_yesterdayGrid_import(self.site_id) - self.TPW.getTPW_yesterdayGrid_export(self.site_id),2), 33)
 
@@ -157,9 +156,9 @@ class teslaPWHistoryNode(udi_interface.Node):
     '''
 
     drivers = [
-            {'driver': 'ST', 'value': 99, 'uom': 25},  #online         
+            {'driver': 'ST', 'value': 0, 'uom': 33},  # Home Total Use Today (kWh)
+            {'driver': 'GV0', 'value': 99, 'uom': 25},  # Connected to Tesla (online)
             
-            #{'driver': 'GV0', 'value': 0, 'uom': 51},       
             #{'driver': 'GV1', 'value': 0, 'uom': 33},
             #{'driver': 'GV2', 'value': 0, 'uom': 33},  
             #{'driver': 'GV3', 'value': 0, 'uom': 33}, 
@@ -168,9 +167,7 @@ class teslaPWHistoryNode(udi_interface.Node):
             #{'driver': 'GV6', 'value': 99, 'uom': 25},  
             #{'driver': 'GV7', 'value': 99, 'uom': 25},  
 
-
-            {'driver': 'GV8', 'value': 99, 'uom': 25}, 
-
+            {'driver': 'GV8', 'value': 0, 'uom': 33}, 
             {'driver': 'GV9', 'value': 0, 'uom': 33}, 
             {'driver': 'GV10', 'value': 0, 'uom': 33},  
             {'driver': 'GV11', 'value': 0, 'uom': 33},  
@@ -196,7 +193,6 @@ class teslaPWHistoryNode(udi_interface.Node):
             {'driver': 'GV28', 'value': 99, 'uom': 33},
             {'driver': 'GV29', 'value': 99, 'uom': 58},
 
-            {'driver': 'GV1', 'value': 0, 'uom': 33},            
             {'driver': 'GV2', 'value': 0, 'uom': 33},                      
             ]          
            

@@ -513,6 +513,11 @@
       "properties": [
         {
           "id": "ST",
+          "name": "Home Total Use Today",
+          "editor": "KWH"
+        },
+        {
+          "id": "GV0",
           "name": "Connected to Tesla",
           "editor": "ONLINE"
         },
@@ -815,14 +820,14 @@
     "CMD-PWSTATUS-UPDATE-NAME": "Update System Data",
     "ND-PWHISTORY-NAME": "Power Wall History",
     "ND-PWHISTORY-ICON": "Electricity",
-    "ST-nlspwhist-ST-NAME": "Connected to Tesla",
-    "ST-PWHISTORY-ST-NAME": "Connected to Tesla",
-    "ST-nlspwhist-GV1-NAME": "Generator Today",
-    "ST-PWHISTORY-GV1-NAME": "Generator Today",
-    "ST-nlspwhist-GV2-NAME": "Generator Yesterday",
-    "ST-PWHISTORY-GV2-NAME": "Generator Yesterday",
+    "ST-nlspwhist-ST-NAME": "Home Total Use Today",
+    "ST-PWHISTORY-ST-NAME": "Home Total Use Today",
+    "ST-nlspwhist-GV0-NAME": "Connected to Tesla",
+    "ST-PWHISTORY-GV0-NAME": "Connected to Tesla",
     "ST-nlspwhist-GV8-NAME": "Home Total Use Today",
     "ST-PWHISTORY-GV8-NAME": "Home Total Use Today",
+    "ST-nlspwhist-GV2-NAME": "Generator Yesterday",
+    "ST-PWHISTORY-GV2-NAME": "Generator Yesterday",
     "ST-nlspwhist-GV9-NAME": "Solar Export Today",
     "ST-PWHISTORY-GV9-NAME": "Solar Export Today",
     "ST-nlspwhist-GV10-NAME": "Battery Export Today",

@@ -52,8 +52,8 @@
    <nodeDef id="PWHISTORY" nls="nlspwhist">
       <editors />
       <sts>
-         <st id="ST" editor="ONLINE" />     
-         <st id="GV1" editor="KWH" />
+         <st id="ST" editor="KWH" />
+         <st id="GV0" editor="ONLINE" />
          <st id="GV2" editor="KWH" />
          <st id="GV8" editor="KWH" />
          <st id="GV9" editor="KWH" />

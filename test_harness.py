@@ -910,9 +910,11 @@ class TestTeslaPWHistoryNode(unittest.TestCase):
         self.assertEqual(self.node.id, 'PWHISTORY')
         drivers = self.node._driver_values
 
-        self.assertEqual(drivers['ST']['value'], 1)
         # Today
+        self.assertEqual(drivers['ST']['value'], 14.50)
+        self.assertEqual(drivers['GV0']['value'], 1)
         self.assertEqual(drivers['GV8']['value'], 14.50)
+        self.assertNotIn('GV1', drivers)
         self.assertEqual(drivers['GV9']['value'], 22.10)
         self.assertEqual(drivers['GV10']['value'], 4.50)
         self.assertEqual(drivers['GV11']['value'], 6.80)
@@ -1906,7 +1908,7 @@ class TestPhase5Features(unittest.TestCase):
         pwhist_gen_drivers = [prop['id'] for prop in pwhist_gen['properties']]
 
         self.assertIn('GV28', pwstatus_gen_drivers)
-        self.assertIn('GV1', pwhist_gen_drivers)
+        self.assertNotIn('GV1', pwhist_gen_drivers)
         self.assertIn('GV2', pwhist_gen_drivers)
 
     def test_pwsetup_st_operating_mode_in_profile(self):
@@ -1982,7 +1984,7 @@ class TestPhase5Features(unittest.TestCase):
 
         hist_node_gen = teslaPWHistoryNode(poly2, 'controller', 'pwhist_gen', 'History Node Gen', 'site_123', tpw_gen)
         hist_gen_driver_ids = [d['driver'] for d in hist_node_gen.drivers]
-        self.assertIn('GV1', hist_gen_driver_ids)
+        self.assertNotIn('GV1', hist_gen_driver_ids)
         self.assertIn('GV2', hist_gen_driver_ids)
 
     def test_poll_system_data_solar_not_installed_local_polling(self):

@@ -387,15 +387,15 @@ def _profile_nodedefs(generator_installed: bool = False) -> List[Dict[str, Any]]
     pwstatus_props.append({"id": "TIME", "name": "Last Update Time", "editor": "UNIXTIME"})
 
     pwhistory_props = [
-        {"id": "ST", "name": "Connected to Tesla", "editor": "ONLINE"},
+        {"id": "ST", "name": "Home Total Use Today", "editor": "KWH"},
+        {"id": "GV0", "name": "Connected to Tesla", "editor": "ONLINE"},
+        {"id": "GV8", "name": "Home Total Use Today", "editor": "KWH"},
     ]
     if generator_installed:
         pwhistory_props.extend([
-            {"id": "GV1", "name": "Generator Today", "editor": "KWH"},
             {"id": "GV2", "name": "Generator Yesterday", "editor": "KWH"},
         ])
     pwhistory_props.extend([
-        {"id": "GV8", "name": "Home Total Use Today", "editor": "KWH"},
         {"id": "GV9", "name": "Solar Export Today", "editor": "KWH"},
         {"id": "GV10", "name": "Battery Export Today", "editor": "KWH"},
         {"id": "GV11", "name": "Battery Import Today", "editor": "KWH"},
