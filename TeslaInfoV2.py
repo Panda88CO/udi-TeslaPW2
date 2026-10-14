@@ -78,7 +78,8 @@ class tesla_info():
         #self.site_id = None
         self.TPWlocal = None
         self.TPWcloud = TPWcloud
-        self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there
+        self.generatorInstalled = False
+        self.generator_override = None
         self.solarInstalled = False
         self.ISYCritical = {}
         self.lastDay = date.today()  
@@ -178,6 +179,8 @@ class tesla_info():
                             if 'components' in  products[site]:
                                 if 'solar' in products[site]['components']:
                                     self.solarInstalled = products[site]['components']['solar']
+                                if 'generator' in products[site]['components'] and self.generator_override is None:
+                                    self.generatorInstalled = bool(products[site]['components']['generator'])
 
         if PowerWalls == {}:
             PowerWalls['local'] = {}
@@ -191,6 +194,9 @@ class tesla_info():
 
     def init_cloud_data(self, site_id):
         self.TPWcloud.tesla_get_site_info(site_id) # needs to run first to get timezone name 
+        if self.generator_override is None and hasattr(self.TPWcloud, 'teslaGeneratorInstalled'):
+            if self.TPWcloud.teslaGeneratorInstalled(site_id):
+                self.generatorInstalled = True
         self.TPWcloud.tesla_get_live_status(site_id)
         self.TPWcloud.tesla_get_today_history(site_id, 'energy')
         self.TPWcloud.tesla_get_today_history(site_id, 'backup')
@@ -203,6 +209,17 @@ class tesla_info():
 
         logging.debug('Cloud data retrieved tesla_info')
         
+
+    def set_generator_override(self, override_val):
+        """Allows custom configuration to override generator detection (True, False, or None for auto)."""
+        self.generator_override = override_val
+        if override_val is not None:
+            self.generatorInstalled = bool(override_val)
+
+    def is_generator_installed(self) -> bool:
+        if self.generator_override is not None:
+            return bool(self.generator_override)
+        return bool(self.generatorInstalled)
 
     def init_local(self, email, password, ip_address) -> bool:
         logging.debug('init_local')
@@ -222,7 +239,10 @@ class tesla_info():
         self.local_site_name = self.TPWlocal.get_site_name()
 
         #self.solarInstalled = False
-        self.generatorInstalled = False
+        if self.generator_override is not None:
+            self.generatorInstalled = bool(self.generator_override)
+        else:
+            self.generatorInstalled = False
         try:
             meters = self.TPWlocal.get_meters()
             logging.debug(meters)
@@ -230,7 +250,7 @@ class tesla_info():
             logging.debug('installed dev {}'.format(installed_dev))
             for tmp_meter in installed_dev:
                 #logging.debug('meter: {} '.format(tmp_meter))
-                if 'generator' in str(tmp_meter).lower():
+                if 'generator' in str(tmp_meter).lower() and self.generator_override is None:
                     self.generatorInstalled = True
                 if 'solar' in str(tmp_meter).lower():
                     self.solarInstalled = True

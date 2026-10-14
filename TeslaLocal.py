@@ -21,7 +21,7 @@ class tesla_local:
    
         logging.debug('class tesla_info - init')
 
-        self.generatorInstalled  = True # I have not found a way to identify this on clould only connection so it will report even if not there
+        self.generatorInstalled = False
         self.solarInstalled = False
         self.ISYCritical = {}
         self.lastDay = date.today()  

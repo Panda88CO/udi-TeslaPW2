@@ -39,8 +39,8 @@ class teslaPWSetupNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         logging.debug('Node updateISYdrivers')
+        self.PW_setDriver('ST', self.TPW.getTPW_operationMode(self.site_id), 25)
         self.PW_setDriver('GV1', self.TPW.getTPW_backoffLevel(self.site_id), 51)
-        self.PW_setDriver('GV2', self.TPW.getTPW_operationMode(self.site_id), 25)
         self.PW_setDriver('GV3', self.TPW.getTPW_stormMode(self.site_id), 25)
         #self.PW_setDriver('GV4', self.TPW.getTPW_touMode(self.site_id))
         if hasattr(self.TPW, 'getTPW_gridImportMode'):
@@ -72,7 +72,7 @@ class teslaPWSetupNode(udi_interface.Node):
         logging.debug('setOperatingMode: {}'.format(command))
         value = int(command.get('value'))
         self.TPW.setTPW_operationMode(value, self.site_id)
-        self.PW_setDriver('GV2', value, 25)
+        self.PW_setDriver('ST', value, 25)
     
     def setBackupPercent(self, command):
         logging.debug('setBackupPercent: {}'.format(command))
@@ -126,8 +126,8 @@ class teslaPWSetupNode(udi_interface.Node):
                 }
 
     drivers = [
+            {'driver': 'ST', 'value': 0, 'uom': 25},   #operating mode
             {'driver': 'GV1', 'value': 0, 'uom': 51},  #backup reserve
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #operating mode
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #storm mode
             #{'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
             {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid import 

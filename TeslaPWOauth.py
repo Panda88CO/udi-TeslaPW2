@@ -596,6 +596,13 @@ class teslaPWAccess(teslaAccess):
     def teslaSolarInstalled(self, site_id) -> bool:
         return(self.site_info[site_id]['components']['solar'])
 
+    def teslaGeneratorInstalled(self, site_id) -> bool:
+        if site_id in self.site_info and isinstance(self.site_info[site_id], dict):
+            comps = self.site_info[site_id].get('components', {})
+            if isinstance(comps, dict):
+                return bool(comps.get('generator', False))
+        return False
+
     def tesla_get_pw_name(self, site_id) -> str:
         return(self.site_info[site_id]['site_name'])
 

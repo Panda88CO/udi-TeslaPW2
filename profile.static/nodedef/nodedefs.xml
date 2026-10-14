@@ -90,8 +90,8 @@
    <nodeDef id="PWSETUP" nls="nlspwsetup">
       <editors />
       <sts>
+         <st id="ST" editor="OPMODE" />
          <st id="GV1" editor="PERCENT" />
-         <st id="GV2" editor="OPMODE" />
          <st id="GV3" editor="TOGGLE" />
          <st id="GV5" editor="GRIDIMPMODE" />  
          <st id="GV6" editor="GRIDEXPMODE" />
@@ -106,7 +106,7 @@
                <p id="" editor="PERCENT" init="GV1" /> 
             </cmd> 
             <cmd id="OPMODE" > 
-               <p id="" editor="SETOPMODE" init="GV2" /> 
+               <p id="" editor="SETOPMODE" init="ST" /> 
             </cmd> 
             <cmd id="STORMMODE" > 
                <p id="" editor="SETTOGGLE" init="GV3" /> 
