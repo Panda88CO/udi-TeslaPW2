@@ -958,29 +958,48 @@ class tesla_info():
 
     def getTPW_powerSupplyMode(self):
         logging.debug('getTPW_powerSupplyMode ')  
-        logging.debug(self.status)
-        if  self.status.is_power_supply_mode:
-           return(1)   
-        else:
-           return(0)            
+        logging.debug(getattr(self, 'status', None))
+        if hasattr(self, 'status') and self.status:
+            psm = getattr(self.status, 'is_power_supply_mode', None)
+            if psm is None and isinstance(self.status, dict):
+                psm = self.status.get('power_supply_mode')
+            if psm:
+                return 1
+        return 0
     
     def getTPW_ConnectedTesla(self):  # can check other direction 
         logging.debug('getTPW_ConnectedTesla ')  
-        logging.debug(self.status)
-        if self.status.is_connected_to_tesla:
-            return(1)   
-        else:
-            return(0)
+        logging.debug(getattr(self, 'status', None))
+        if hasattr(self, 'status') and self.status:
+            is_conn = getattr(self.status, 'is_connected_to_tesla', None)
+            if is_conn is None and isinstance(self.status, dict):
+                is_conn = self.status.get('connected_to_tesla')
+            if is_conn:
+                return 1
+        if self.cloudAccessUp:
+            return 1
+        return 0
 
     def getTPW_onLine(self):
         logging.debug('getTPW_onLine') 
-        if  self.localAccessUp and self.firstPollCompleted:
-            return(self.getTPW_ConnectedTesla())
+        # System is online if either local gateway access is actively communicating or cloud access is up
+        if self.localAccessUp and self.firstPollCompleted:
+            if hasattr(self, 'status') and self.status:
+                running = getattr(self.status, 'running', None)
+                status_str = getattr(self.status, 'status', None)
+                if isinstance(self.status, dict):
+                    if running is None:
+                        running = self.status.get('running')
+                    if status_str is None:
+                        status_str = self.status.get('status')
+                if running is False or status_str == 'StatusDown':
+                    return 1 if (self.TPWcloudAccess and self.cloudAccessUp) else 0
+            return 1
+        elif self.TPWcloudAccess and (self.cloudAccessUp or not self.firstPollCompleted):
+            return 1 if self.cloudAccessUp else 0
         else:
-            if self.TPWcloudAccess:
-                return(1)
-            else:
-                return(0)
+            return 0
+
 
     def getTPW_lastUpdateTime(self, site_id=None):
         logging.debug('getTPW_lastUpdateTime')

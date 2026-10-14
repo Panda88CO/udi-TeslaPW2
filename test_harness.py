@@ -2018,6 +2018,43 @@ class TestPhase5Features(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(tpw.daysTotalSolar, 0.0)
 
+    def test_get_tpw_online_status_detection(self):
+        """Verifies getTPW_onLine returns online (1) when local or cloud is working, even if connected_to_tesla is False."""
+        from TeslaInfoV2 import tesla_info
+        tpw = tesla_info(None)
+
+        # Case 1: Local gateway connected and running, but connected_to_tesla is False
+        tpw.localAccessUp = True
+        tpw.firstPollCompleted = True
+        tpw.status = {'status': 'StatusUp', 'running': True, 'connected_to_tesla': False, 'power_supply_mode': False}
+        tpw.cloudAccessUp = False
+        tpw.TPWcloudAccess = False
+        self.assertEqual(tpw.getTPW_onLine(), 1)
+        self.assertEqual(tpw.getTPW_ConnectedTesla(), 0)
+        self.assertEqual(tpw.getTPW_powerSupplyMode(), 0)
+
+        # Case 2: Cloud only up
+        tpw.localAccessUp = False
+        tpw.firstPollCompleted = False
+        tpw.TPWcloudAccess = True
+        tpw.cloudAccessUp = True
+        self.assertEqual(tpw.getTPW_onLine(), 1)
+
+        # Case 3: Cloud only down
+        tpw.cloudAccessUp = False
+        self.assertEqual(tpw.getTPW_onLine(), 0)
+
+        # Case 4: Neither local nor cloud
+        tpw.TPWcloudAccess = False
+        self.assertEqual(tpw.getTPW_onLine(), 0)
+
+        # Case 5: Local gateway explicitly down and cloud down
+        tpw.localAccessUp = True
+        tpw.firstPollCompleted = True
+        tpw.status = {'status': 'StatusDown', 'running': False, 'connected_to_tesla': False}
+        self.assertEqual(tpw.getTPW_onLine(), 0)
+
+
 
 
 # ---------------------------------------------------------------------------
