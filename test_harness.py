@@ -708,6 +708,47 @@ class TestProfileXmlAndNls(unittest.TestCase):
                         f"{nid} driver '{drv}' has uom={py_uom} in Python, but editor '{ed_id}' only allows uoms={allowed_uoms}"
                     )
 
+    def test_python_drivers_have_names_matching_profile_or_nls(self):
+        """Verifies that all Python node drivers define a non-empty 'name' matching profile/NLS."""
+        node_classes = {
+            'CONTROLLER': TeslaPWController,
+            'PWSTATUS': teslaPWStatusNode,
+            'PWHISTORY': teslaPWHistoryNode,
+            'PWSETUP': teslaPWSetupNode,
+        }
+
+        nls_map = {}
+        with open(self.nls_txt, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if '=' in line:
+                    k, v = line.split('=', 1)
+                    nls_map[k.strip()] = v.strip()
+
+        nls_prefixes = {
+            'CONTROLLER': 'ST-nlscontroller-',
+            'PWSTATUS': 'ST-nlspwstatus-',
+            'PWHISTORY': 'ST-nlspwhist-',
+            'PWSETUP': 'ST-nlspwsetup-',
+        }
+
+        for nid, cls in node_classes.items():
+            prefix = nls_prefixes[nid]
+            for d in getattr(cls, 'drivers', []):
+                drv = d.get('driver')
+                name = d.get('name')
+                self.assertIsNotNone(name, f"{nid} driver '{drv}' is missing 'name' attribute")
+                self.assertIsInstance(name, str, f"{nid} driver '{drv}' name must be a string")
+                self.assertTrue(len(name.strip()) > 0, f"{nid} driver '{drv}' name cannot be empty")
+
+                nls_key = f"{prefix}{drv}-NAME"
+                if nls_key in nls_map:
+                    self.assertEqual(
+                        name,
+                        nls_map[nls_key],
+                        f"{nid} driver '{drv}' name '{name}' does not match NLS '{nls_map[nls_key]}'"
+                    )
+
 
 class TestTeslaPWStatusNode(unittest.TestCase):
     """Tests the Powerwall Status Node functionality."""

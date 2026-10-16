@@ -180,28 +180,28 @@ class teslaPWStatusNode(udi_interface.Node):
     '''
 
     drivers = [
-            {'driver': 'ST', 'value': 99, 'uom': 25},  #online         
-            {'driver': 'GV0', 'value': 0, 'uom': 51},       
-            {'driver': 'GV1', 'value': 0, 'uom': 30},
-            {'driver': 'GV2', 'value': 0, 'uom': 30},  
-            {'driver': 'GV3', 'value': 0, 'uom': 30}, 
-            {'driver': 'GV4', 'value': 0, 'uom': 30},  
+            {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Connected to Tesla'},
+            {'driver': 'GV0', 'value': 0, 'uom': 51, 'name': 'Remaining Battery'},
+            {'driver': 'GV1', 'value': 0, 'uom': 30, 'name': 'Inst Solar Export'},
+            {'driver': 'GV2', 'value': 0, 'uom': 30, 'name': 'Inst Battery Export'},
+            {'driver': 'GV3', 'value': 0, 'uom': 30, 'name': 'Inst Home Load'},
+            {'driver': 'GV4', 'value': 0, 'uom': 30, 'name': 'Inst Grid Import'},
 
-            {'driver': 'GV5', 'value': 99, 'uom': 25},  
-            {'driver': 'GV6', 'value': 99, 'uom': 25},  
-            {'driver': 'GV7', 'value': 99, 'uom': 25},  
+            {'driver': 'GV5', 'value': 99, 'uom': 25, 'name': 'Operation Mode'},
+            {'driver': 'GV6', 'value': 99, 'uom': 25, 'name': 'Grid Status'},
+            {'driver': 'GV7', 'value': 99, 'uom': 25, 'name': 'Grid Services Active'},
 
-            {'driver': 'GV8', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV8', 'value': 0, 'uom': 33, 'name': 'Home Total Use Today'},
 
-            {'driver': 'GV9', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV10', 'value': 0, 'uom': 33},  
-            {'driver': 'GV11', 'value': 0, 'uom': 33},  
-            {'driver': 'GV12', 'value': 0, 'uom': 33},
-            {'driver': 'GV13', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV14', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV9', 'value': 0, 'uom': 33, 'name': 'Solar Export Today'},
+            {'driver': 'GV10', 'value': 0, 'uom': 33, 'name': 'Battery Export Today'},
+            {'driver': 'GV11', 'value': 0, 'uom': 33, 'name': 'Battery Import Today'},
+            {'driver': 'GV12', 'value': 0, 'uom': 33, 'name': 'Grid Export Today'},
+            {'driver': 'GV13', 'value': 0, 'uom': 33, 'name': 'Grid Import Today'},
+            {'driver': 'GV14', 'value': 0, 'uom': 33, 'name': 'Grid/House Net Use Today'},
 
-            {'driver': 'GV28', 'value': 0, 'uom': 33},
-            {'driver': 'TIME', 'value': 0, 'uom': 151},
+            {'driver': 'GV28', 'value': 0, 'uom': 33, 'name': 'Generator Today'},
+            {'driver': 'TIME', 'value': 0, 'uom': 151, 'name': 'Last Update Time'},
             ]
 
     

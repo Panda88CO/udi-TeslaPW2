@@ -600,10 +600,10 @@ class TeslaPWController(udi_interface.Node):
     id = 'CONTROLLER'
     commands = { 'UPDATE': ISYupdate }
     drivers = [
-            {'driver': 'ST', 'value':0, 'uom':25},
-            {'driver': 'GV2', 'value':0, 'uom':25},
-            {'driver': 'GV3', 'value':0, 'uom':55},
-            {'driver': 'GV4', 'value':0, 'uom':25},
+            {'driver': 'ST', 'value': 0, 'uom': 25, 'name': 'Controller Up'},
+            {'driver': 'GV2', 'value': 0, 'uom': 25, 'name': 'Connected to Tesla Power Wall'},
+            {'driver': 'GV3', 'value': 0, 'uom': 55, 'name': 'Consecutive missed LongPolls'},
+            {'driver': 'GV4', 'value': 0, 'uom': 25, 'name': 'Connection Status'},
             ]
 
 if __name__ == "__main__":

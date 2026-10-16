@@ -156,44 +156,35 @@ class teslaPWHistoryNode(udi_interface.Node):
     '''
 
     drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 33},  # Home Total Use Today (kWh)
-            {'driver': 'GV0', 'value': 99, 'uom': 25},  # Connected to Tesla (online)
-            
-            #{'driver': 'GV1', 'value': 0, 'uom': 33},
-            #{'driver': 'GV2', 'value': 0, 'uom': 33},  
-            #{'driver': 'GV3', 'value': 0, 'uom': 33}, 
-            #{'driver': 'GV4', 'value': 0, 'uom': 33},  
-            #{'driver': 'GV5', 'value': 99, 'uom': 25},  
-            #{'driver': 'GV6', 'value': 99, 'uom': 25},  
-            #{'driver': 'GV7', 'value': 99, 'uom': 25},  
+            {'driver': 'ST', 'value': 0, 'uom': 33, 'name': 'Home Total Use Today'},
+            {'driver': 'GV0', 'value': 99, 'uom': 25, 'name': 'Connected to Tesla'},
 
-            {'driver': 'GV8', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV9', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV10', 'value': 0, 'uom': 33},  
-            {'driver': 'GV11', 'value': 0, 'uom': 33},  
-            {'driver': 'GV12', 'value': 0, 'uom': 33},
-            {'driver': 'GV13', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV14', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV15', 'value': 0, 'uom': 33}, 
+            {'driver': 'GV8', 'value': 0, 'uom': 33, 'name': 'Home Total Use Today'},
+            {'driver': 'GV9', 'value': 0, 'uom': 33, 'name': 'Solar Export Today'},
+            {'driver': 'GV10', 'value': 0, 'uom': 33, 'name': 'Battery Export Today'},
+            {'driver': 'GV11', 'value': 0, 'uom': 33, 'name': 'Battery Import Today'},
+            {'driver': 'GV12', 'value': 0, 'uom': 33, 'name': 'Grid Export Today'},
+            {'driver': 'GV13', 'value': 0, 'uom': 33, 'name': 'Grid Import Today'},
+            {'driver': 'GV14', 'value': 0, 'uom': 33, 'name': 'Grid/House Net Use Today'},
+            {'driver': 'GV15', 'value': 0, 'uom': 33, 'name': 'Home Total Use Yesterday'},
 
-            {'driver': 'GV16', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV17', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV18', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV19', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV20', 'value': 0, 'uom': 33}, 
-            {'driver': 'GV21', 'value': 0, 'uom': 33},
+            {'driver': 'GV16', 'value': 0, 'uom': 33, 'name': 'Solar Export Yesterday'},
+            {'driver': 'GV17', 'value': 0, 'uom': 33, 'name': 'Battery Export Yesterday'},
+            {'driver': 'GV18', 'value': 0, 'uom': 33, 'name': 'Battery Import Yesterday'},
+            {'driver': 'GV19', 'value': 0, 'uom': 33, 'name': 'Grid Export Yesterday'},
+            {'driver': 'GV20', 'value': 0, 'uom': 33, 'name': 'Grid Import Yesterday'},
+            {'driver': 'GV21', 'value': 0, 'uom': 33, 'name': 'Grid/House Net Use Yesterday'},
 
+            {'driver': 'GV22', 'value': 0, 'uom': 0, 'name': 'Today nbr backup events'},
+            {'driver': 'GV23', 'value': 0, 'uom': 58, 'name': 'Today backup event time'},
+            {'driver': 'GV24', 'value': 0, 'uom': 0, 'name': 'Yesterday nbr backup events'},
+            {'driver': 'GV25', 'value': 0, 'uom': 58, 'name': 'Yesterday backup event time'},
+            {'driver': 'GV26', 'value': 99, 'uom': 33, 'name': 'Today charge power'},
+            {'driver': 'GV27', 'value': 99, 'uom': 58, 'name': 'Today charge time'},
+            {'driver': 'GV28', 'value': 99, 'uom': 33, 'name': 'Yesterday charge power'},
+            {'driver': 'GV29', 'value': 99, 'uom': 58, 'name': 'Yesterday charge time'},
 
-            {'driver': 'GV22', 'value': 0, 'uom': 0},
-            {'driver': 'GV23', 'value': 0, 'uom': 58},
-            {'driver': 'GV24', 'value': 0, 'uom': 0}, 
-            {'driver': 'GV25', 'value': 0, 'uom': 58}, 
-            {'driver': 'GV26', 'value': 99, 'uom': 33},
-            {'driver': 'GV27', 'value': 99, 'uom': 58}, 
-            {'driver': 'GV28', 'value': 99, 'uom': 33},
-            {'driver': 'GV29', 'value': 99, 'uom': 58},
-
-            {'driver': 'GV2', 'value': 0, 'uom': 33},                      
+            {'driver': 'GV2', 'value': 0, 'uom': 33, 'name': 'Generator Yesterday'},
             ]          
            
             

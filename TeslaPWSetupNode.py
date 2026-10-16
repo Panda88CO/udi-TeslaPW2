@@ -126,13 +126,13 @@ class teslaPWSetupNode(udi_interface.Node):
                 }
 
     drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 25},   #operating mode
-            {'driver': 'GV1', 'value': 0, 'uom': 51},  #backup reserve
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #storm mode
+            {'driver': 'ST', 'value': 0, 'uom': 25, 'name': 'Operating Mode'},
+            {'driver': 'GV1', 'value': 0, 'uom': 51, 'name': 'Backup Reserve (%)'},
+            {'driver': 'GV3', 'value': 0, 'uom': 25, 'name': 'Storm Mode'},
             #{'driver': 'GV4', 'value': 0, 'uom': 25},  #time of use mode
-            {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid import 
-            {'driver': 'GV6', 'value': 0, 'uom': 25},  #grid export
-            {'driver': 'GV7', 'value': 0, 'uom': 51},  #EV charge limit
+            {'driver': 'GV5', 'value': 0, 'uom': 25, 'name': 'Grid Import to battery'},
+            {'driver': 'GV6', 'value': 0, 'uom': 25, 'name': 'Grid Export Mode'},
+            {'driver': 'GV7', 'value': 0, 'uom': 51, 'name': 'EV offgrid charge reserve (%)'},
             ]
 
         
