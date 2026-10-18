@@ -1,5 +1,8 @@
 # Tesla PowerWall Node Server for Polyglot PG3x
 
+**Version:** 0.3.0  
+**Author:** Panda88CO  
+
 ## Installation
 Cloud access via the official Tesla Fleet API is enabled by default with zero configuration required. The node server automatically discovers your account region directly through the Tesla Fleet API.
 
@@ -23,21 +26,39 @@ If these parameters are present, the node server tests local connectivity on sta
 
 ## Node Structure & Key Drivers
 
-- **Controller Node (`CONTROLLER`)**: System status, connection state (`GV4`), and poll health.
-- **Status Node (`PWSTATUS`)**: Live power flows in kW (`GV1`–`GV4`), battery SOC (`GV0`), operating mode (`GV5`), grid state (`GV6`), and today's energy totals (`GV8`–`GV14`).
-- **Usage History Node (`PWHISTORY`)**:
-  - **`ST`**: Home Total Use Today (kWh) — primary status displayed in IoX tree views
-  - **`GV0`**: Connected to Tesla / Online status
-  - **`GV8`**: Home Total Use Today (kWh)
+- **Controller Node (`CONTROLLER` - Tesla PowerWall Info)**:
+  - `ST`: Controller Up
+  - `GV2`: Connected to Tesla Power Wall
+  - `GV3`: Consecutive missed LongPolls
+  - `GV4`: Connection Status (No Connection, Cloud only, Local only, Local and Cloud)
+
+- **Status Node (`PWSTATUS` - Power Wall Status)**:
+  - `ST`: Connected to Tesla (Online status)
+  - `GV0`: Remaining Battery (%)
+  - `GV1`–`GV4`: Inst Solar Export, Inst Battery Export, Inst Home Load, Inst Grid Import (kW)
+  - `GV5`: Operation Mode (Backup, Self-consumption, Autonomous, Site control)
+  - `GV6`: Grid Status (On grid, Islanded ready, Islanded, Transition to grid)
+  - `GV7`: Grid Services Active
+  - `GV8`–`GV14`: Today's energy totals (kWh)
+  - `GV28`: Generator Today (kWh) *(conditionally displayed only if generator is installed)*
+  - `TIME`: Last Update Time (Unix timestamp)
+
+- **Usage History Node (`PWHISTORY` - Power Wall History)**:
+  - **`ST`**: Home Total Use Today (kWh) — primary status displayed in IoX tree and summary views
+  - **`GV0`**: Connected to Tesla (Online status)
+  - **`GV8`**: Home Total Use Today (kWh) — symmetrical pair to GV15
   - **`GV9`–`GV21`**: Today and Yesterday energy totals (kWh)
-  - **`GV22`–`GV29`**: Backup event counts/durations and EV charging power/time
-- **Control Parameters Node (`PWSETUP`)**:
-  - **`ST`**: Operating Mode (Backup, Self-consumption, Autonomous)
+  - **`GV22`–`GV25`**: Backup event counts and duration
+  - **`GV26`–`GV29`**: EV charging power and time
+  - **`GV2`**: Generator Yesterday (kWh) *(conditionally displayed only if generator is installed)*
+
+- **Control Parameters Node (`PWSETUP` - Power Wall Control Parameters)**:
+  - **`ST`**: Operating Mode (Backup, Self-consumption, Autonomous) — primary status & control
   - **`GV1`**: Backup Reserve (%)
   - **`GV3`**: Storm Mode
-  - **`GV5`**: Grid Import to Battery
+  - **`GV5`**: Grid Import to battery
   - **`GV6`**: Grid Export Mode
-  - **`GV7`**: EV Off-Grid Charge Reserve (%)
+  - **`GV7`**: EV offgrid charge reserve (%)
 
 *Note: Generator drivers are dynamically hidden in IoX if no generator is installed.*
 
