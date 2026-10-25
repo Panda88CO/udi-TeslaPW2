@@ -57,6 +57,7 @@ class teslaPWAccess(teslaAccess):
         self.cloudAccess =  self.connectionEstablished
         self.products = {}
         self.history_data = {}
+        self.history_yesterday_date = {}
         self.previous_date_str = '' # no previous data stored
         self.date_changed = True
         self.t_now_date = ''
@@ -195,10 +196,20 @@ class teslaPWAccess(teslaAccess):
         except Exception as e:
             logging.error('tesla_set_storm_mode Exception : {}'.format(e))
 
-    def update_date_time(self, site_id) -> None:
-        t_now = datetime.now(get_localzone())
+    def update_date_time(self, site_id=None) -> None:
+        t_now = None
+        if site_id and self.installation_tz.get(site_id):
+            try:
+                import zoneinfo
+                site_tz = zoneinfo.ZoneInfo(self.installation_tz[site_id])
+                t_now = datetime.now(site_tz)
+            except Exception:
+                t_now = None
+        if t_now is None:
+            t_now = datetime.now(get_localzone())
         today_date_str = t_now.strftime('%Y-%m-%d')
-        self.date_changed = (today_date_str != self.previous_date_str)
+        if self.previous_date_str and today_date_str != self.previous_date_str:
+            self.date_changed = True
         self.previous_date_str = today_date_str
         self.t_now_date = today_date_str
         self.t_now_time = t_now.strftime('T%H:%M:%S')
@@ -207,7 +218,7 @@ class teslaPWAccess(teslaAccess):
         #self.tz_str = t_now.tzname()
         t_yesterday = t_now - timedelta(days = 1)
         self.t_yesterday_date = t_yesterday.strftime('%Y-%m-%d')
-        if self.installation_tz.get(site_id):
+        if site_id and self.installation_tz.get(site_id):
             self.tz_str = self.installation_tz[site_id]
         else:
             self.tz_str = t_now.tzname() or 'UTC'
@@ -249,7 +260,7 @@ class teslaPWAccess(teslaAccess):
                 logging.debug('result ({}) = {}'.format(type, hist_data))
                 if hist_data:
                     if 'response' in hist_data:
-                        self.process_history_data(site_id, type, hist_data['response'])
+                        self.process_history_data(site_id, type, hist_data['response'], day_target='today')
                     else:
                         logging.info ('No data obtained')
         except Exception as e:
@@ -289,7 +300,7 @@ class teslaPWAccess(teslaAccess):
                 logging.debug('result ({})= {}'.format(type, hist_data))
                 if hist_data:
                     if 'response' in hist_data:
-                        self.process_history_data(site_id, type, hist_data['response'])
+                        self.process_history_data(site_id, type, hist_data['response'], day_target='yesterday')
                     else:
                         logging.info ('No data obtained')
         except Exception as e:
@@ -324,79 +335,90 @@ class teslaPWAccess(teslaAccess):
                 if hist_data:
                     if 'response' in hist_data:
                         logging.debug('result ({}) = {}'.format(type, hist_data['response']))
-                        self.process_history_data(site_id, type, hist_data['response'])
+                        self.process_history_data(site_id, type, hist_data['response'], day_target=None)
                     else:
                         logging.info ('No data obtained')
         except Exception as e:
             logging.error('tesla_get_2day_history Exception : {}'.format(e))
 
 
-    def process_energy_data(self, site_id, hist_data) -> None:
-        logging.debug('process_energy_data: {}'.format(hist_data))
+    def process_energy_data(self, site_id, hist_data, day_target=None) -> None:
+        logging.debug('process_energy_data: {} (day_target={})'.format(hist_data, day_target))
 
-        if 'today'  not in self.history_data[site_id]['energy']:
+        if 'today' not in self.history_data[site_id]['energy']:
             self.history_data[site_id]['energy']['today'] = {}
-        if 'yesterday'  not in self.history_data[site_id]['energy']:
+        if 'yesterday' not in self.history_data[site_id]['energy']:
             self.history_data[site_id]['energy']['yesterday'] = {}
-        if 'time_series' in hist_data:
-            for indx in range(0,len(hist_data['time_series'])):
-                # remove old data 
-                energy_data = hist_data['time_series'][indx]
-                time_str = energy_data['timestamp']
-                dt_object = datetime.fromisoformat(time_str)
-                date_str = dt_object.strftime('%Y-%m-%d')
-                if date_str == self.t_now_date:
-                    self.history_data[site_id]['energy']['today'] = {}
-                if date_str == self.t_yesterday_date:
-                    self.history_data[site_id]['energy']['yesterday'] = {}           
 
-            for indx in range(0,len(hist_data['time_series'])):        
-                energy_data = hist_data['time_series'][indx]
+        if not isinstance(hist_data, dict):
+            return
 
-                if date_str == self.t_now_date:
-                    #date_key = 'today'
-                    for key in energy_data:
-                        #logging.debug('today energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
-                        if isinstance(energy_data[key], numbers.Number): # only process numbers 
-                            if key not in self.history_data[site_id]['energy']['today']:
-                                self.history_data[site_id]['energy']['today'][key] = energy_data[key]
-                                
+        time_series = hist_data.get('time_series', [])
+        if not isinstance(time_series, list):
+            return
+
+        if day_target in ('today', 'yesterday'):
+            self.history_data[site_id]['energy'][day_target] = {}
+            for energy_data in time_series:
+                if isinstance(energy_data, dict):
+                    for key, val in energy_data.items():
+                        if isinstance(val, numbers.Number):
+                            if key not in self.history_data[site_id]['energy'][day_target]:
+                                self.history_data[site_id]['energy'][day_target][key] = val
                             else:
-                                self.history_data[site_id]['energy']['today'][key] += energy_data[key]
+                                self.history_data[site_id]['energy'][day_target][key] += val
+        else:
+            for energy_data in time_series:
+                if not isinstance(energy_data, dict):
+                    continue
+                time_str = energy_data.get('timestamp')
+                date_str = None
+                if time_str:
+                    try:
+                        dt_object = datetime.fromisoformat(time_str)
+                        date_str = dt_object.strftime('%Y-%m-%d')
+                    except Exception:
+                        date_str = None
 
+                target = None
+                if date_str == self.t_now_date:
+                    target = 'today'
                 elif date_str == self.t_yesterday_date:
-                    #date_key = 'yesterday'
-                    for key in energy_data:
-                        #logging.debug('yesterday energy {} {} {}'.format(key,energy_data[key], type(energy_data[key]) ))
-                        if isinstance(energy_data[key], numbers.Number): # do not process time stamps              
-                            if key not in self.history_data[site_id]['energy']['yesterday']:
-                                self.history_data[site_id]['energy']['yesterday'][key] = energy_data[key]
+                    target = 'yesterday'
+
+                if target:
+                    for key, val in energy_data.items():
+                        if isinstance(val, numbers.Number):
+                            if key not in self.history_data[site_id]['energy'][target]:
+                                self.history_data[site_id]['energy'][target][key] = val
                             else:
-                                self.history_data[site_id]['energy']['yesterday'][key] += energy_data[key]
+                                self.history_data[site_id]['energy'][target][key] += val
         try:
             logging.debug('process_energy_data today {}'.format(self.history_data[site_id]['energy']['today']))
             logging.debug('process_energy_data yesterday {}'.format(self.history_data[site_id]['energy']['yesterday']))
         except Exception as e:
             logging.debug('Parsing energy data exception : {}'.format(e))
-    def process_backup_data(self, site_id, hist_data) -> None:
-        logging.debug('process_backup_data: {}'.format(hist_data))
+
+    def process_backup_data(self, site_id, hist_data, day_target=None) -> None:
+        logging.debug('process_backup_data: {} (day_target={})'.format(hist_data, day_target))
         backup_data = hist_data if isinstance(hist_data, dict) else {}
         total_duration = 0
         total_events = int(backup_data.get('total_events', 0))
-        date_key = 'unknown' 
+        date_key = day_target if day_target in ('today', 'yesterday') else 'unknown'
         events = backup_data.get('events', [])
         if int(backup_data.get('events_count', 0)) > 0 and len(events) > 0:
-            time_str = events[0].get('timestamp')
-            if time_str:
-                try:
-                    dt_object = datetime.fromisoformat(time_str)
-                    date_str = dt_object.strftime('%Y-%m-%d')
-                    if date_str == self.t_now_date:
-                        date_key = 'today'                
-                    elif date_str == self.t_yesterday_date:
-                        date_key = 'yesterday'
-                except Exception:
-                    pass
+            if date_key == 'unknown':
+                time_str = events[0].get('timestamp')
+                if time_str:
+                    try:
+                        dt_object = datetime.fromisoformat(time_str)
+                        date_str = dt_object.strftime('%Y-%m-%d')
+                        if date_str == self.t_now_date:
+                            date_key = 'today'                
+                        elif date_str == self.t_yesterday_date:
+                            date_key = 'yesterday'
+                    except Exception:
+                        pass
             for event in events:
                 total_duration += event.get('duration', 0)
         temp = {
@@ -408,42 +430,42 @@ class teslaPWAccess(teslaAccess):
                 self.history_data[site_id]['backup'] = {}
             self.history_data[site_id]['backup'][date_key] = temp
 
-
-    def process_charge_data(self, site_id, hist_data) -> None:
-        logging.debug('process_charge_data: {}'.format(hist_data))
+    def process_charge_data(self, site_id, hist_data, day_target=None) -> None:
+        logging.debug('process_charge_data: {} (day_target={})'.format(hist_data, day_target))
         charge_data = hist_data if isinstance(hist_data, dict) else {}
         total_duration = 0
         total_events = 0
         total_energy = 0
-        date_key = 'unknown' 
+        date_key = day_target if day_target in ('today', 'yesterday') else 'unknown'
 
         history_list = charge_data.get('charge_history') or charge_data.get('time_series') or []
         if isinstance(history_list, list) and len(history_list) > 0:
-            first_event = history_list[0]
-            start_time = first_event.get('charge_start_time') or first_event.get('timestamp')
-            dt_object = None
-            if isinstance(start_time, dict) and 'seconds' in start_time:
-                try:
-                    dt_object = datetime.fromtimestamp(start_time['seconds'])
-                except Exception:
-                    pass
-            elif isinstance(start_time, (int, float)):
-                try:
-                    dt_object = datetime.fromtimestamp(start_time)
-                except Exception:
-                    pass
-            elif isinstance(start_time, str):
-                try:
-                    dt_object = datetime.fromisoformat(start_time)
-                except Exception:
-                    pass
+            if date_key == 'unknown':
+                first_event = history_list[0]
+                start_time = first_event.get('charge_start_time') or first_event.get('timestamp')
+                dt_object = None
+                if isinstance(start_time, dict) and 'seconds' in start_time:
+                    try:
+                        dt_object = datetime.fromtimestamp(start_time['seconds'])
+                    except Exception:
+                        pass
+                elif isinstance(start_time, (int, float)):
+                    try:
+                        dt_object = datetime.fromtimestamp(start_time)
+                    except Exception:
+                        pass
+                elif isinstance(start_time, str):
+                    try:
+                        dt_object = datetime.fromisoformat(start_time)
+                    except Exception:
+                        pass
 
-            if dt_object:
-                date_str = dt_object.strftime('%Y-%m-%d')
-                if date_str == self.t_now_date:
-                    date_key = 'today'
-                elif date_str == self.t_yesterday_date:
-                    date_key = 'yesterday'
+                if dt_object:
+                    date_str = dt_object.strftime('%Y-%m-%d')
+                    if date_str == self.t_now_date:
+                        date_key = 'today'
+                    elif date_str == self.t_yesterday_date:
+                        date_key = 'yesterday'
 
             total_events = len(history_list)
             for event in history_list:
@@ -467,11 +489,8 @@ class teslaPWAccess(teslaAccess):
                 self.history_data[site_id]['charge'] = {}
             self.history_data[site_id]['charge'][date_key] = temp
 
-
-
-
-    def process_history_data(self, site_id, type, pw_data) -> None:
-        logging.debug('process_history_data - {} {} {}'.format(site_id, type, pw_data))
+    def process_history_data(self, site_id, type, pw_data, day_target=None) -> None:
+        logging.debug('process_history_data - {} {} {} (day_target={})'.format(site_id, type, pw_data, day_target))
         self.update_date_time(site_id)
         if site_id not in self.history_data:
             self.history_data[site_id] = {}
@@ -479,11 +498,11 @@ class teslaPWAccess(teslaAccess):
             self.history_data[site_id][type] = {}
 
         if type == 'energy':
-            self.process_energy_data(site_id, pw_data)
+            self.process_energy_data(site_id, pw_data, day_target=day_target)
         elif type == 'backup':
-            self.process_backup_data(site_id, pw_data)
+            self.process_backup_data(site_id, pw_data, day_target=day_target)
         elif type == 'charge':
-            self.process_charge_data(site_id, pw_data)
+            self.process_charge_data(site_id, pw_data, day_target=day_target)
         else:
             logging.error('Unknown type provided: {}'.format(type))
 
@@ -492,8 +511,8 @@ class teslaPWAccess(teslaAccess):
 
 
 
-    def teslaUpdateCloudData(self, site_id, mode) -> None:
-        logging.debug('teslaUpdateCloudData - {} {}'.format( site_id, mode))
+    def teslaUpdateCloudData(self, site_id, mode, force_yesterday=False) -> None:
+        logging.debug('teslaUpdateCloudData - {} {} (force_yesterday={})'.format(site_id, mode, force_yesterday))
         access = False
         self.update_date_time(site_id)
         #while not self.authenticated():
@@ -525,21 +544,25 @@ class teslaPWAccess(teslaAccess):
             self.tesla_get_today_history(site_id, 'energy')
             self.tesla_get_today_history(site_id, 'backup')
             self.tesla_get_today_history(site_id, 'charge')
-            if self.date_changed:
+
+            loaded_yesterday = self.history_yesterday_date.get(site_id)
+            yesterday_data_present = isinstance(
+                self.history_data.get(site_id, {}).get('energy', {}).get('yesterday', {}).get('consumer_energy_imported_from_battery'),
+                numbers.Number
+            )
+            needs_yesterday = (
+                force_yesterday or
+                self.date_changed or
+                loaded_yesterday != self.t_yesterday_date or
+                not yesterday_data_present
+            )
+
+            if needs_yesterday:
                 self.tesla_get_yesterday_history(site_id, 'energy')
                 self.tesla_get_yesterday_history(site_id, 'backup')
                 self.tesla_get_yesterday_history(site_id, 'charge')
-            else:
-                try:
-                    tmp = self.history_data.get(site_id, {}).get('energy', {}).get('yesterday', {}).get('consumer_energy_imported_from_battery')
-                    yesterday_data_needed = not isinstance(tmp, numbers.Number)
-                except Exception:
-                    yesterday_data_needed = True
-
-                if yesterday_data_needed:
-                    self.tesla_get_yesterday_history(site_id, 'energy')
-                    self.tesla_get_yesterday_history(site_id, 'backup')
-                    self.tesla_get_yesterday_history(site_id, 'charge')
+                self.history_yesterday_date[site_id] = self.t_yesterday_date
+                self.date_changed = False
                 
             logging.debug('history_data : {}'.format(self.history_data))
         return(access)

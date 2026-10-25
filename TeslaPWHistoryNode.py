@@ -107,7 +107,7 @@ class teslaPWHistoryNode(udi_interface.Node):
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        self.TPW.pollSystemData(self.site_id, 'all')
+        self.TPW.pollSystemData(self.site_id, 'all', force=True)
         self.updateISYdrivers()
 
  

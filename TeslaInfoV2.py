@@ -200,10 +200,10 @@ class tesla_info():
         self.TPWcloud.tesla_get_live_status(site_id)
         self.TPWcloud.tesla_get_today_history(site_id, 'energy')
         self.TPWcloud.tesla_get_today_history(site_id, 'backup')
-        #self.TPWcloud.tesla_get_today_history(site_id, 'charge')
+        self.TPWcloud.tesla_get_today_history(site_id, 'charge')
         self.TPWcloud.tesla_get_yesterday_history(site_id, 'energy')
         self.TPWcloud.tesla_get_yesterday_history(site_id, 'backup')
-        #self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
+        self.TPWcloud.tesla_get_yesterday_history(site_id, 'charge')
         #self.TPWcloud.tesla_get_2day_history(site_id, 'energy')
         #self.TPWcloud.tesla_get_2day_history(site_id, 'backup')
 
@@ -346,7 +346,7 @@ class tesla_info():
             self.daysTotalGridServices = self.TPWcloud.tesla_grid_service_export(site_id, 'today') - self.TPWcloud.tesla_grid_service_import(site_id, 'today') #
             self.yesterdayTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(site_id, 'yesterday')
             self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday' )
-            self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
+            self.yesterdayTotalGeneration = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
             self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'yesterday')
             self.yesterdayTotalSite_imp = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday')
             self.yesterdayTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'yesterday')
@@ -354,7 +354,7 @@ class tesla_info():
 
             self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'yesterday')
             self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'yesterday')
-            self.yesterdayTotalSolar = self.TPWcloud.tesla_home_energy_solar(site_id, 'yesterday')         
+            self.yesterdayTotalSolar = self.TPWcloud.tesla_solar_energy_exported(site_id, 'yesterday')         
             self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(site_id, 'yesterday')#
 
         logging.debug('teslaInitializeData - 1 - grid status {} '.format(GridStatus))
@@ -414,13 +414,13 @@ class tesla_info():
 
     When this finishes, we should have current PW data data.
     '''
-    def pollSystemData(self, site_id, level='all') :
+    def pollSystemData(self, site_id, level='all', force=False) :
         logging.debug('PollSystemData - ' + str(level))
 
         try:
             self.nowDay = date.today() 
             
-            if (self.lastDay.day != self.nowDay.day): # we passed midnight
+            if (self.lastDay != self.nowDay): # we passed midnight
                 self.yesterdayTotalSolar = self.daysTotalSolar
                 self.yesterdayTotalConsumption = self.daysTotalConsumption
                 self.yesterdayTotalGeneration  = self.daysTotalGeneraton
@@ -447,7 +447,7 @@ class tesla_info():
             # Get data from the cloud....
             if self.TPWcloudAccess:
                 logging.debug('pollSystemData - CLOUD')
-                self.cloudAccessUp = self.TPWcloud.teslaUpdateCloudData(site_id,level)
+                self.cloudAccessUp = self.TPWcloud.teslaUpdateCloudData(site_id, level, force_yesterday=force)
                 if level == 'all':
                     self.daysTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(site_id, 'today')
                     self.daysTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'today' )
@@ -459,7 +459,7 @@ class tesla_info():
                     self.daysTotalGridServices = self.TPWcloud.tesla_grid_service_export(site_id, 'today') - self.TPWcloud.tesla_grid_service_import(site_id, 'today') #
                     self.yesterdayTotalSolarGeneration = self.TPWcloud.tesla_solar_energy_exported(site_id, 'yesterday')
                     self.yesterdayTotalConsumption = self.TPWcloud.tesla_home_energy_total(site_id, 'yesterday' )
-                    self.yesterdayTotalGeneraton = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
+                    self.yesterdayTotalGeneration = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
                     self.yesterdayTotalBattery = self.TPWcloud.tesla_home_energy_battery(site_id, 'yesterday')
                     self.daysTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'today')
                     self.daysTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'today')
@@ -467,7 +467,7 @@ class tesla_info():
                     
                     self.yesterdayTotalGrid = self.TPWcloud.tesla_home_energy_grid(site_id, 'yesterday')
                     self.yesterdayTotalGenerator = self.TPWcloud.tesla_home_energy_generator(site_id, 'yesterday')
-                    self.yesterdayTotalSolar = self.TPWcloud.tesla_home_energy_solar(site_id, 'yesterday')         
+                    self.yesterdayTotalSolar = self.TPWcloud.tesla_solar_energy_exported(site_id, 'yesterday')         
                     self.yesterdayTotalGridServices = self.TPWcloud.tesla_grid_service_export(site_id, 'yesterday') - self.TPWcloud.tesla_grid_service_import(site_id, 'yesterday')#
                     self.yesterdayTotalBattery_exp = self.TPWcloud.tesla_battery_energy_export(site_id, 'yesterday')
                     self.yesterdayTotalBattery_imp = self.TPWcloud.tesla_battery_energy_import(site_id, 'yesterday')
@@ -901,7 +901,7 @@ class tesla_info():
         if self.cloudAccessUp:
             Pwr = self.TPWcloud.tesla_grid_energy_export(site_id, 'yesterday')
         elif  self.localAccessUp and self.firstPollCompleted:
-            Pwr = self.yesterdayTotalGeneraton
+            Pwr = self.yesterdayTotalGeneration
         else:
             return(None)
         logging.debug('getTPW_daysBattery ' + str(Pwr))

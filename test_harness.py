@@ -1639,9 +1639,10 @@ class TestPhase2BugFixes(unittest.TestCase):
         from TeslaPWOauth import teslaPWAccess
         poly = MockPolyglotInterface()
         tpw = teslaPWAccess(poly, 'energy_device_data')
-        
-        tpw.previous_date_str = datetime.now().strftime('%Y-%m-%d')
+
+        tpw.update_date_time('site_123')
         tpw.date_changed = False
+        tpw.history_yesterday_date['site_123'] = tpw.t_yesterday_date
         tpw.history_data['site_123'] = {
             'energy': {
                 'yesterday': {
@@ -1652,12 +1653,162 @@ class TestPhase2BugFixes(unittest.TestCase):
         tpw.tesla_get_live_status = lambda site_id: {}
         tpw.tesla_get_site_info = lambda site_id: {}
         tpw.tesla_get_today_history = lambda site_id, kind: None
-        
+
         yesterday_calls = []
         tpw.tesla_get_yesterday_history = lambda site_id, kind: yesterday_calls.append((site_id, kind))
-        
+
         tpw.teslaUpdateCloudData('site_123', 'all')
         self.assertEqual(len(yesterday_calls), 0)
+
+        # Force refresh fetches yesterday
+        tpw.teslaUpdateCloudData('site_123', 'all', force_yesterday=True)
+        self.assertEqual(len(yesterday_calls), 3)
+
+        # Rollover to new day re-fetches yesterday and updates history_yesterday_date
+        yesterday_calls.clear()
+        tpw.history_yesterday_date['site_123'] = '2020-01-01'
+        tpw.teslaUpdateCloudData('site_123', 'all')
+        self.assertEqual(len(yesterday_calls), 3)
+        self.assertEqual(tpw.history_yesterday_date['site_123'], tpw.t_yesterday_date)
+
+    def test_process_history_data_day_target_explicit(self):
+        """Verifies process_history_data with day_target='yesterday' correctly stores data."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+
+        energy_resp = {
+            'time_series': [
+                {
+                    'timestamp': '2026-04-10T12:00:00-07:00',
+                    'solar_energy_exported': 5000,
+                    'grid_energy_exported_from_solar': 1200,
+                    'battery_energy_imported_from_solar': 3000,
+                    'consumer_energy_imported_from_solar': 800,
+                    'consumer_energy_imported_from_battery': 2000,
+                    'consumer_energy_imported_from_grid': 4000,
+                    'consumer_energy_imported_from_generator': 0,
+                    'grid_energy_exported_from_battery': 500,
+                    'battery_energy_imported_from_grid': 100,
+                    'battery_energy_exported': 2500,
+                    'battery_energy_imported': 3100,
+                    'grid_services_energy_exported': 0,
+                    'grid_services_energy_imported': 0,
+                    'grid_energy_imported': 4100
+                }
+            ]
+        }
+        tpw.process_history_data('site_123', 'energy', energy_resp, day_target='yesterday')
+        self.assertIn('yesterday', tpw.history_data['site_123']['energy'])
+        self.assertEqual(tpw.history_data['site_123']['energy']['yesterday']['solar_energy_exported'], 5000)
+        self.assertEqual(tpw.history_data['site_123']['energy']['yesterday']['consumer_energy_imported_from_grid'], 4000)
+
+        # 0 backup events
+        backup_resp = {'events': []}
+        tpw.process_history_data('site_123', 'backup', backup_resp, day_target='yesterday')
+        self.assertIn('yesterday', tpw.history_data['site_123']['backup'])
+        self.assertEqual(tpw.history_data['site_123']['backup']['yesterday']['total_events'], 0)
+        self.assertEqual(tpw.history_data['site_123']['backup']['yesterday']['total_duration'], 0)
+
+        # 0 charge events
+        charge_resp = {'events': []}
+        tpw.process_history_data('site_123', 'charge', charge_resp, day_target='yesterday')
+        self.assertIn('yesterday', tpw.history_data['site_123']['charge'])
+        self.assertEqual(tpw.history_data['site_123']['charge']['yesterday']['total_energy'], 0)
+        self.assertEqual(tpw.history_data['site_123']['charge']['yesterday']['total_duration'], 0)
+
+    def test_process_energy_data_multiday_scoping(self):
+        """Verifies process_energy_data does not leak loop variables across multi-day records."""
+        from TeslaPWOauth import teslaPWAccess
+        poly = MockPolyglotInterface()
+        tpw = teslaPWAccess(poly, 'energy_device_data')
+        tpw.update_date_time('site_123')
+
+        resp = {
+            'time_series': [
+                {
+                    'timestamp': f'{tpw.t_yesterday_date}T10:00:00Z',
+                    'solar_energy_exported': 4000,
+                },
+                {
+                    'timestamp': f'{tpw.t_now_date}T11:00:00Z',
+                    'solar_energy_exported': 6000,
+                }
+            ]
+        }
+        tpw.process_history_data('site_123', 'energy', resp, day_target=None)
+        self.assertEqual(tpw.history_data['site_123']['energy']['yesterday']['solar_energy_exported'], 4000)
+        self.assertEqual(tpw.history_data['site_123']['energy']['today']['solar_energy_exported'], 6000)
+
+    def test_tesla_info_local_yesterday_grid_export_no_attribute_error(self):
+        """Verifies getTPW_yesterdayGrid_export accesses yesterdayTotalGeneration without typo error."""
+        from TeslaInfoV2 import tesla_info
+        tpw_cloud = types.SimpleNamespace()
+        info = tesla_info(tpw_cloud)
+        info.localAccessUp = True
+        info.firstPollCompleted = True
+        info.yesterdayTotalGeneration = 4500
+        val = info.getTPW_yesterdayGrid_export('local')
+        self.assertEqual(val, 4.5)
+
+    def test_tesla_info_poll_system_data_forwards_force(self):
+        """Verifies pollSystemData forwards force parameter to teslaUpdateCloudData."""
+        from TeslaInfoV2 import tesla_info
+        tpw_cloud = types.SimpleNamespace()
+        update_calls = []
+        tpw_cloud.teslaUpdateCloudData = lambda site, level, force_yesterday=False: update_calls.append((site, level, force_yesterday)) or True
+        tpw_cloud.tesla_solar_energy_exported = lambda s, p: 100.0
+        tpw_cloud.tesla_home_energy_total = lambda s, p: 200.0
+        tpw_cloud.tesla_grid_energy_export = lambda s, p: 50.0
+        tpw_cloud.tesla_home_energy_battery = lambda s, p: 60.0
+        tpw_cloud.tesla_home_energy_grid = lambda s, p: 70.0
+        tpw_cloud.tesla_home_energy_generator = lambda s, p: 0.0
+        tpw_cloud.tesla_home_energy_solar = lambda s, p: 80.0
+        tpw_cloud.tesla_grid_service_export = lambda s, p: 0.0
+        tpw_cloud.tesla_grid_service_import = lambda s, p: 0.0
+        tpw_cloud.tesla_battery_energy_export = lambda s, p: 30.0
+        tpw_cloud.tesla_battery_energy_import = lambda s, p: 20.0
+
+        info = tesla_info(tpw_cloud)
+        info.TPWcloudAccess = True
+        info.pollSystemData('site_123', 'all', force=True)
+        self.assertEqual(len(update_calls), 1)
+        self.assertEqual(update_calls[0], ('site_123', 'all', True))
+
+    def test_history_node_isy_update_forces_refresh(self):
+        """Verifies ISYupdate command invokes pollSystemData with force=True."""
+        from TeslaPWHistoryNode import teslaPWHistoryNode
+        poly = MockPolyglotInterface()
+        tpw_mock = types.SimpleNamespace()
+        poll_calls = []
+        tpw_mock.pollSystemData = lambda site_id, level, force=False: poll_calls.append((site_id, level, force))
+        tpw_mock.getTPW_daysConsumption = lambda s: 10.0
+        tpw_mock.getTPW_onLine = lambda: True
+        tpw_mock.getTPW_daysSolar = lambda s: 5.0
+        tpw_mock.getTPW_daysBattery_export = lambda s: 2.0
+        tpw_mock.getTPW_daysBattery_import = lambda s: 1.0
+        tpw_mock.getTPW_daysGrid_export = lambda s: 3.0
+        tpw_mock.getTPW_daysGrid_import = lambda s: 4.0
+        tpw_mock.getTPW_yesterdayConsumption = lambda s: 11.0
+        tpw_mock.getTPW_yesterdaySolar = lambda s: 6.0
+        tpw_mock.getTPW_yesterdayBattery_export = lambda s: 2.5
+        tpw_mock.getTPW_yesterdayBattery_import = lambda s: 1.5
+        tpw_mock.getTPW_yesterdayGrid_export = lambda s: 3.5
+        tpw_mock.getTPW_yesterdayGrid_import = lambda s: 4.5
+        tpw_mock.getTPW_days_backup_events = lambda s: 0
+        tpw_mock.getTPW_days_backup_time = lambda s: 0
+        tpw_mock.getTPW_yesterday_backup_events = lambda s: 0
+        tpw_mock.getTPW_yesterday_backup_time = lambda s: 0
+        tpw_mock.getTPW_days_evcharge_power = lambda s: 0
+        tpw_mock.getTPW_days_evcharge_time = lambda s: 0
+        tpw_mock.getTPW_yesterday_evcharge_power = lambda s: 0
+        tpw_mock.getTPW_yesterday_evcharge_time = lambda s: 0
+        tpw_mock.is_generator_installed = lambda: False
+
+        node = teslaPWHistoryNode(poly, 'primary_addr', 'hist_addr', 'History', 'site_123', tpw_mock)
+        node.ISYupdate({})
+        self.assertEqual(len(poll_calls), 1)
+        self.assertEqual(poll_calls[0], ('site_123', 'all', True))
 
     def test_local_battery_import_and_yesterday_import_return_values(self):
         """Verifies getTPW_daysBattery_import and getTPW_yesterdayBattery_import return values, not None."""
