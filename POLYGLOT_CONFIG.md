@@ -1,6 +1,6 @@
 # Tesla PowerWall Node Server for Polyglot PG3x
 
-**Version:** 0.3.0  
+**Version:** 0.3.1  
 **Author:** Panda88CO  
 
 ## Installation

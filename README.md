@@ -1,6 +1,6 @@
 # udi-TeslaPW2 - Polyglot PG3x Node Server for Tesla Powerwall
 
-**Version:** 0.3.0  
+**Version:** 0.3.1  
 **Platform:** Universal Devices eisy / Polisy with Polyglot PG3x (v3.x)  
 **Author:** Panda88CO  
 
@@ -141,6 +141,15 @@ Allows controlling Powerwall operating parameters from IoX / ISY programs and ad
 ---
 
 ## Version History
+
+### Version 0.3.1
+- **Hardware-Aware Local Access Detection**: Powerwall hardware model and gateway type are auto-detected (Powerwall 2 vs Powerwall 3 / neop). Local API configuration parameters (`pw_ip_address`, `pw_email`, `pw_customer_pwd`) and setup notice are only presented if the connected Powerwall supports local customer access.
+- **Yesterday's Power Summary Updates**:
+  - Resolved caching bug preventing yesterday's energy metrics from updating after midnight.
+  - Added calendar date-aware cache invalidation (`history_yesterday_date`) and fixed midnight rollover date latching.
+  - Fixed typo in local grid export calculation (`yesterdayTotalGeneration`) and aligned yesterday's solar metrics with `tesla_solar_energy_exported`.
+  - Added forced yesterday history refresh on manual ISY `UPDATE` command.
+  - Fixed zero-event handling for yesterday's backup and EV charging metrics.
 
 ### Version 0.3.0
 - **Explicit Driver Names**: Added explicit `'name'` attribute definitions to all drivers across all node classes (`CONTROLLER`, `PWSTATUS`, `PWHISTORY`, `PWSETUP`) matching dynamic profiles and NLS definitions.
