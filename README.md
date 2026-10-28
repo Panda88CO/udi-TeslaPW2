@@ -11,6 +11,7 @@ This is an updated version of the Tesla Powerwall Node Server for Universal Devi
 - **Official Tesla Fleet API Integration**: Direct OAuth authentication and cloud telemetry/control via Tesla's Fleet API.
 - **Zero-Config Cloud Discovery**: Automatically discovers your account region (NA, EU, or CN) on initial authentication.
 - **Optional Local LAN Telemetry (Powerwall 2)**: Direct high-speed local polling from the Powerwall Gateway API when configured, with automatic fallback to cloud telemetry.
+- **Hardware-Aware Local Access Detection**: Powerwall hardware model and gateway type are auto-detected (Powerwall 2 vs Powerwall 3 / neop). Local API configuration parameters and setup notices are only presented if the connected Powerwall supports local customer access.
 - **Dynamic Node Profiles**: Sub-nodes and driver sets automatically adapt based on your system configuration (e.g., hiding generator drivers if no generator is installed).
 - **Explicit Driver Names**: All node drivers define explicit descriptive names matching dynamic profiles and NLS definitions for seamless PG3x and IoX presentation.
 - **Comprehensive Telemetry**: Real-time power flows (kW), daily/historical energy usage (kWh), backup events, and EV charging telemetry.
@@ -35,13 +36,17 @@ Cloud access requires zero initial configuration:
 4. The node server will automatically discover your region and initialize all registered Powerwall sites.
 
 ### 2. Optional: Local LAN Access (Powerwall 2 only)
-If you have a Powerwall 2 with a gateway that supports customer local API access (`/api/login/Basic`), you may optionally configure:
+The node server automatically detects whether your Powerwall hardware supports local LAN access:
+- **Powerwall 2**: When a Powerwall 2 gateway supporting customer local API access (`/api/login/Basic`) is detected without local credentials configured, the node server automatically creates placeholder parameters under PG3x Custom Configuration and displays a dashboard notice.
+- **Powerwall 3**: Powerwall 3 / neop gateways do not offer customer local API access; the node server automatically recognizes this, suppresses local configuration notices, and operates via the official Tesla Cloud Fleet API.
+
+To enable fast local LAN polling on Powerwall 2:
 - In PG3x Custom Configuration, specify:
   - `LOCAL_IP_ADDRESS`: Gateway local IP address (e.g. `192.168.1.150`)
   - `LOCAL_USER_EMAIL`: Customer email used for gateway login
   - `LOCAL_USER_PASSWORD`: Customer password used for gateway login
 
-The node server verifies local connectivity on startup. If local access is available, it uses high-frequency local meter telemetry; if local access is unavailable or unsupported (such as on Powerwall 3), it seamlessly falls back to Cloud access without interruption.
+The node server verifies local connectivity on startup. If local access is available, it uses high-frequency local meter telemetry; if local access is unavailable or unsupported, it seamlessly falls back to Cloud access without interruption.
 
 ---
 
@@ -107,7 +112,7 @@ Daily and historical energy consumption, backup events, and EV charging data.
 - **`GV28`**: Yesterday charge power (`kWh`)
 - **`GV29`**: Yesterday charge time (Duration in seconds)
 - **`GV2`**: Generator Yesterday (`kWh`) *(conditionally displayed only if a generator is installed)*
-- **Commands**: `UPDATE`
+- **Commands**: `UPDATE` (forces an immediate query of system data and yesterday's historical cloud energy and backup data)
 
 ### 4. Control Parameters Node (`PWSETUP` - Power Wall Control Parameters)
 Allows controlling Powerwall operating parameters from IoX / ISY programs and admin console.
@@ -143,7 +148,7 @@ Allows controlling Powerwall operating parameters from IoX / ISY programs and ad
 ## Version History
 
 ### Version 0.3.1
-- **Hardware-Aware Local Access Detection**: Powerwall hardware model and gateway type are auto-detected (Powerwall 2 vs Powerwall 3 / neop). Local API configuration parameters (`pw_ip_address`, `pw_email`, `pw_customer_pwd`) and setup notice are only presented if the connected Powerwall supports local customer access.
+- **Hardware-Aware Local Access Detection**: Powerwall hardware model and gateway type are auto-detected (Powerwall 2 vs Powerwall 3 / neop). Local API configuration parameters (`LOCAL_IP_ADDRESS`, `LOCAL_USER_EMAIL`, `LOCAL_USER_PASSWORD`) and setup notice are only presented if the connected Powerwall supports local customer access.
 - **Yesterday's Power Summary Updates**:
   - Resolved caching bug preventing yesterday's energy metrics from updating after midnight.
   - Added calendar date-aware cache invalidation (`history_yesterday_date`) and fixed midnight rollover date latching.

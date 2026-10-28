@@ -375,10 +375,11 @@ class teslaPWAccess(teslaAccess):
                 date_str = None
                 if time_str:
                     try:
-                        dt_object = datetime.fromisoformat(time_str)
+                        clean_time = str(time_str).replace('Z', '+00:00')
+                        dt_object = datetime.fromisoformat(clean_time)
                         date_str = dt_object.strftime('%Y-%m-%d')
                     except Exception:
-                        date_str = None
+                        date_str = str(time_str)[:10] if isinstance(time_str, str) and len(time_str) >= 10 else None
 
                 target = None
                 if date_str == self.t_now_date:
@@ -411,14 +412,15 @@ class teslaPWAccess(teslaAccess):
                 time_str = events[0].get('timestamp')
                 if time_str:
                     try:
-                        dt_object = datetime.fromisoformat(time_str)
+                        clean_time = str(time_str).replace('Z', '+00:00')
+                        dt_object = datetime.fromisoformat(clean_time)
                         date_str = dt_object.strftime('%Y-%m-%d')
-                        if date_str == self.t_now_date:
-                            date_key = 'today'                
-                        elif date_str == self.t_yesterday_date:
-                            date_key = 'yesterday'
                     except Exception:
-                        pass
+                        date_str = str(time_str)[:10] if isinstance(time_str, str) and len(time_str) >= 10 else None
+                    if date_str == self.t_now_date:
+                        date_key = 'today'                
+                    elif date_str == self.t_yesterday_date:
+                        date_key = 'yesterday'
             for event in events:
                 total_duration += event.get('duration', 0)
         temp = {
@@ -456,16 +458,21 @@ class teslaPWAccess(teslaAccess):
                         pass
                 elif isinstance(start_time, str):
                     try:
-                        dt_object = datetime.fromisoformat(start_time)
+                        clean_time = str(start_time).replace('Z', '+00:00')
+                        dt_object = datetime.fromisoformat(clean_time)
                     except Exception:
                         pass
 
+                date_str = None
                 if dt_object:
                     date_str = dt_object.strftime('%Y-%m-%d')
-                    if date_str == self.t_now_date:
-                        date_key = 'today'
-                    elif date_str == self.t_yesterday_date:
-                        date_key = 'yesterday'
+                elif isinstance(start_time, str) and len(start_time) >= 10:
+                    date_str = str(start_time)[:10]
+
+                if date_str == self.t_now_date:
+                    date_key = 'today'
+                elif date_str == self.t_yesterday_date:
+                    date_key = 'yesterday'
 
             total_events = len(history_list)
             for event in history_list:
